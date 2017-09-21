@@ -9,7 +9,7 @@
   "scripts": {
     "compile": "babel src --out-dir lib",
     "start": "npm run compile && node ./lib",
-    "postinstall": "npm install && npm start"
+    "postinstall": "npm start"
   },
   "repository": {
     "type": "git",
