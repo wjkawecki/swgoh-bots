@@ -5,7 +5,7 @@
   "main": "./lib",
   "scripts": {
     "compile": "babel src --out-dir lib",
-    "start": "npm run compile && node ./lib"
+    "start": "node ./lib"
   },
   "repository": {
     "type": "git",
