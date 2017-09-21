@@ -1,11 +1,15 @@
 {
   "name": "shard-payout",
   "version": "1.0.0",
+  "engines": {
+    "node": "8.x.x"
+  },
   "description": "",
   "main": "./lib",
   "scripts": {
     "compile": "babel src --out-dir lib",
-    "start": "node ./lib"
+    "start": "npm run compile && node ./lib",
+    "postinstall": "npm install && npm start"
   },
   "repository": {
     "type": "git",
