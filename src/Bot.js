@@ -11,8 +11,8 @@ const nightmare = Nightmare({
 	}
 })
 
-const readChannelId = '313398928890527746'
-const writeChannelId = '330485028045848578'
+const readChannelId = '360337936203382796'
+const writeChannelId = '360337936203382796'
 const xlsxUrl = 'https://onedriv	e.live.com/view.aspx?resid=B92275A9BF72C170!40986&ithint=file%2cxlsx&app=Excel&authkey=!AJDJRXahXJTfaUU'
 
 export default class Bot {
