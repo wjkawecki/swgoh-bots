@@ -9,7 +9,7 @@
   "scripts": {
     "compile": "babel src --out-dir lib",
     "start": "npm run compile && node ./lib",
-    "postinstall": "npm start"
+    "heroku-postbuild": "npm install && npm start"
   },
   "repository": {
     "type": "git",
