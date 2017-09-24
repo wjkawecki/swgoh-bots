@@ -181,13 +181,7 @@ export default class Bot {
 		Kabob
 		Mascularn*/
 		embed.setDescription(desc)
-		embed.addField("10:00 GMT", "Pinnnkky")
-		embed.addField("15:00 GMT", "Gorra")
-		embed.addField("16:00 GMT - #payout_cest", "Andreas Angin\nAnsirus\nMops56\nRonron\nXilentis")
-		embed.addField("17:00 GMT", "Jinn Kuen")
-		embed.addField("21:00 GMT", "Faroer Laike")
-		embed.addField("22:00 GMT - #payout_est", "Afatkid\nKyle Katarn\nRylb89")
-		embed.addField("01:00 GMT - #payout_pst", "gnarlee\nJezza\nKabob\nMascularn")
+	
 		await this.message.edit({embed})
 	}
 }
