@@ -157,34 +157,37 @@ export default class Bot {
 			}
 		}
 
-		/*18:00 SGT  | 10:00 GMT
+		/*10:00 GMT
 		Pinnnkky
-		18:00 MSK  | 15:00 GMT
+		15:00 GMT
 		Gorra
-		18:00 CEST | 16:00 GMT - #payout_cest
+		16:00 GMT - #payout_cest
 		Andreas Angin
 		Ansirus
 		Mops56
 		Ronron
 		Xilentis
-		17:00 EST  | 21:00 GMT
+		17:00 GMT
+		Jinn Kuen
+		21:00 GMT
 		Faroer Laike
-		18:00 EST  | 22:00 GMT - #payout_est
+		22:00 GMT - #payout_est
 		Afatkid
 		Kyle Katarn
 		Rylb89
-		18:00 PST  | 01:00 GMT - #payout_pst
+		01:00 GMT - #payout_pst
 		gnarlee
 		Jezza
 		Kabob
 		Mascularn*/
 		embed.setDescription(desc)
-		embed.addField("18:00 SGT | 10:00 GMT", "Pinnnkky")
-		embed.addField("18:00 MSK | 15:00 GMT", "Gorra")
-		embed.addField("18:00 CEST | 16:00 GMT - #payout_cest", "Andreas Angin\nAnsiruss\nMops56\nRonron\nXilentis")
-		embed.addField("17:00 EST  | 21:00 GMT", "Faroer Laike")
-		embed.addField("18:00 EST  | 22:00 GMT - #payout_est", "Afatkid\nKyle Katarn\nRylb89")
-		embed.addField("18:00 PST  | 01:00 GMT - #payout_pst", "gnarlee\nJezza\nKabob\nMascularn")
+		embed.addField("10:00 GMT", "Pinnnkky")
+		embed.addField("15:00 GMT", "Gorra")
+		embed.addField("16:00 GMT - #payout_cest", "Andreas Angin\nAnsirus\nMops56\nRonron\nXilentis")
+		embed.addField("17:00 GMT", "Jinn Kuen")
+		embed.addField("21:00 GMT", "Faroer Laike")
+		embed.addField("22:00 GMT - #payout_est", "Afatkid\nKyle Katarn\nRylb89")
+		embed.addField("01:00 GMT - #payout_pst", "gnarlee\nJezza\nKabob\nMascularn")
 		await this.message.edit({embed})
 	}
 }
