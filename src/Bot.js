@@ -156,7 +156,9 @@ export default class Bot {
 				desc += `${mate.flag} [${mate.name}](${mate.swgoh})   `
 			}
 		}
-
+		embed.setDescription(desc)	
+		await this.message.edit({embed})
+		
 		/*10:00 GMT
 		Pinnnkky
 		15:00 GMT
@@ -180,8 +182,5 @@ export default class Bot {
 		Jezza
 		Kabob
 		Mascularn*/
-		embed.setDescription(desc)
-	
-		await this.message.edit({embed})
 	}
 }
