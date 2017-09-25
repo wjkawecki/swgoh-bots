@@ -148,17 +148,21 @@ export default class Bot {
 
 	async sendMessage() {
 		let embed = new Discord.RichEmbed().setColor(0x00AE86).setThumbnail('https://swgoh.gg/static/img/swgohgg-nav.png')
-		let desc = '**Time until next payout**:'
+		let desc = '**Next payout**:'
 		for (let i in this.mates) {
 			desc += `\n\`${this.mates[i].time}\`   `
 			for (let j in this.mates[i].mates) {
 				const mate = this.mates[i].mates[j]
 				desc += `${mate.flag} [${mate.name}](${mate.swgoh})   `
 			}
+
+			if (i === 0) {
+				desc += `\n\n\Following payouts`
+			}
 		}
-		embed.setDescription(desc)	
+		embed.setDescription(desc)
 		await this.message.edit({embed})
-		
+
 		/*10:00 GMT
 		Pinnnkky
 		15:00 GMT
