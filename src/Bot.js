@@ -22,7 +22,7 @@ export default class Bot {
 		this.botToken = botToken;
 
 		this.client = new Discord.Client();
-		this.client.on("ready", async () => {
+		this.client.on('ready', async () => {
 			this.client.user.setGame('live countdowns until payout');
 			this.readChannel = this.client.channels.get(readChannelId);
 			this.writeChannel = this.client.channels.get(writeChannelId);
@@ -99,7 +99,7 @@ export default class Bot {
 	}
 
 	parseXlsx() {
-		this.mates = []
+		this.mates = [];
 		for (let i in this.sheet) {
 			const user = this.sheet[i];
 			this.mates.push({
