@@ -9,25 +9,18 @@ const clientGame = 'SWGOH Arena';
 export default class Bot {
 	constructor(botToken) {
 		this.main = this.main.bind(this);
-
-		this.botToken = botToken;
-
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => {
 			this.client.user.setGame(clientGame);
 			this.readChannel = this.client.channels.get(readChannelId);
 			this.writeChannel = this.client.channels.get(writeChannelId);
-
 			this.initializeBot();
 		});
 
 		this.client.login(botToken);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.Sheet1);
 
-		console.log(this.sheet);
-
 		this.parseXlsx();
-
 		this.main();
 	}
 
@@ -45,11 +38,6 @@ export default class Bot {
 	}
 
 	async initializeBot() {
-		// fetch message. create a new one if necessary
-		/* const a = (await this.writeChannel.fetchMessages()).array()
-		for (let i in a) {
-		  await a[i].delete()
-		} */
 		const messages = await this.writeChannel.fetchMessages();
 
 		if (messages.array().length === 0) {
@@ -98,6 +86,7 @@ export default class Bot {
 
 	calculateSecondsUntilPayout() {
 		const now = new Date();
+
 		for (let i in this.mates) {
 			const mate = this.mates[i];
 			const p = new Date();
@@ -120,13 +109,12 @@ export default class Bot {
 
 	async sendMessage() {
 		let embed = new Discord.RichEmbed(),
-			desc = '',
-			mate;
+			desc = '';
 
 		for (let i in this.mates) {
 			desc += `\n\`${this.mates[i].time}\`   `;
 			for (let j in this.mates[i].mates) {
-				mate = this.mates[i].mates[j];
+				const mate = this.mates[i].mates[j];
 				desc += `${mate.flag} [${mate.name}](${mate.swgoh})    `;
 			}
 
@@ -143,29 +131,5 @@ export default class Bot {
 			.setTimestamp();
 
 		await this.message.edit({embed});
-
-		/*10:00 GMT
-		Pinnnkky
-		15:00 GMT
-		Gorra
-		16:00 GMT - #payout_cest
-		Andreas Angin
-		Ansirus
-		Mops56
-		Ronron
-		Xilentis
-		17:00 GMT
-		Jinn Kuen
-		21:00 GMT
-		Faroer Laike
-		22:00 GMT - #payout_est
-		Afatkid
-		Kyle Katarn
-		Rylb89
-		01:00 GMT - #payout_pst
-		gnarlee
-		Jezza
-		Kabob
-		Mascularn*/
 	}
 }
