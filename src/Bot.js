@@ -4,6 +4,7 @@ import path from 'path';
 
 const readChannelId = '360337936203382796';
 const writeChannelId = '360337936203382796';
+const clientGame = 'SWGOH Arena';
 
 export default class Bot {
 	constructor(botToken) {
@@ -13,12 +14,11 @@ export default class Bot {
 
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => {
-			this.client.user.setGame('SWGOH Arena');
+			this.client.user.setGame(clientGame);
 			this.readChannel = this.client.channels.get(readChannelId);
 			this.writeChannel = this.client.channels.get(writeChannelId);
 
 			this.initializeBot();
-			console.log('Bot initialized');
 		});
 
 		this.client.login(botToken);
@@ -49,6 +49,7 @@ export default class Bot {
 		  await a[i].delete()
 		} */
 		const messages = await this.writeChannel.fetchMessages();
+		
 		if (messages.array().length === 0) {
 			try {
 				this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
@@ -63,6 +64,8 @@ export default class Bot {
 				this.message = messages.first();
 			}
 		}
+
+		console.log('Bot initialized');
 	}
 
 	parseXlsx() {
