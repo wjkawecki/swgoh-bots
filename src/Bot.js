@@ -1,19 +1,9 @@
 import Discord from 'discord.js';
-import Nightmare from 'nightmare';
 import XLSX from 'xlsx';
-
 import path from 'path';
-
-const nightmare = Nightmare({
-	show: true,
-	openDevTools: {
-		mode: 'detach'
-	}
-});
 
 const readChannelId = '360337936203382796';
 const writeChannelId = '360337936203382796';
-const xlsxUrl = 'https://onedriv	e.live.com/view.aspx?resid=B92275A9BF72C170!40986&ithint=file%2cxlsx&app=Excel&authkey=!AJDJRXahXJTfaUU';
 
 export default class Bot {
 	constructor(botToken) {
@@ -23,7 +13,7 @@ export default class Bot {
 
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => {
-			this.client.user.setGame('live countdowns until payout');
+			this.client.user.setGame('SWGOH Arena');
 			this.readChannel = this.client.channels.get(readChannelId);
 			this.writeChannel = this.client.channels.get(writeChannelId);
 
@@ -32,11 +22,6 @@ export default class Bot {
 		});
 
 		this.client.login(botToken);
-
-		// scrape Excel online
-		// TODO not working right now, nightmare is unable to find elements by selectors
-		// await this.scrapeXlsx()
-		// TODO workaround: parse local xlsx file
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.Sheet1);
 
 		this.parseXlsx();
@@ -77,24 +62,6 @@ export default class Bot {
 			} else {
 				this.message = messages.first();
 			}
-		}
-	}
-
-	async scrapeXlsx() {
-		try {
-			// TODO oh my god, please let me scrape you, Excel online
-			nightmare.goto(xlsxUrl)
-				.wait(5000)
-				.evaluate(() => {
-					// console.log(document.querySelector('#m_excelWebRenderer_ewaCtl_commandUIPlaceHolder'))
-					return document.querySelector('body');
-				})
-				.end()
-				.then(res => {
-					console.log(res);
-				});
-		} catch (err) {
-			console.error(err);
 		}
 	}
 
