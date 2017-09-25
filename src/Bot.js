@@ -18,7 +18,7 @@ export default class Bot {
 		});
 
 		this.client.login(botToken);
-		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.Sheet1);
+		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.shard);
 
 		this.parseXlsx();
 		this.main();
