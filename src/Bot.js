@@ -24,6 +24,8 @@ export default class Bot {
 		this.client.login(botToken);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.Sheet1);
 
+		console.log(this.sheet);
+
 		this.parseXlsx();
 
 		this.main();
@@ -49,7 +51,7 @@ export default class Bot {
 		  await a[i].delete()
 		} */
 		const messages = await this.writeChannel.fetchMessages();
-		
+
 		if (messages.array().length === 0) {
 			try {
 				this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
