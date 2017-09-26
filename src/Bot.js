@@ -65,9 +65,8 @@ export default class Bot {
 			this.mates.push({
 				name: user.Name,
 				payout: parseInt(user.UTC.substr(0, 2)),
-				discordId: user.ID,
 				flag: user.Flag,
-				swgoh: user.SWGOH
+				swgoh: user.SWGOHGG
 			});
 		}
 		const matesByTime = {};
