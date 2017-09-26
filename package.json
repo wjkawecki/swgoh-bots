@@ -2,7 +2,7 @@
   "name": "swgoh-arena-payout",
   "version": "1.0.0",
   "engines": {
-    "node": ">=8.0.0"
+    "node": "^8.0.0"
   },
   "description": "",
   "main": "./lib",
@@ -24,7 +24,7 @@
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-preset-env": "^1.6.0",
-    "discord.js": ">=11.1.0",
+    "discord.js": "^11.1.0",
     "xlsx": "^0.11.1"
   }
 }
