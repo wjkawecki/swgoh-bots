@@ -68,8 +68,6 @@ export default class Bot {
 				flag: user.Flag,
 				swgohgg: user.SWGOHGG
 			});
-
-			console.log(user.SWGOHGG);
 		}
 		const matesByTime = {};
 		for (let i in this.mates) {
