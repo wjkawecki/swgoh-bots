@@ -66,8 +66,10 @@ export default class Bot {
 				name: user.Name,
 				payout: parseInt(user.UTC.substr(0, 2)),
 				flag: user.Flag,
-				swgoh: user.SWGOHGG
+				swgohgg: user.SWGOHGG
 			});
+
+			console.log(user.SWGOHGG);
 		}
 		const matesByTime = {};
 		for (let i in this.mates) {
