@@ -115,7 +115,7 @@ export default class Bot {
 			desc += `\n\`${this.mates[i].time}\`   `;
 			for (let j in this.mates[i].mates) {
 				const mate = this.mates[i].mates[j];
-				desc += `${mate.flag} [${mate.name}](${mate.swgoh})    `;
+				desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
 			}
 
 			if (i === '0') {
