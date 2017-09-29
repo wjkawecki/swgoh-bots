@@ -38,28 +38,33 @@ export default class Bot {
 	}
 
 	async initializeBot() {
-		const messages = await this.writeChannel.fetchMessages();
+		try {
+			const messages = await this.writeChannel.fetchMessages();
 
-		if (messages.array().length === 0) {
-			try {
-				this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
-			} catch (err) {
-				console.log(err);
-			}
-		} else {
-			if (messages.first().embeds.length === 0) {
-				await messages.first().delete();
-				this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+			if (messages.array().length === 0) {
+				try {
+					this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+				} catch (err) {
+					console.log(err);
+				}
 			} else {
-				this.message = messages.first();
+				if (messages.first().embeds.length === 0) {
+					await messages.first().delete();
+					this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+				} else {
+					this.message = messages.first();
+				}
 			}
-		}
 
-		console.log('Bot initialized');
+			console.log('Bot initialized');
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
 	parseXlsx() {
 		this.mates = [];
+
 		for (let i in this.sheet) {
 			const user = this.sheet[i];
 			this.mates.push({
@@ -69,7 +74,9 @@ export default class Bot {
 				swgohgg: user.SWGOHGG
 			});
 		}
+
 		const matesByTime = {};
+
 		for (let i in this.mates) {
 			const mate = this.mates[i];
 			if (!matesByTime[mate.payout]) {
@@ -80,6 +87,7 @@ export default class Bot {
 			}
 			matesByTime[mate.payout].mates.push(mate);
 		}
+
 		this.mates = Object.values(matesByTime);
 	}
 
@@ -107,28 +115,32 @@ export default class Bot {
 	}
 
 	async sendMessage() {
-		let embed = new Discord.RichEmbed(),
-			desc = '';
+		try {
+			let embed = new Discord.RichEmbed(),
+				desc = '';
 
-		for (let i in this.mates) {
-			desc += `\n\`${this.mates[i].time}\`   `;
-			for (let j in this.mates[i].mates) {
-				const mate = this.mates[i].mates[j];
-				desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
+			for (let i in this.mates) {
+				desc += `\n\`${this.mates[i].time}\`   `;
+				for (let j in this.mates[i].mates) {
+					const mate = this.mates[i].mates[j];
+					desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
+				}
+
+				if (i === '0') {
+					desc += '\n\n\Following payouts:';
+				}
 			}
 
-			if (i === '0') {
-				desc += '\n\n\Following payouts:';
-			}
+			embed
+				.setDescription(desc)
+				.setColor(0x00AE86)
+				.setThumbnail('https://swgoh.gg/static/img/swgohgg-nav.png')
+				.setAuthor('Next payout:')
+				.setTimestamp();
+
+			await this.message.edit({embed});
+		} catch (err) {
+			console.log(err);
 		}
-
-		embed
-			.setDescription(desc)
-			.setColor(0x00AE86)
-			.setThumbnail('https://swgoh.gg/static/img/swgohgg-nav.png')
-			.setAuthor('Next payout:')
-			.setTimestamp();
-
-		await this.message.edit({embed});
 	}
 }
