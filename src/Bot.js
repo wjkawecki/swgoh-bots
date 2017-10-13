@@ -123,7 +123,11 @@ export default class Bot {
 				desc += `\n\`${this.mates[i].time}\`   `;
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
-					desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
+					if (mate.swgohgg) {
+						desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
+					} else {
+						desc += `${mate.flag} ${mate.name}    `;
+					}
 				}
 
 				if (i === '0') {
