@@ -41,18 +41,23 @@ export default class Bot {
 		try {
 			const messages = await this.writeChannel.fetchMessages();
 
-			if (messages.array().length === 0) {
-				try {
-					this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
-				} catch (err) {
-					console.log(err);
-				}
-			} else {
-				if (messages.first().embeds.length === 0) {
-					await messages.first().delete();
-					this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+			if (messages) {
+				if (messages.array().length === 0) {
+					try {
+						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+					} catch (err) {
+						console.log(err);
+					}
 				} else {
-					this.message = messages.first();
+					if (messages.last().embeds.length === 0) {
+						messages.forEach(async (message) => {
+							await message.delete();
+						});
+
+						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+					} else {
+						this.message = messages.last();
+					}
 				}
 			}
 
@@ -67,9 +72,10 @@ export default class Bot {
 
 		for (let i in this.sheet) {
 			const user = this.sheet[i];
+
 			this.mates.push({
 				name: user.Name,
-				payout: parseInt(user.UTC.substr(0, 2)),
+				payout: parseInt(user.UTC),
 				flag: user.Flag,
 				swgohgg: user.SWGOHGG
 			});
