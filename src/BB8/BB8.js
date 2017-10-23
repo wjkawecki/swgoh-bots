@@ -4,9 +4,9 @@ import path from 'path';
 
 const readChannelId = '360337936203382796';
 const writeChannelId = '360337936203382796';
-const clientGame = 'SWGOH Arena';
+const clientGame = 'Arena';
 
-export default class Bot {
+export default class BB8 {
 	constructor(botToken) {
 		this.main = this.main.bind(this);
 		this.client = new Discord.Client();
