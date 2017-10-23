@@ -2,26 +2,22 @@ import Discord from 'discord.js';
 import XLSX from 'xlsx';
 import path from 'path';
 
-const readChannelId = '371742456653414410';
-const writeChannelId = '371742456653414410';
-const clientGame = 'Kashyyyk';
+const readChannelId = '371742456653414410', // #bot_playground
+	writeChannelId = '371742456653414410', // #bot_playground
+	xlsxPath = '../../../../data/WookieeSergeant.xlsx';
 
-export default class WookieeSergeant {
-	constructor(botToken) {
+export default class Arena {
+	constructor(Client) {
+		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, xlsxPath)).Sheets.shard);
+		this.readChannel = Client.channels.get(readChannelId);
+		this.writeChannel = Client.channels.get(writeChannelId);
+
 		this.main = this.main.bind(this);
-		this.client = new Discord.Client();
-		this.client.on('ready', async () => {
-			this.client.user.setGame(clientGame);
-			this.readChannel = this.client.channels.get(readChannelId);
-			this.writeChannel = this.client.channels.get(writeChannelId);
-			this.initializeBot();
-		});
-
-		this.client.login(botToken);
-		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/WookieeSergeant.xlsx')).Sheets.shard);
-
+		this.initializeBot();
 		this.parseXlsx();
 		this.main();
+
+		console.log('WookieeSergeant.Arena ready');
 	}
 
 	async main() {
@@ -60,8 +56,6 @@ export default class WookieeSergeant {
 					}
 				}
 			}
-
-			console.log('WookieeSergeant initialized');
 		} catch (err) {
 			console.log(err);
 		}

@@ -18,7 +18,7 @@ export default class BB8 {
 		});
 
 		this.client.login(botToken);
-		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.shard);
+		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
 
 		this.parseXlsx();
 		this.main();
@@ -61,7 +61,7 @@ export default class BB8 {
 				}
 			}
 
-			console.log('Bot initialized');
+			console.log('BB8 ready');
 		} catch (err) {
 			console.log(err);
 		}
