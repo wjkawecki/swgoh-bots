@@ -170,6 +170,8 @@ export default class Raids {
 				this.updateJSON();
 				this.main();
 			}, raid.diff);
+
+			console.log(`WookieeSergeant.Raids.setTimeout(): ${raid.type} start reminder in ${raid.diff / 60000 / 60} hours`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
@@ -187,6 +189,8 @@ export default class Raids {
 				this.updateJSON();
 				this.main();
 			}, raid.diff);
+
+			console.log(`WookieeSergeant.Raids.setTimeout(): ${nextPhase}${raid.type} reminder in ${raid.diff / 60000 / 60} hours`);
 		}
 	}
 
