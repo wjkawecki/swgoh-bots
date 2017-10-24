@@ -9,7 +9,6 @@ export default class WookieeSergeant {
 		this.Client = new Client(botToken).client;
 		this.Client.on('ready', async () => {
 			new Raids(this.Client);
-			// new Arena(this.Client);
 		});
 	}
 }
