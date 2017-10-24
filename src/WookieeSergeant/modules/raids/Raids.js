@@ -17,6 +17,7 @@ export default class Raids {
 	constructor(Client) {
 		console.log('WookieeSergeant.Raids ready');
 		this.initChannels(Client, channels);
+		this.listenToMessages(Client);
 		this.main();
 	}
 
@@ -26,6 +27,20 @@ export default class Raids {
 		for (let key in channels) {
 			this.channels[key] = Client.channels.get(channels[key]);
 		}
+	}
+
+	listenToMessages(Client) {
+		Client.on('message', msg => {
+			if (msg.channel.id === channels.bot_playground) {
+				if (msg.content.toLowerCase() === '--start rancor') {
+					this.startRaid('Rancor', msg);
+				}
+				if (msg.content.toLowerCase() === '--start aat') {
+
+					this.startRaid('AAT', msg);
+				}
+			}
+		});
 	}
 
 	async main() {
@@ -57,6 +72,43 @@ export default class Raids {
 
 	updateJSON() {
 		fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify(this.json));
+	}
+
+	startRaid(raidName, msg) {
+		const raid = this.json[raidName],
+			nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
+
+		if (raid.active) {
+			msg.reply(`don't fool me, ${raidName} is already started!`);
+		} else {
+			msg.reply(`roger that, logging new ${raidName} in my books!`);
+
+			if (raid.config.registrationHours > 0) {
+				this.json[raidName].active = {
+					rotationTimeUTC: raid.next.rotationTimeUTC,
+					initiatorID: msg.author.id,
+					phase: 0
+				};
+			} else {
+				let nextPhase = (raid.config.phases.count > 1) ? `P1 ` : '';
+
+				this.json[raidName].active = {
+					rotationTimeUTC: raid.next.rotationTimeUTC,
+					initiatorID: msg.author.id,
+					phase: 1
+				};
+
+				this.channels.bot_playground.send(`${roles.shavedWookiee} ${nextPhase}${raidName} is now OPEN!`);
+			}
+
+			this.json[raidName].next = {
+				rotationTimeUTC: nextRotationTimeUTC,
+				reminderTriggered: false
+			};
+
+			this.updateJSON();
+			this.main();
+		}
 	}
 
 	findNextEvent() {
@@ -111,7 +163,7 @@ export default class Raids {
 
 		if (raid.phase === 0 && !raid.reminderTriggered) { // remind @Officer to start raid
 			setTimeout(() => {
-				this.channels.bot_playground.send(`${roles.officer} start ${raid.type} NOW! After that type here "--start ${raid.type}"`);
+				this.channels.bot_playground.send(`${roles.officer} start ${raid.type} NOW! After that type here "--start ${raid.type.toLowerCase()}"`);
 
 				this.json[raid.type].next.reminderTriggered = true;
 
@@ -119,12 +171,13 @@ export default class Raids {
 				this.main();
 			}, raid.diff);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
-			let nextPhase = (raid.config.phases.count > 1) ? `Phase ${raid.phase} ` : '';
+			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
 			setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
 				this.channels.bot_playground.send(`${roles.shavedWookiee} ${nextPhase}${raid.type} is now OPEN!`);
 
 				if (isLastPhase) { // this was the last phase - move raid to logs
+					delete this.json[raid.type].active.phase;
 					this.json[raid.type].log.push(this.json[raid.type].active);
 					this.json[raid.type].active = null;
 				} else {

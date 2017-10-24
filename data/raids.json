@@ -23,11 +23,13 @@
 		"log": [
 			{
 				"rotationTimeUTC": 0,
-				"initiatorID": "297208034860597248"
+				"initiatorID": "297208034860597248",
+				"phase": 1
 			},
 			{
 				"rotationTimeUTC": 12,
-				"initiatorID": "209632024783355904"
+				"initiatorID": "209632024783355904",
+				"phase": 1
 			}
 		]
 	},
