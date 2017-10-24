@@ -1,6 +1,5 @@
 import Client from './modules/client/Client';
 import Raids from './modules/raids/Raids';
-import Arena from './modules/arena/Arena';
 
 export default class WookieeSergeant {
 	constructor(botToken) {
