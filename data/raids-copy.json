@@ -44,9 +44,13 @@
 				23
 			]
 		},
-		"active": null,
+		"active": {
+			"rotationTimeUTC": 11,
+			"initiatorID": "209632024783355904",
+			"phase": 1
+		},
 		"next": {
-			"rotationTimeUTC": 11
+			"rotationTimeUTC": 17
 		},
 		"log": [
 			{

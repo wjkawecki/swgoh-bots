@@ -10,14 +10,15 @@ const jsonPath = '../../../../data/raids.json',
 	roles = {
 		officer: '<@&324139861709946901>',
 		shavedWookiee: '<@&324184776871510016>'
-	},
-	timeouts = [];
+	};
 
 export default class Raids {
 	constructor(Client) {
-		console.log('WookieeSergeant.Raids ready');
+		console.log('WookieeSergeant.Raids');
+
 		this.initChannels(Client, channels);
 		this.listenToMessages(Client);
+		this.timeouts = [];
 		this.main();
 	}
 
@@ -32,12 +33,20 @@ export default class Raids {
 	listenToMessages(Client) {
 		Client.on('message', msg => {
 			if (msg.channel.id === channels.bot_playground) {
-				if (msg.content.toLowerCase() === '--start rancor') {
-					this.startRaid('Rancor', msg);
-				}
-				if (msg.content.toLowerCase() === '--start aat') {
+				switch (msg.content.toLowerCase()) {
 
-					this.startRaid('AAT', msg);
+					case '--start rancor':
+						this.startRaid('Rancor', msg);
+						break;
+
+					case '--start aat':
+						this.startRaid('AAT', msg);
+						break;
+
+					case '--json':
+						console.log(JSON.stringify(this.json, null, 4));
+						break;
+
 				}
 			}
 		});
@@ -47,13 +56,7 @@ export default class Raids {
 		try {
 			console.log('WookieeSergeant.Raids.main()');
 
-			// const messages = await this.channels.bot_playground.fetchMessages();
-			// if (messages) {
-			// 	messages.forEach(async (message) => {
-			// 		await message.delete();
-			// 	});
-			// }
-
+			// this.clearChannel();
 			this.readJSON();
 			this.processRaids();
 		} catch (err) {
@@ -61,17 +64,31 @@ export default class Raids {
 		}
 	}
 
-	readJSON() {
-		this.json = JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath)));
+	async clearChannel() {
+		console.log(`WookieeSergeant.Raids.clearChannel()`);
+
+		const messages = await this.channels.bot_playground.fetchMessages();
+		if (messages) {
+			messages.forEach(async (message) => {
+				await message.delete();
+			});
+		}
 	}
 
-	processRaids() {
-		this.findNextEvent();
-		this.setTimeout();
+	readJSON() {
+		console.log(`WookieeSergeant.Raids.readJSON(): ${typeof this.json}`);
+		this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath)));
 	}
 
 	updateJSON() {
 		fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify(this.json));
+		this.channels.bot_playground.send(JSON.stringify(this.json));
+	}
+
+	processRaids() {
+		this.findNextEvent();
+		this.clearTimeout();
+		this.setTimeout();
 	}
 
 	startRaid(raidName, msg) {
@@ -101,11 +118,10 @@ export default class Raids {
 				this.channels.bot_playground.send(`${roles.shavedWookiee} ${nextPhase}${raidName} is now OPEN!`);
 			}
 
-			this.channels.raid_log.send(`${raidName} ${raid.next.rotationTimeUTC}UTC started by <@${msg.author.id}>`);
+			this.channels.raid_log.send(`${raidName} ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>`);
 
 			this.json[raidName].next = {
-				rotationTimeUTC: nextRotationTimeUTC,
-				reminderTriggered: false
+				rotationTimeUTC: nextRotationTimeUTC
 			};
 
 			this.updateJSON();
@@ -157,29 +173,49 @@ export default class Raids {
 		this.nextEvent = nextEvents[0];
 	}
 
-	setTimeout() {
-		let raid = this.nextEvent;
+	clearTimeout() {
+		console.log(`WookieeSergeant.Raids.clearTimeout(): ${this.timeouts.length} timeouts`);
 
-		console.log('WookieeSergeant.Raids.setTimeout()');
+		if (this.timeouts) {
+			this.timeouts.forEach((timeout) => {
+				clearTimeout(timeout);
+			});
+		}
+	}
+
+	setTimeout() {
+		let remindMinutesBefore = 2,
+			raid = this.nextEvent,
+			diff = new Date(raid.diff - (remindMinutesBefore * 60 * 1000));
 
 		if (raid.phase === 0) { // remind @Officer to start raid
-			setTimeout(() => {
-				this.channels.bot_playground.send(`${roles.officer} prepare to start ${raid.type} in 5 minutes!\nI hope you have enough raid tickets?!`);
-			}, raid.diff - (5 * 60 * 1000));
+			this.timeouts.push(setTimeout(() => {
+				this.channels.bot_playground.send(
+					`${roles.officer} prepare to start ${raid.type} in ${remindMinutesBefore} minutes!\nI hope you have enough raid tickets?!`
+				);
+			}, diff));
 
-			setTimeout(() => {
-				this.channels.bot_playground.send(`${roles.officer} start ${raid.type} NOW!\nAfter that type here "--start ${raid.type.toLowerCase()}"\nIf you don't have enough tickets I will remind you again tomorrow.`);
+			this.timeouts.push(setTimeout(() => {
+				this.channels.bot_playground.send(`${roles.officer} start ${raid.type} NOW!\nAfter that type here \`--start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`);
 
 				this.updateJSON();
 				this.main();
-			}, raid.diff);
+			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.setTimeout(): ${raid.type} start reminder in ${raid.diff / 60000 / 60} hours`);
+			console.log(`WookieeSergeant.Raids.setTimeout(): ${raid.type} start in ${raid.diff / 1000 / 60 / 60}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
-			setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
-				this.channels.bot_playground.send(`${roles.shavedWookiee} ${nextPhase}${raid.type} is now OPEN!`);
+			this.timeouts.push(setTimeout(() => {
+				this.channels.bot_playground.send(
+					`${roles.shavedWookiee} ${nextPhase}${raid.type} will open in ${remindMinutesBefore} minutes. Get ready!`
+				);
+			}, diff));
+
+			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
+				this.channels.bot_playground.send(
+					`${roles.shavedWookiee} ${nextPhase}${raid.type} is now OPEN! Go go go!`
+				);
 
 				if (isLastPhase) { // this was the last phase - move raid to logs
 					delete this.json[raid.type].active.phase;
@@ -191,9 +227,9 @@ export default class Raids {
 
 				this.updateJSON();
 				this.main();
-			}, raid.diff);
+			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.setTimeout(): ${nextPhase}${raid.type} reminder in ${raid.diff / 60000 / 60} hours`);
+			console.log(`WookieeSergeant.Raids.setTimeout(): ${nextPhase}${raid.type} in ${raid.diff / 1000 / 60 / 60}`);
 		}
 	}
 

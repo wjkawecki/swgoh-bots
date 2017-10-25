@@ -8,7 +8,7 @@ export default class Client {
 		this.client.on('ready', async () => {
 			this.client.user.setGame(clientGame);
 
-			console.log('WookieeSergeant.Client ready');
+			console.log('WookieeSergeant.Client');
 		});
 
 		this.client.login(botToken);
