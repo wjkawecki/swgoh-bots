@@ -79,7 +79,7 @@ export default class Raids {
 			nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
 
 		if (raid.active) {
-			msg.reply(`don't fool me, ${raidName} is already started!`);
+			msg.reply(`don't fool me! ${raidName} is already started!`);
 		} else {
 			msg.reply(`roger that, logging new ${raidName} in my books!`);
 
@@ -100,6 +100,8 @@ export default class Raids {
 
 				this.channels.bot_playground.send(`${roles.shavedWookiee} ${nextPhase}${raidName} is now OPEN!`);
 			}
+
+			this.channels.raid_log.send(`${raidName} ${raid.next.rotationTimeUTC}UTC started by <@${msg.author.id}>`);
 
 			this.json[raidName].next = {
 				rotationTimeUTC: nextRotationTimeUTC,
@@ -159,13 +161,14 @@ export default class Raids {
 		let raid = this.nextEvent;
 
 		console.log('WookieeSergeant.Raids.setTimeout()');
-		console.log(raid);
 
-		if (raid.phase === 0 && !raid.reminderTriggered) { // remind @Officer to start raid
+		if (raid.phase === 0) { // remind @Officer to start raid
 			setTimeout(() => {
-				this.channels.bot_playground.send(`${roles.officer} start ${raid.type} NOW! After that type here "--start ${raid.type.toLowerCase()}"`);
+				this.channels.bot_playground.send(`${roles.officer} prepare to start ${raid.type} in 5 minutes!\nI hope you have enough raid tickets?!`);
+			}, raid.diff - (5 * 60 * 1000));
 
-				this.json[raid.type].next.reminderTriggered = true;
+			setTimeout(() => {
+				this.channels.bot_playground.send(`${roles.officer} start ${raid.type} NOW!\nAfter that type here "--start ${raid.type.toLowerCase()}"\nIf you don't have enough tickets I will remind you again tomorrow.`);
 
 				this.updateJSON();
 				this.main();
