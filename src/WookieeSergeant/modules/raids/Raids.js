@@ -202,7 +202,7 @@ export default class Raids {
 				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.setTimeout(): ${raid.type} start in ${raid.diff / 1000 / 60 / 60}`);
+			console.log(`WookieeSergeant.Raids.setTimeout(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
@@ -229,7 +229,7 @@ export default class Raids {
 				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.setTimeout(): ${nextPhase}${raid.type} in ${raid.diff / 1000 / 60 / 60}`);
+			console.log(`WookieeSergeant.Raids.setTimeout(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
 		}
 	}
 
@@ -237,5 +237,17 @@ export default class Raids {
 		return function (rotationTimesUTC) {
 			return (rotationTimesUTC > nowHour);
 		}
+	}
+
+	getReadableTime(time, showSeconds = false) {
+		time = new Date(time);
+
+		if (showSeconds) {
+			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}:${String(time.getUTCSeconds()).padStart(2, '00')}`;
+		} else {
+			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}`;
+		}
+
+		return time;
 	}
 }

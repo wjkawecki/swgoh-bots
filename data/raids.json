@@ -44,11 +44,7 @@
 				23
 			]
 		},
-		"active": {
-			"rotationTimeUTC": 11,
-			"initiatorID": "209632024783355904",
-			"phase": 1
-		},
+		"active": null,
 		"next": {
 			"rotationTimeUTC": 17
 		},
@@ -60,6 +56,10 @@
 			{
 				"rotationTimeUTC": 5,
 				"initiatorID": "307729886540333056"
+			},
+			{
+				"rotationTimeUTC": 11,
+				"initiatorID": "209632024783355904"
 			}
 		]
 	}
