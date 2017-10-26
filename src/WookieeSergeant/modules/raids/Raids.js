@@ -1,7 +1,7 @@
-import path from 'path';
-import * as fs from 'fs';
+import * as mongodb from 'mongodb';
 
-const jsonPath = '../../../../data/raids.json',
+const MongoClient = mongodb.MongoClient,
+	mongoUrl = 'mongodb://heroku_v41s5g4n:l1jreltnrju63hofsm7qpsoe3b@ds231315.mlab.com:31315/heroku_v41s5g4n',
 	channels = {
 		bot_playground: '371742456653414410',
 		officer_chat: '324199905017200651',
@@ -11,6 +11,7 @@ const jsonPath = '../../../../data/raids.json',
 		officer: '<@&324139861709946901>',
 		shavedWookiee: '<@&324184776871510016>'
 	};
+;
 
 export default class Raids {
 	constructor(Client) {
@@ -58,7 +59,6 @@ export default class Raids {
 
 			// this.clearChannel();
 			this.readJSON();
-			this.processRaids();
 		} catch (err) {
 			console.log(err);
 		}
@@ -76,16 +76,47 @@ export default class Raids {
 	}
 
 	readJSON() {
-		console.log(`WookieeSergeant.Raids.readJSON(): ${typeof this.json}`);
-		this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath)));
+		let that = this;
+		//this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath))).raids;
+
+		if (!this.json) {
+			MongoClient.connect(mongoUrl, function (err, db) {
+				if (err) throw err;
+				db.collection('raids').findOne({}, function (err, result) {
+					if (err) throw err;
+					that.json = result.raids;
+					db.close();
+					console.log(`WookieeSergeant.Raids.readJSON(): MongoDB ${typeof that.json}`);
+					that.processRaids();
+				});
+			});
+		} else {
+			console.log(`WookieeSergeant.Raids.readJSON(): local ${typeof that.json}`);
+			this.processRaids();
+		}
+
 	}
 
 	updateJSON() {
-		fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify(this.json));
+		let that = this,
+		json = {raids: that.json};
+		//fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify(this.json));
+
+		MongoClient.connect(mongoUrl, function (err, db) {
+			if (err) throw err;
+			db.collection('raids').updateOne({}, json, function (err, result) {
+				if (err) throw err;
+				console.log("1 document updated", result.result);
+				db.close();
+			});
+		});
+
 		this.channels.bot_playground.send(JSON.stringify(this.json));
 	}
 
 	processRaids() {
+		// console.log(this.json);
+
 		this.findNextEvent();
 		this.clearTimeout();
 		this.setTimeout();
@@ -118,7 +149,7 @@ export default class Raids {
 				this.channels.bot_playground.send(`${roles.shavedWookiee} ${nextPhase}${raidName} is now OPEN!`);
 			}
 
-			this.channels.raid_log.send(`${raidName} ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>`);
+			// this.channels.raid_log.send(`${raidName} ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>`);
 
 			this.json[raidName].next = {
 				rotationTimeUTC: nextRotationTimeUTC
