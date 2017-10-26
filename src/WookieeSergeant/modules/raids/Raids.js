@@ -106,12 +106,12 @@ export default class Raids {
 			if (err) throw err;
 			db.collection('raids').updateOne({}, json, function (err, result) {
 				if (err) throw err;
-				console.log("1 document updated", result.result);
+				console.log(`WookieeSergeant.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 				db.close();
 			});
 		});
 
-		this.channels.bot_playground.send(JSON.stringify(this.json));
+		// this.channels.bot_playground.send(JSON.stringify(this.json));
 	}
 
 	processRaids() {
