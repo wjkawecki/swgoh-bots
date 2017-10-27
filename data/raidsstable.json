@@ -1,8 +1,8 @@
 {
 	"_id": {
-		"$oid": "59f1ecd6f36d28556930f739"
+		"$oid": "59f1edf6f36d28556930f7d3"
 	},
-	"raid": {
+	"raids": {
 		"Rancor": {
 			"config": {
 				"registrationHours": 24,
@@ -17,7 +17,7 @@
 			},
 			"active": {
 				"rotationTimeUTC": 12,
-				"initiatorID": "209632024783355904",
+				"initiatorID": "309607586200813579",
 				"phase": 0
 			},
 			"next": {
@@ -52,13 +52,9 @@
 					23
 				]
 			},
-			"active": {
-				"rotationTimeUTC": 17,
-				"initiatorID": "209632024783355904",
-				"phase": 1
-			},
+			"active": null,
 			"next": {
-				"rotationTimeUTC": 23
+				"rotationTimeUTC": 17
 			},
 			"log": [
 				{

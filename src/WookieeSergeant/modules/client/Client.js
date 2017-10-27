@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 
-const clientGame = 'Kashyyyk';
+const clientGame = 'FTB Shaved Wookiees';
 
 export default class Client {
 	constructor(botToken) {
