@@ -4,7 +4,7 @@ import * as mongodb from 'mongodb';
 import path from 'path';
 import * as fs from 'fs';
 
-const MongoClient = mongodb.MongoClient,
+let MongoClient = mongodb.MongoClient,
 	mongoUrl = 'mongodb://heroku_v41s5g4n:l1jreltnrju63hofsm7qpsoe3b@ds231315.mlab.com:31315/heroku_v41s5g4n',
 	jsonPath = '../../../../data/raids.json',
 	jsonStablePath = '../../../../data/raidsstable.json',
@@ -18,6 +18,14 @@ const MongoClient = mongodb.MongoClient,
 		officer: '324139861709946901',
 		shavedWookiee: '324184776871510016'
 	};
+
+if (dev) {
+	channels = { // all channels are #bot_playground
+		officer_chat: channels.bot_playground,
+		raid_log: channels.bot_playground,
+		the_guild_lounge: channels.bot_playground
+	};
+}
 
 export default class Raids {
 	constructor(Client) {
