@@ -4,28 +4,20 @@ import * as mongodb from 'mongodb';
 import path from 'path';
 import * as fs from 'fs';
 
-let MongoClient = mongodb.MongoClient,
+const MongoClient = mongodb.MongoClient,
 	mongoUrl = 'mongodb://heroku_v41s5g4n:l1jreltnrju63hofsm7qpsoe3b@ds231315.mlab.com:31315/heroku_v41s5g4n',
 	jsonPath = '../../../../data/raids.json',
 	jsonStablePath = '../../../../data/raidsstable.json',
 	channels = {
-		bot_playground: '371742456653414410',
 		officer_chat: '324199905017200651',
 		raid_log: '358111155572441091',
-		the_guild_lounge: '324023862771712011'
+		raids_comm: '328317495431790593',
+		bot_playground: '371742456653414410'
 	},
 	roles = {
 		officer: '324139861709946901',
 		shavedWookiee: '324184776871510016'
 	};
-
-if (dev) {
-	channels = { // all channels are #bot_playground
-		officer_chat: channels.bot_playground,
-		raid_log: channels.bot_playground,
-		the_guild_lounge: channels.bot_playground
-	};
-}
 
 export default class Raids {
 	constructor(Client) {
@@ -49,7 +41,11 @@ export default class Raids {
 		this.channels = {};
 
 		for (let key in channels) {
-			this.channels[key] = this.Client.channels.get(channels[key]);
+			if (dev) {
+				this.channels[key] = this.Client.channels.get(channels.bot_playground);
+			} else {
+				this.channels[key] = this.Client.channels.get(channels[key]);
+			}
 		}
 	}
 
@@ -229,7 +225,7 @@ export default class Raids {
 					phase: 1
 				};
 
-				this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> ${nextPhase}${raidName} is now OPEN!`);
+				this.channels.raids_comm.send(`<@&${roles.shavedWookiee}> ${nextPhase}${raidName} is now OPEN!`);
 			}
 
 			if (!dev) {
@@ -321,13 +317,13 @@ export default class Raids {
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
 			this.timeouts.push(setTimeout(() => {
-				this.channels.the_guild_lounge.send(
+				this.channels.raids_comm.send(
 					`<@&${roles.shavedWookiee}> ${nextPhase}${raid.type} will open in ${remindMinutesBefore} minutes. Get ready!`
 				);
 			}, diff));
 
 			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
-				this.channels.the_guild_lounge.send(
+				this.channels.raids_comm.send(
 					`<@&${roles.shavedWookiee}> ${nextPhase}${raid.type} is now OPEN!`
 				);
 
