@@ -60,7 +60,7 @@ export default class DailyActivities {
 	}
 
 	helpReply(msg) {
-		msg.reply(`Here is the list of my __DailyActivities__ commands:\n\`-help\` - this is what you are reading right now.`);
+		msg.reply(`here is the list of my __DailyActivities__ commands:\n\`-help\` - this is what you are reading right now.`);
 	}
 
 	isBotMentioned(msg) {
