@@ -316,11 +316,13 @@ export default class Raids {
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
-			this.timeouts.push(setTimeout(() => {
-				this.channels.raids_comm.send(
-					`<@&${roles.shavedWookiee}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes. Get ready!`
-				);
-			}, diff));
+			if (raid.config.phases.count <= 1) {
+				this.timeouts.push(setTimeout(() => {
+					this.channels.raids_comm.send(
+						`<@&${roles.shavedWookiee}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
+					);
+				}, diff));
+			}
 
 			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
 				this.channels.raids_comm.send(
