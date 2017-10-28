@@ -206,7 +206,7 @@ export default class Raids {
 		if (raid.active) {
 			msg.reply(`don't fool me! __${raidName}__ is already active!`);
 		} else {
-			msg.reply(`roger that! Adding new __${raidName}__ to the <#${channels.raid_log}>`);
+			msg.reply(`yes sir! Adding new __${raidName}__ to the <#${channels.raid_log}>`);
 
 			this.undoJson = JSON.parse(JSON.stringify(this.json));
 
@@ -225,14 +225,14 @@ export default class Raids {
 					phase: 1
 				};
 
-				this.channels.raids_comm.send(`<@&${roles.shavedWookiee}> ${nextPhase}${raidName} is now OPEN!`);
+				this.channels.raids_comm.send(`<@&${roles.shavedWookiee}> ${nextPhase}__${raidName}__ is now OPEN!`);
 			}
 
 			if (!DEV) {
 				let that = this;
 
 				this.channels.raid_log
-					.send(`${raidName} ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>`)
+					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
@@ -301,12 +301,12 @@ export default class Raids {
 		if (raid.phase === 0) { // remind @Officer to start raid
 			this.timeouts.push(setTimeout(() => {
 				this.channels.officer_chat.send(
-					`<@&${roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes! I hope you have enough raid tickets?!`
+					`<@&${roles.officer}> Prepare to start __${raid.type}__ in ${remindMinutesBefore} minutes!`
 				);
 			}, diff));
 
 			this.timeouts.push(setTimeout(() => {
-				this.channels.officer_chat.send(`<@&${roles.officer}> Start ${raid.type} NOW! After that type here \`-start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`);
+				this.channels.officer_chat.send(`<@&${roles.officer}> Start __${raid.type}__ NOW! After that type \`-start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`);
 
 				// this.updateJSON();
 				this.main();
@@ -318,13 +318,13 @@ export default class Raids {
 
 			this.timeouts.push(setTimeout(() => {
 				this.channels.raids_comm.send(
-					`<@&${roles.shavedWookiee}> ${nextPhase}${raid.type} will open in ${remindMinutesBefore} minutes. Get ready!`
+					`<@&${roles.shavedWookiee}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes. Get ready!`
 				);
 			}, diff));
 
 			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
 				this.channels.raids_comm.send(
-					`<@&${roles.shavedWookiee}> ${nextPhase}${raid.type} is now OPEN!`
+					`<@&${roles.shavedWookiee}> ${nextPhase}__${raid.type}__ is now OPEN!`
 				);
 
 				if (isLastPhase) { // this was the last phase - move raid to logs

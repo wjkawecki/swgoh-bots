@@ -49,10 +49,6 @@ export default class DailyActivities {
 		this.Client.on('message', msg => {
 			switch (msg.content.toLowerCase()) {
 
-				case '-undo':
-					this.undo(msg);
-					break;
-
 				case '-help':
 					this.helpReply(msg);
 					break;
@@ -64,7 +60,7 @@ export default class DailyActivities {
 	}
 
 	helpReply(msg) {
-		msg.reply(`Here is the list of my __DailyActivities__ commands:\n\`-start rancor\` *- officer only*. Starts next Rancor according to schedule.\n\`-start aat\` *- officer only*. Starts next AAT according to schedule.\n\`-undo\` *- officer only*. Undo your last action!\n\`-help\` - this is what you are reading right now.`);
+		msg.reply(`Here is the list of my __DailyActivities__ commands:\n\`-help\` - this is what you are reading right now.`);
 	}
 
 	isBotMentioned(msg) {
