@@ -1,4 +1,4 @@
-const dev = false;
+const DEV = false;
 
 import * as mongodb from 'mongodb';
 import path from 'path';
@@ -21,7 +21,7 @@ const MongoClient = mongodb.MongoClient,
 
 export default class Raids {
 	constructor(Client) {
-		console.log(`WookieeSergeant.Raids${dev ? ' (dev mode)' : ''}`);
+		console.log(`WookieeSergeant.Raids ready${DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
 		this.timeouts = [];
@@ -29,7 +29,7 @@ export default class Raids {
 		this.initChannels(channels);
 		this.listenToMessages();
 
-		if (dev) {
+		if (DEV) {
 			this.clearChannel(this.channels.bot_playground, true);
 			this.restoreJSON();
 		}
@@ -41,7 +41,7 @@ export default class Raids {
 		this.channels = {};
 
 		for (let key in channels) {
-			if (dev) {
+			if (DEV) {
 				this.channels[key] = this.Client.channels.get(channels.bot_playground);
 			} else {
 				this.channels[key] = this.Client.channels.get(channels[key]);
@@ -84,7 +84,7 @@ export default class Raids {
 	}
 
 	helpReply(msg) {
-		msg.reply(`Here is the list of my __Raid__ commands:\n\`-start rancor\` *- officer only*. Starts next Rancor according to schedule.\n\`-start aat\` *- officer only*. Starts next AAT according to schedule.\n\`-undo\` *- officer only*. Undo your last action!\n\`-help\` - this is what you are reading right now.`);
+		msg.reply(`here is the list of my __Raid__ commands:\n\`-start rancor\` *- officer only*. Starts next Rancor according to schedule.\n\`-start aat\` *- officer only*. Starts next AAT according to schedule.\n\`-undo\` *- officer only*. Undo your last action!\n\`-help\` - this is what you are reading right now.`);
 	}
 
 	undo(msg) {
@@ -94,7 +94,7 @@ export default class Raids {
 			this.json = JSON.parse(JSON.stringify(this.undoJson));
 			this.undoJson = null;
 
-			if (!dev) {
+			if (!DEV) {
 				this.clearChannel(this.channels.raid_log);
 			}
 
@@ -140,7 +140,7 @@ export default class Raids {
 	readJSON() {
 		let that = this;
 
-		if (dev) {
+		if (DEV) {
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath))).raids;
 			console.log(`WookieeSergeant.Raids.readJSON(): local ${typeof that.json}`);
 			this.processRaids();
@@ -165,7 +165,7 @@ export default class Raids {
 	}
 
 	updateJSON() {
-		if (dev) {
+		if (DEV) {
 			fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify({'raids': this.json}));
 			this.channels.bot_playground.send(JSON.stringify(this.json));
 		} else {
@@ -184,7 +184,7 @@ export default class Raids {
 	}
 
 	restoreJSON() {
-		if (dev) {
+		if (DEV) {
 			console.log(`WookieeSergeant.Raids.restoreJSON()`);
 
 			let jsonStable = fs.readFileSync(path.resolve(__dirname, jsonStablePath));
@@ -228,7 +228,7 @@ export default class Raids {
 				this.channels.raids_comm.send(`<@&${roles.shavedWookiee}> ${nextPhase}${raidName} is now OPEN!`);
 			}
 
-			if (!dev) {
+			if (!DEV) {
 				let that = this;
 
 				this.channels.raid_log
@@ -306,7 +306,7 @@ export default class Raids {
 			}, diff));
 
 			this.timeouts.push(setTimeout(() => {
-				this.channels.officer_chat.send(`<@&${roles.officer}> Start ${raid.type} NOW! After that type here \`--start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`);
+				this.channels.officer_chat.send(`<@&${roles.officer}> Start ${raid.type} NOW! After that type here \`-start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`);
 
 				// this.updateJSON();
 				this.main();
