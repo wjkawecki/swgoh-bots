@@ -1,0 +1,75 @@
+{
+	"_id": {
+		"$oid": "59f1edf6f36d28556930f7d3"
+	},
+	"raids": {
+		"Rancor": {
+			"config": {
+				"registrationHours": 24,
+				"phases": {
+					"count": 1,
+					"holdHours": 0
+				},
+				"rotationTimesUTC": [
+					0,
+					12
+				]
+			},
+			"active": {
+				"rotationTimeUTC": 12,
+				"initiatorID": "309607586200813579",
+				"phase": 0
+			},
+			"next": {
+				"rotationTimeUTC": 0
+			},
+			"log": [
+				{
+					"rotationTimeUTC": 0,
+					"initiatorID": "297208034860597248"
+				},
+				{
+					"rotationTimeUTC": 12,
+					"initiatorID": "209632024783355904"
+				},
+				{
+					"rotationTimeUTC": 0,
+					"initiatorID": "297208034860597248"
+				}
+			]
+		},
+		"AAT": {
+			"config": {
+				"registrationHours": 0,
+				"phases": {
+					"count": 4,
+					"holdHours": 6
+				},
+				"rotationTimesUTC": [
+					5,
+					11,
+					17,
+					23
+				]
+			},
+			"active": null,
+			"next": {
+				"rotationTimeUTC": 17
+			},
+			"log": [
+				{
+					"rotationTimeUTC": 23,
+					"initiatorID": "308879941850628096"
+				},
+				{
+					"rotationTimeUTC": 5,
+					"initiatorID": "307729886540333056"
+				},
+				{
+					"rotationTimeUTC": 11,
+					"initiatorID": "209632024783355904"
+				}
+			]
+		}
+	}
+}

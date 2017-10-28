@@ -4,9 +4,9 @@ import path from 'path';
 
 const readChannelId = '360337936203382796';
 const writeChannelId = '360337936203382796';
-const clientGame = 'SWGOH Arena';
+const clientGame = 'Arena';
 
-export default class Bot {
+export default class BB8 {
 	constructor(botToken) {
 		this.main = this.main.bind(this);
 		this.client = new Discord.Client();
@@ -18,7 +18,7 @@ export default class Bot {
 		});
 
 		this.client.login(botToken);
-		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../SWGoH_Shard.xlsx')).Sheets.shard);
+		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
 
 		this.parseXlsx();
 		this.main();
@@ -61,7 +61,7 @@ export default class Bot {
 				}
 			}
 
-			console.log('Bot initialized');
+			console.log('BB8 ready');
 		} catch (err) {
 			console.log(err);
 		}
