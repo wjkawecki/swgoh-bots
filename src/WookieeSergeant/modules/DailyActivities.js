@@ -7,6 +7,10 @@ const channels = {
 	roles = {
 		officer: '324139861709946901',
 		shavedWookiee: '324184776871510016'
+	},
+	resetTimeUTC = {
+		hour: 23,
+		minute: 30
 	};
 
 export default class DailyActivities {
@@ -27,7 +31,7 @@ export default class DailyActivities {
 
 			// do something
 			// this.clearTimeout();
-			// this.setTimeout();
+			this.setTimeout();
 		} catch (err) {
 			console.log(err);
 		}
@@ -57,6 +61,10 @@ export default class DailyActivities {
 			if (this.isBotMentioned(msg))
 				this.helpReply(msg);
 		});
+	}
+
+	setTimeout() {
+
 	}
 
 	helpReply(msg) {
