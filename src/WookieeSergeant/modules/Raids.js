@@ -195,8 +195,8 @@ export default class Raids {
 
 	processRaids() {
 		this.findNextEvent();
-		this.clearTimeout();
-		this.setTimeout();
+		this.clearTimeouts();
+		this.scheduleReminder();
 	}
 
 	startRaid(raidName, msg) {
@@ -293,7 +293,7 @@ export default class Raids {
 		this.nextEvent = nextEvents[0];
 	}
 
-	setTimeout() {
+	scheduleReminder() {
 		let remindMinutesBefore = 2,
 			raid = this.nextEvent,
 			diff = new Date(raid.diff - (remindMinutesBefore * 60 * 1000));
@@ -312,7 +312,7 @@ export default class Raids {
 				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.setTimeout(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
+			console.log(`WookieeSergeant.Raids.scheduleReminder(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
@@ -341,12 +341,12 @@ export default class Raids {
 				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.setTimeout(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
+			console.log(`WookieeSergeant.Raids.scheduleReminder(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
 		}
 	}
 
-	clearTimeout() {
-		console.log(`WookieeSergeant.Raids.clearTimeout(): ${this.timeouts.length} timeouts`);
+	clearTimeouts() {
+		console.log(`WookieeSergeant.Raids.clearTimeouts(): ${this.timeouts.length} timeouts`);
 
 		if (this.timeouts) {
 			this.timeouts.forEach((timeout) => {
