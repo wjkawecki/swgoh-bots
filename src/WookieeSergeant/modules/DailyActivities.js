@@ -1,4 +1,4 @@
-const DEV = true;
+const DEV = false;
 import Discord from 'discord.js';
 
 const channels = {
@@ -56,6 +56,10 @@ export default class DailyActivities {
 		this.Client.on('message', msg => {
 			switch (msg.content.toLowerCase()) {
 
+				case '-tickets':
+					this.scheduleReminder(true);
+					break;
+
 				case '-help':
 					this.helpReply(msg);
 					break;
@@ -66,10 +70,10 @@ export default class DailyActivities {
 		});
 	}
 
-	scheduleReminder() {
-		let now = new Date(),
+	scheduleReminder(manualReminder = false) {
+		let remindHoursBefore = 2,
+			now = new Date(),
 			reset = new Date(now),
-			resetDay,
 			diff;
 
 		reset.setUTCHours(resetTimeUTC.hour, resetTimeUTC.minute, 0, 0);
@@ -77,92 +81,97 @@ export default class DailyActivities {
 		this.resetDay = reset.getUTCDay();
 		diff = reset.getTime() - now.getTime();
 
-		console.log(`WookieeSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
+		if (DEV) {
+			diff = 30000;
+		}
 
-		setTimeout(() => {
-			this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> 2 hours left to get your 600 daily tickets. Go grab them now!`);
-		}, diff - (2 * 60 * 60 * 1000));
+		if (manualReminder) {
+			this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
+		} else {
+			console.log(`WookieeSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
 
-		setTimeout((resetDay = this.resetDay) => {
-			let embed = new Discord.RichEmbed(),
-				activity = '',
-				desc = '';
+			setTimeout(() => {
+				this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> ${remindHoursBefore} hours left to get your 600 daily tickets. Go grab them now!`);
+			}, diff - (remindHoursBefore * 60 * 60 * 1000));
 
-			console.log('resetDay ' + resetDay);
+			setTimeout((resetDay = this.resetDay) => {
+				let embed = new Discord.RichEmbed(),
+					activity = '',
+					desc = '';
 
-			switch (resetDay) {
+				switch (resetDay) {
 
-				case 0: // Sunday
-					activity = 'Cantina Battles';
-					desc = `
+					case 0: // Sunday
+						activity = 'Cantina Battles';
+						desc = `
 :zap:  **Spend** Cantina Energy
 :heavy_multiplication_x:  **Save** Normal Energy
 :heavy_multiplication_x:  **Save** Galactic War Battles (unless reset available)`;
-					console.log(reset.getUTCDay());
-					break;
+						break;
 
-				case 1: // Monday
-					activity = 'Light Side Battles';
-					desc = `
+					case 1: // Monday
+						activity = 'Light Side Battles';
+						desc = `
 :zap:  **Spend** Normal Energy on Light Side Battles
 :heavy_multiplication_x:  **Save** Galactic War Battles`;
-					console.log(reset.getUTCDay());
-					break;
+						break;
 
-				case 2: // Tuesday
-					activity = 'Galactic War Battles';
-					desc = `
+					case 2: // Tuesday
+						activity = 'Galactic War Battles';
+						desc = `
 :boom:  **Complete** Galactic War Battles
 :heavy_multiplication_x:  **Save** Normal Energy`;
-					console.log(reset.getUTCDay());
-					break;
+						break;
 
-				case 3: // Wednesday
-					activity = 'Hard Mode Battles';
-					desc = `
+					case 3: // Wednesday
+						activity = 'Hard Mode Battles';
+						desc = `
 :zap:  **Spend** Normal Energy on Hard Mode Battles
 :heavy_multiplication_x:  **Save** Challenges`;
-					console.log(reset.getUTCDay());
-					break;
+						break;
 
-				case 4: // Thursday
-					activity = 'Challenges';
-					desc = `
+					case 4: // Thursday
+						activity = 'Challenges';
+						desc = `
 :boom:  **Complete** Challenges
 :heavy_multiplication_x:  **Save** Normal Energy`;
-					console.log(reset.getUTCDay());
-					break;
+						break;
 
-				case 5: // Friday
-					activity = 'Dark Side Battles';
-					desc = `
+					case 5: // Friday
+						activity = 'Dark Side Battles';
+						desc = `
 :zap:  **Spend** Normal Energy on Dark Side Battles
 :heavy_multiplication_x:  **Save** Arena Battles`;
-					console.log(reset.getUTCDay());
-					break;
+						break;
 
-				case 6: // Saturday
-					activity = 'Arena Battles';
-					desc = `
+					case 6: // Saturday
+						activity = 'Arena Battles';
+						desc = `
 :boom:  **Complete** Arena Battles
 :heavy_multiplication_x:  **Save** Cantina Energy`;
-					console.log(reset.getUTCDay());
-					break;
-			}
+						break;
+				}
 
-			embed
-				.setAuthor(`New Guild Activity: ${activity}`)
-				.setDescription(desc)
-				.setColor(0x00bc9d);
+				desc += `
 
-			this.channels.the_guild_lounge.send(embed);
+Thank you for your raid tickets contribution!`;
 
-			this.main();
-		}, diff);
+				embed
+					.setAuthor(`New Guild Activity: ${activity}`)
+					.setDescription(desc)
+					.setColor(0x00bc9d);
+
+				this.channels.the_guild_lounge.send(embed);
+
+				this.main();
+			}, diff);
+		}
 	}
 
 	helpReply(msg) {
-		msg.reply(`here is the list of my __DailyActivities__ commands:\n\`-help\` - this is what you are reading right now.`);
+		msg.reply(`here is the list of my __DailyActivities__ commands:
+\`-tickets\` - sends a global motivating message with remaining time to guild reset.
+\`-help\` - this is what you are reading right now.`);
 	}
 
 	isBotMentioned(msg) {

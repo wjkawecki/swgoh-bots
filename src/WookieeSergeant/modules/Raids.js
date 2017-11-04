@@ -84,7 +84,11 @@ export default class Raids {
 	}
 
 	helpReply(msg) {
-		msg.reply(`here is the list of my __Raid__ commands:\n\`-start rancor\` *- officer only*. Starts next Rancor according to schedule.\n\`-start aat\` *- officer only*. Starts next AAT according to schedule.\n\`-undo\` *- officer only*. Undo your last action!\n\`-help\` - this is what you are reading right now.`);
+		msg.reply(`here is the list of my __Raid__ commands:
+\`-start rancor\` *- officer only*. Starts next Rancor according to schedule.
+\`-start aat\` *- officer only*. Starts next AAT according to schedule.
+\`-undo\` *- officer only*. Undo your last action!
+\`-help\` - this is what you are reading right now.`);
 	}
 
 	undo(msg) {
