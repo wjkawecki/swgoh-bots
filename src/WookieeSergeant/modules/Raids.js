@@ -54,26 +54,32 @@ export default class Raids {
 			switch (msg.content.toLowerCase()) {
 
 				case '-start rancor':
+				case '- start rancor':
 					if (msg.member.roles.has(roles.officer))
 						this.startRaid('Rancor', msg);
 					break;
 
 				case '-start aat':
+				case '- start aat':
 					if (msg.member.roles.has(roles.officer))
 						this.startRaid('AAT', msg);
 					break;
 
 				case '-undo':
+				case '- undo':
 					if (msg.member.roles.has(roles.officer))
 						this.undo(msg);
 					break;
 
 				case '-json':
+				case '- json':
 					if (msg.member.roles.has(roles.officer))
 						console.log(JSON.stringify(this.json, null, 4));
 					break;
 
 				case '-help':
+				case '- help':
+				case '!help':
 					this.helpReply(msg);
 					break;
 			}

@@ -57,10 +57,14 @@ export default class DailyActivities {
 			switch (msg.content.toLowerCase()) {
 
 				case '-tickets':
+				case '- tickets':
+				case '!tickets':
 					this.scheduleReminder(true);
 					break;
 
 				case '-help':
+				case '- help':
+				case '!help':
 					this.helpReply(msg);
 					break;
 			}
