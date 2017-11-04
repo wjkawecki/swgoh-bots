@@ -84,7 +84,7 @@ export default class Raids {
 	}
 
 	helpReply(msg) {
-		msg.reply(`here is the list of my __Raid__ commands:
+		msg.reply(`here is the list of my __Raids__ commands:
 \`-start rancor\` *- officer only*. Starts next Rancor according to schedule.
 \`-start aat\` *- officer only*. Starts next AAT according to schedule.
 \`-undo\` *- officer only*. Undo your last action!
