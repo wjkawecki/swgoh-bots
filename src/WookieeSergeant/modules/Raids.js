@@ -309,6 +309,12 @@ export default class Raids {
 			diff = new Date(raid.diff - (remindMinutesBefore * 60 * 1000));
 
 		if (raid.phase === 0) { // remind @Officer to start raid
+			if (raid.config.registrationHours === 0) {
+				this.channels.raids_comm.send(
+					`<@&${roles.shavedWookiee}> Next ${raid.type} will probably start in ${this.getReadableTime(raid.diff)} (if we have tickets).`
+				);
+			}
+
 			this.timeouts.push(setTimeout(() => {
 				this.channels.officer_chat.send(
 					`<@&${roles.officer}> Prepare to start __${raid.type}__ in ${remindMinutesBefore} minutes!`
@@ -316,7 +322,9 @@ export default class Raids {
 			}, diff));
 
 			this.timeouts.push(setTimeout(() => {
-				this.channels.officer_chat.send(`<@&${roles.officer}> Start __${raid.type}__ NOW! After that type \`-start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`);
+				this.channels.officer_chat.send(
+					`<@&${roles.officer}> Start __${raid.type}__ NOW! After that type \`-start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`
+				);
 
 				// this.updateJSON();
 				this.main();

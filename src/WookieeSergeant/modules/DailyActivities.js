@@ -62,6 +62,48 @@ export default class DailyActivities {
 					this.scheduleReminder(true);
 					break;
 
+				case '-monday':
+				case '- monday':
+				case '!monday':
+					this.dayReminder(msg, 'Monday');
+					break;
+
+				case '-tuesday':
+				case '- tuesday':
+				case '!tuesday':
+					this.dayReminder(msg, 'Tuesday');
+					break;
+
+				case '-wednesday':
+				case '- wednesday':
+				case '!wednesday':
+					this.dayReminder(msg, 'Wednesday');
+					break;
+
+				case '-thursday':
+				case '- thursday':
+				case '!thursday':
+					this.dayReminder(msg, 'Thursday');
+					break;
+
+				case '-friday':
+				case '- friday':
+				case '!friday':
+					this.dayReminder(msg, 'Friday');
+					break;
+
+				case '-saturday':
+				case '- saturday':
+				case '!saturday':
+					this.dayReminder(msg, 'Saturday');
+					break;
+
+				case '-sunday':
+				case '- sunday':
+				case '!sunday':
+					this.dayReminder(msg, 'Sunday');
+					break;
+
 				case '-help':
 				case '- help':
 				case '!help':
@@ -72,6 +114,123 @@ export default class DailyActivities {
 			if (this.isBotMentioned(msg))
 				this.helpReply(msg);
 		});
+	}
+
+	dayReminder(msg, day) {
+		let embed = new Discord.RichEmbed(),
+			before,
+			after;
+
+		switch (day) {
+
+			case 'Monday':
+				before = {
+					activity: 'Cantina Battles',
+					desc: `:zap:  **Spend** Cantina Energy
+:heavy_multiplication_x:  **Save** Normal Energy
+:heavy_multiplication_x:  **Save** Galactic War (unless reset available)`
+				};
+
+				after = {
+					activity: 'Light Side Battles',
+					desc: `:zap:  **Spend** Normal Energy on Light Side Battles
+:heavy_multiplication_x:  **Save** Galactic War (unless reset available)`
+				};
+				break;
+
+			case 'Tuesday':
+				before = {
+					activity: 'Light Side Battles',
+					desc: `:zap:  **Spend** Normal Energy on Light Side Battles
+:heavy_multiplication_x:  **Save** Galactic War`
+				};
+
+				after = {
+					activity: 'Galactic War Battles',
+					desc: `:boom:  **Complete** Galactic War Battles (24 with restart)
+:heavy_multiplication_x:  **Save** Normal Energy`
+				};
+				break;
+
+			case 'Wednesday':
+				before = {
+					activity: 'Galactic War Battles',
+					desc: `:boom:  **Complete** Galactic War Battles (12)
+:heavy_multiplication_x:  **Save** Normal Energy`
+				};
+
+				after = {
+					activity: 'Hard Mode Battles',
+					desc: `:zap:  **Spend** Normal Energy on Hard Mode Battles`
+				};
+				break;
+
+			case 'Thursday':
+				before = {
+					activity: 'Hard Mode Battles',
+					desc: `:zap:  **Spend** Normal Energy on Hard Mode Battles
+:heavy_multiplication_x:  **Save** Challenges (Dailies are fine)`
+				};
+
+				after = {
+					activity: 'Challenges',
+					desc: `:boom:  **Complete** Challenges
+:heavy_multiplication_x:  **Save** Normal Energy`
+				};
+				break;
+
+			case 'Friday':
+				before = {
+					activity: 'Challenges',
+					desc: `:boom:  **Complete** Challenges
+:heavy_multiplication_x:  **Save** Normal Energy`
+				};
+
+				after = {
+					activity: 'Dark Side Battles',
+					desc: `:zap:  **Spend** Normal Energy on Dark Side Battles`
+				};
+				break;
+
+			case 'Saturday':
+				before = {
+					activity: 'Dark Side Battles',
+					desc: `:zap:  **Spend** Normal Energy on Dark Side Battles
+:heavy_multiplication_x:  **Save** Arena Battles
+:heavy_multiplication_x:  **Save** Cantina Energy`
+				};
+
+				after = {
+					activity: 'Arena Battles',
+					desc: `:boom:  **Complete** Arena Battles (5)
+:heavy_multiplication_x:  **Save** Cantina Energy`
+				};
+				break;
+
+			case 'Sunday':
+				before = {
+					activity: 'Arena Battles',
+					desc: `:boom:  **Complete** Arena Battles (5)
+:heavy_multiplication_x:  **Save** Cantina Energy
+:heavy_multiplication_x:  **Save** Normal Energy`
+				};
+
+				after = {
+					activity: 'Cantina Battles',
+					desc: `:zap:  **Spend** Cantina Energy
+:heavy_multiplication_x:  **Save** Normal Energy`
+				};
+				break;
+
+		}
+
+		embed
+			.setAuthor(`${day}`)
+			.addField(`${before.activity} - before reset`, before.desc)
+			.addField(`${after.activity} - after reset`, after.desc)
+			.setColor(0x00bc9d);
+
+		msg.channel.send(embed);
 	}
 
 	scheduleReminder(manualReminder = false) {
@@ -86,7 +245,7 @@ export default class DailyActivities {
 		diff = reset.getTime() - now.getTime();
 
 		if (DEV) {
-			diff = 30000;
+			// diff = 30000;
 		}
 
 		if (manualReminder) {
@@ -175,6 +334,13 @@ Thank you for your raid tickets contribution!`;
 	helpReply(msg) {
 		msg.reply(`here is the list of my __DailyActivities__ commands:
 \`-tickets\` - sends a global motivating message with remaining time to guild reset.
+\`-monday\`
+\`-tuesday\`
+\`-wednesday\`
+\`-thursday\`
+\`-friday\`
+\`-saturday\`
+\`-sunday\`
 \`-help\` - this is what you are reading right now.`);
 	}
 
