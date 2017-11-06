@@ -6,8 +6,8 @@ import * as fs from 'fs';
 
 const MongoClient = mongodb.MongoClient,
 	mongoUrl = 'mongodb://heroku_v41s5g4n:l1jreltnrju63hofsm7qpsoe3b@ds231315.mlab.com:31315/heroku_v41s5g4n',
-	jsonPath = '../../../../data/raids.json',
-	jsonStablePath = '../../../../data/raidsstable.json',
+	jsonPath = '../../../data/raids.json',
+	jsonStablePath = '../../../data/raidsstable.json',
 	channels = {
 		officer_chat: '324199905017200651',
 		raid_log: '358111155572441091',
@@ -308,20 +308,25 @@ export default class Raids {
 	scheduleReminder() {
 		let remindMinutesBefore = 2,
 			raid = this.nextEvent,
-			diff = new Date(raid.diff - (remindMinutesBefore * 60 * 1000)),
-			nextRaidDiff;
+			diff = raid.diff - (remindMinutesBefore * 60 * 1000),
+			nextRaidDiff,
+			nextRaidDiffVerbose;
 
 		if (raid.phase === 0) { // remind @Officer to start raid
 			if (raid.config.registrationHours === 0) {
-				if (raid.diff > (raid.config.phases.holdHours * 60 * 60 * 1000)) {
-					nextRaidDiff = new Date(raid.diff - (raid.config.phases.holdHours * 60 * 60 * 1000));
+				let phaseHold = raid.config.phases.holdHours * 60 * 60 * 1000;
+
+				if (raid.diff > phaseHold) {
+					nextRaidDiff = raid.diff - phaseHold;
+					nextRaidDiffVerbose = `${raid.config.phases.holdHours} hours`;
 				} else {
 					nextRaidDiff = remindMinutesBefore * 60 * 1000;
+					nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
 				}
 
 				this.timeouts.push(setTimeout(() => {
 					this.channels.raids_comm.send(
-						`Next __${raid.type}__ will probably start in ${this.getReadableTime(nextRaidDiff)} (if we have tickets).`
+						`Next __${raid.type}__ will probably start in ${nextRaidDiffVerbose} (if we have tickets).`
 					);
 				}, nextRaidDiff));
 			}

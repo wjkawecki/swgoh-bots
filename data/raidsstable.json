@@ -15,18 +15,38 @@
 					12
 				]
 			},
-			"active": {
-				"rotationTimeUTC": 12,
-				"initiatorID": "309607586200813579",
-				"phase": 0
-			},
+			"active": null,
 			"next": {
-				"rotationTimeUTC": 0
+				"rotationTimeUTC": 12
 			},
 			"log": [
 				{
 					"rotationTimeUTC": 0,
 					"initiatorID": "297208034860597248"
+				},
+				{
+					"rotationTimeUTC": 12,
+					"initiatorID": "209632024783355904"
+				},
+				{
+					"rotationTimeUTC": 0,
+					"initiatorID": "297208034860597248"
+				},
+				{
+					"rotationTimeUTC": 12,
+					"initiatorID": "309607586200813579"
+				},
+				{
+					"rotationTimeUTC": 0,
+					"initiatorID": "297208034860597248"
+				},
+				{
+					"rotationTimeUTC": 12,
+					"initiatorID": "209632024783355904"
+				},
+				{
+					"rotationTimeUTC": 0,
+					"initiatorID": "308879941850628096"
 				},
 				{
 					"rotationTimeUTC": 12,
@@ -54,7 +74,7 @@
 			},
 			"active": null,
 			"next": {
-				"rotationTimeUTC": 17
+				"rotationTimeUTC": 11
 			},
 			"log": [
 				{
@@ -67,6 +87,18 @@
 				},
 				{
 					"rotationTimeUTC": 11,
+					"initiatorID": "209632024783355904"
+				},
+				{
+					"rotationTimeUTC": 17,
+					"initiatorID": "209632024783355904"
+				},
+				{
+					"rotationTimeUTC": 23,
+					"initiatorID": "308879941850628096"
+				},
+				{
+					"rotationTimeUTC": 5,
 					"initiatorID": "209632024783355904"
 				}
 			]
