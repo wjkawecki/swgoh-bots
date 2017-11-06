@@ -226,6 +226,8 @@ export default class Raids {
 					initiatorID: msg.author.id,
 					phase: 0
 				};
+
+				this.channels.raids_comm.send(`__${raidName}__ is now open for registration.`);
 			} else {
 				let nextPhase = (raid.config.phases.count > 1) ? `P1 ` : '';
 
@@ -306,18 +308,27 @@ export default class Raids {
 	scheduleReminder() {
 		let remindMinutesBefore = 2,
 			raid = this.nextEvent,
-			diff = new Date(raid.diff - (remindMinutesBefore * 60 * 1000));
+			diff = new Date(raid.diff - (remindMinutesBefore * 60 * 1000)),
+			nextRaidDiff;
 
 		if (raid.phase === 0) { // remind @Officer to start raid
 			if (raid.config.registrationHours === 0) {
-				this.channels.raids_comm.send(
-					`<@&${roles.shavedWookiee}> Next ${raid.type} will probably start in ${this.getReadableTime(raid.diff)} (if we have tickets).`
-				);
+				if (raid.diff > (raid.config.phases.holdHours * 60 * 60 * 1000)) {
+					nextRaidDiff = new Date(raid.diff - (raid.config.phases.holdHours * 60 * 60 * 1000));
+				} else {
+					nextRaidDiff = remindMinutesBefore * 60 * 1000;
+				}
+
+				this.timeouts.push(setTimeout(() => {
+					this.channels.raids_comm.send(
+						`Next __${raid.type}__ will probably start in ${this.getReadableTime(raid.diff)} (if we have tickets).`
+					);
+				}, nextRaidDiff));
 			}
 
 			this.timeouts.push(setTimeout(() => {
 				this.channels.officer_chat.send(
-					`<@&${roles.officer}> Prepare to start __${raid.type}__ in ${remindMinutesBefore} minutes!`
+					`<@&${roles.officer}> Prepare to start __${raid.type}__ in ${remindMinutesBefore} minutes.`
 				);
 			}, diff));
 
