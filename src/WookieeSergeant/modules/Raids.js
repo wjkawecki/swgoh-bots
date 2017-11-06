@@ -321,7 +321,7 @@ export default class Raids {
 
 				this.timeouts.push(setTimeout(() => {
 					this.channels.raids_comm.send(
-						`Next __${raid.type}__ will probably start in ${this.getReadableTime(raid.diff)} (if we have tickets).`
+						`Next __${raid.type}__ will probably start in ${this.getReadableTime(nextRaidDiff)} (if we have tickets).`
 					);
 				}, nextRaidDiff));
 			}
