@@ -1,4 +1,5 @@
 const DEV = false;
+
 import Discord from 'discord.js';
 
 const channels = {
@@ -25,6 +26,8 @@ export default class DailyActivities {
 
 		if (DEV) {
 			this.clearChannel(this.channels.bot_playground, true);
+		} else {
+			this.channels.bot_playground.send(`<@209632024783355904> WookieeSergeant.DailyActivities on duty!`);
 		}
 
 		this.main();
