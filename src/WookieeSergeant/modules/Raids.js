@@ -335,7 +335,8 @@ export default class Raids {
 
 			this.timeouts.push(setTimeout(() => {
 				this.channels.officer_chat.send(
-					`<@&${roles.officer}> Prepare to start __${raid.type}__ in ${remindMinutesBefore} minutes.`
+					`<@&${roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
+					{'tts': true}
 				);
 			}, diff));
 
