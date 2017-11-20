@@ -256,9 +256,13 @@ export default class DailyActivities {
 		} else {
 			console.log(`WookieeSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
 
-			setTimeout(() => {
-				this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> ${remindHoursBefore} hours left to get your 600 daily tickets. Go grab them now!`);
-			}, diff - (remindHoursBefore * 60 * 60 * 1000));
+			let reminderDiff = diff - (remindHoursBefore * 60 * 60 * 1000);
+			
+			if (reminderDiff > 0) {
+				setTimeout(() => {
+					this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> ${remindHoursBefore} hours left to get your 600 daily tickets. Go grab them now!`);
+				}, reminderDiff);
+			}
 
 			setTimeout((resetDay = this.resetDay) => {
 				let embed = new Discord.RichEmbed(),
