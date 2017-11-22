@@ -1,4 +1,4 @@
-var token = 'b0f08e37-e3f2-47fa-9fc9-77becaa66e2d';
+var token = process.env.HEROKU_API_KEY;
 var appName = 'swgoh-bots';
 var dynoName = 'worker';
 

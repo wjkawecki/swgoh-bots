@@ -7,7 +7,7 @@ const writeChannelId = '360337936203382796';
 const clientGame = 'Arena';
 
 export default class BB8 {
-	constructor(botToken) {
+	constructor() {
 		this.main = this.main.bind(this);
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => {
@@ -17,7 +17,7 @@ export default class BB8 {
 			this.initializeBot();
 		});
 
-		this.client.login(botToken);
+		this.client.login(process.env.TOKEN_BB8);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
 
 		this.parseXlsx();

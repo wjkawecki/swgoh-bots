@@ -5,7 +5,7 @@ import path from 'path';
 import * as fs from 'fs';
 
 const MongoClient = mongodb.MongoClient,
-	mongoUrl = 'mongodb://heroku_v41s5g4n:l1jreltnrju63hofsm7qpsoe3b@ds231315.mlab.com:31315/heroku_v41s5g4n',
+	mongoUrl = process.env.MONGODB_URI,
 	jsonPath = '../../../data/raids.json',
 	jsonStablePath = '../../../data/raidsstable.json',
 	channels = {
