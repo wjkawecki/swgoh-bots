@@ -11,17 +11,13 @@
 					"holdHours": 0
 				},
 				"rotationTimesUTC": [
-					0,
-					12
+					15,
+					21
 				]
 			},
-			"active": {
-				"rotationTimeUTC": 0,
-				"initiatorID": "297208034860597248",
-				"phase": 0
-			},
+			"active": null,
 			"next": {
-				"rotationTimeUTC": 12
+				"rotationTimeUTC": 15
 			},
 			"log": [
 				{
@@ -87,6 +83,10 @@
 				{
 					"rotationTimeUTC": 12,
 					"initiatorID": "209632024783355904"
+				},
+				{
+					"rotationTimeUTC": 0,
+					"initiatorID": "297208034860597248"
 				}
 			]
 		},
@@ -104,9 +104,13 @@
 					23
 				]
 			},
-			"active": null,
+			"active": {
+				"rotationTimeUTC": 17,
+				"initiatorID": "309607586200813579",
+				"phase": 3
+			},
 			"next": {
-				"rotationTimeUTC": 17
+				"rotationTimeUTC": 23
 			},
 			"log": [
 				{

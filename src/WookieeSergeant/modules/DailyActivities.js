@@ -257,7 +257,7 @@ export default class DailyActivities {
 			console.log(`WookieeSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
 
 			let reminderDiff = diff - (remindHoursBefore * 60 * 60 * 1000);
-			
+
 			if (reminderDiff > 0) {
 				setTimeout(() => {
 					this.channels.the_guild_lounge.send(`<@&${roles.shavedWookiee}> ${remindHoursBefore} hours left to get your 600 daily tickets. Go grab them now!`);
