@@ -33,7 +33,7 @@ export default class Raids {
 			this.clearChannel(this.channels.bot_playground, true);
 			this.restoreJSON();
 		} else {
-			this.channels.bot_playground.send(`<@209632024783355904> WookieeSergeant.Raids on duty!`);
+			this.channels.bot_playground.send(`WookieeSergeant.Raids on duty!`);
 		}
 
 		this.main();
