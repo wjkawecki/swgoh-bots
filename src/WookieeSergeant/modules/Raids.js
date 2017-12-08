@@ -9,7 +9,7 @@ const MongoClient = mongodb.MongoClient,
 	jsonPath = '../../../data/raids.json',
 	jsonStablePath = '../../../data/raidsstable.json',
 	channels = {
-		officer_chat: '324199905017200651',
+		sergeants_office: '388767134962024449',
 		raid_log: '358111155572441091',
 		raids_comm: '328317495431790593',
 		bot_playground: '371742456653414410'
@@ -334,15 +334,15 @@ export default class Raids {
 			}
 
 			this.timeouts.push(setTimeout(() => {
-				this.channels.officer_chat.send(
+				this.channels.sergeants_office.send(
 					`<@&${roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
 				);
 			}, diff));
 
 			this.timeouts.push(setTimeout(() => {
-				this.channels.officer_chat.send(
-					`<@&${roles.officer}> Start __${raid.type}__ NOW! After that type \`-start ${raid.type.toLowerCase()}\`\nIf you don't have enough tickets I will remind you again tomorrow.`
+				this.channels.sergeants_office.send(
+					`<@&${roles.officer}> Start __${raid.type}__ NOW! After that type \`-start ${raid.type.toLowerCase()}\``
 				);
 
 				// this.updateJSON();
