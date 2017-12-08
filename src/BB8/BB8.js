@@ -20,6 +20,8 @@ export default class BB8 {
 		this.client.login(process.env.TOKEN_BB8);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
 
+		console.log(this.sheet);
+
 		this.parseXlsx();
 		this.main();
 	}

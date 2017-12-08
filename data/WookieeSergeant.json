@@ -1,7 +1,4 @@
 {
-	"_id": {
-		"$oid": "59f1edf6f36d28556930f7d3"
-	},
 	"raids": {
 		"Rancor": {
 			"config": {

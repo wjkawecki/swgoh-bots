@@ -1,4 +1,4 @@
-const DEV = false;
+const DEV = process.env.DEV_MODE || false;
 
 import Discord from 'discord.js';
 

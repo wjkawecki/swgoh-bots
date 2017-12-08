@@ -1,4 +1,4 @@
-const DEV = false;
+const DEV = process.env.DEV_MODE || false;
 
 import * as mongodb from 'mongodb';
 import path from 'path';

@@ -1,0 +1,137 @@
+{
+	"players": [
+		{
+			"name": "Jezza",
+			"icon": ":flag_us:",
+			"swgoh_gg": "jezza",
+			"UTC": 1
+		},
+		{
+			"name": "Kabob",
+			"icon": ":flag_us:",
+			"swgoh_gg": "kabob",
+			"UTC": 1
+		},
+		{
+			"name": "Mascularn",
+			"icon": ":flag_us:",
+			"swgoh_gg": "mascularn",
+			"UTC": 1
+		},
+		{
+			"name": "gnarlee",
+			"icon": ":flag_us:",
+			"swgoh_gg": "gnarlee",
+			"UTC": 1
+		},
+		{
+			"name": "DarthDingus",
+			"icon": ":flag_us:",
+			"swgoh_gg": "darthdingus6666",
+			"UTC": 1
+		},
+		{
+			"name": "Pinnnkky",
+			"icon": ":flag_sg:",
+			"swgoh_gg": "pinnnkky",
+			"UTC": 10
+		},
+		{
+			"name": "Gorra",
+			"icon": ":flag_ru:",
+			"swgoh_gg": "gorra",
+			"UTC": 15
+		},
+		{
+			"name": "Mops56",
+			"icon": ":flag_de:",
+			"swgoh_gg": "mops56",
+			"UTC": 16
+		},
+		{
+			"name": "Ansirus",
+			"icon": ":flag_pl:",
+			"swgoh_gg": "ansirus",
+			"UTC": 16
+		},
+		{
+			"name": "Ronron",
+			"icon": ":flag_de:",
+			"swgoh_gg": "ronron",
+			"UTC": 16
+		},
+		{
+			"name": "Xilentis",
+			"icon": ":flag_hu:",
+			"swgoh_gg": "xilentis",
+			"UTC": 16
+		},
+		{
+			"name": "Andreas Angin",
+			"icon": ":flag_se:",
+			"swgoh_gg": "angin",
+			"UTC": 16
+		},
+		{
+			"name": "Lizsen Kendet",
+			"icon": ":flag_be:",
+			"swgoh_gg": "lizsen77",
+			"UTC": 16
+		},
+		{
+			"name": "Jinn Kuen",
+			"icon": ":flag_gb:",
+			"swgoh_gg": "jinnkuen",
+			"UTC": 17
+		},
+		{
+			"name": "Faroer Laike",
+			"icon": ":flag_br:",
+			"swgoh_gg": "fss001",
+			"UTC": 21
+		},
+		{
+			"name": "Afatkid",
+			"icon": ":flag_us:",
+			"swgoh_gg": "afatkid",
+			"UTC": 22
+		},
+		{
+			"name": "Kyle Katarn",
+			"icon": ":flag_us:",
+			"swgoh_gg": "nebling4",
+			"UTC": 22
+		},
+		{
+			"name": "Rylb89",
+			"icon": ":flag_us:",
+			"swgoh_gg": "rylb89",
+			"UTC": 22
+		},
+		{
+			"name": "Mal'og Therne",
+			"icon": ":skull_crossbones:",
+			"UTC": 1
+		},
+		{
+			"name": "tosh",
+			"icon": ":skull_crossbones:",
+			"UTC": 9
+		},
+		{
+			"name": "Griffith",
+			"icon": ":skull_crossbones:",
+			"UTC": 15
+		},
+		{
+			"name": "Siilas Marr",
+			"icon": ":skull_crossbones:",
+			"UTC": 16
+		},
+		{
+			"name": "GW",
+			"icon": ":skull_crossbones:",
+			"UTC": 22
+		}
+	]
+}
