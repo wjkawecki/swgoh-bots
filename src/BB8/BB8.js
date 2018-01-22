@@ -130,9 +130,9 @@ export default class BB8 {
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
 					if (mate.swgohgg) {
-						desc += `${mate.flag}\xa0[${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
+						desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
 					} else {
-						desc += `${mate.flag}\xa0${mate.name}    `;
+						desc += `${mate.flag} ${mate.name}    `;
 					}
 				}
 
