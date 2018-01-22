@@ -126,9 +126,12 @@ export default class BB8 {
 				desc = '';
 
 			for (let i in this.mates) {
-				desc += `\n\`${this.mates[i].time}\`   `;
+				desc += `\n\n\`${this.mates[i].time}\`    `;
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
+					if (i % 4 === 0) {
+						desc += `\n       `;
+					}
 					if (mate.swgohgg) {
 						desc += `${mate.flag} [${mate.name}](https://swgoh.gg/u/${mate.swgohgg})    `;
 					} else {
@@ -137,7 +140,7 @@ export default class BB8 {
 				}
 
 				if (i === '0') {
-					desc += '\n\n\Following payouts:';
+					desc += '\n\n\n\Following payouts:';
 				}
 			}
 
@@ -145,7 +148,7 @@ export default class BB8 {
 				.setDescription(desc)
 				.setColor(0x00AE86)
 				.setThumbnail('https://swgoh.gg/static/img/swgohgg-nav.png')
-				.setAuthor('Next payout:')
+				.setAuthor('Next payout in (hours:minutes):')
 				.setTimestamp();
 
 			await this.message.edit({embed});
