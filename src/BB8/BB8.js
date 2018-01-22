@@ -129,7 +129,7 @@ export default class BB8 {
 				desc += `\n\n\`${this.mates[i].time}\`    `;
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
-					if (i % 4 === 0) {
+					if (i > 0 && i % 3 === 0) {
 						desc += `\n       `;
 					}
 					if (mate.swgohgg) {
