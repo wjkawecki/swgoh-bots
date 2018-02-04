@@ -126,8 +126,8 @@ export default class BB8 {
 				desc = '';
 
 			for (let i in this.mates) {
-				if (i > '0') {
-					desc += '`--`\n';
+				if (i > '1') {
+					desc += '\n`--`\n';
 				}
 
 				desc += `\n\`${this.mates[i].time}\`    `;
