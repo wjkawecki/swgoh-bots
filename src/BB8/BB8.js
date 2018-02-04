@@ -138,6 +138,8 @@ export default class BB8 {
 
 				if (i === '0') {
 					desc += '\n\n\nFollowing payouts:';
+				} else {
+					desc += '\n`--`\n';
 				}
 			}
 
