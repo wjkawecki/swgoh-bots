@@ -271,7 +271,14 @@ export default class DailyActivities {
 
 				switch (resetDay) {
 
-					case 0: // Sunday
+					case 0: // Saturday
+						activity = 'Arena Battles';
+						desc = `
+:boom:  **Complete** Arena Battles
+:heavy_multiplication_x:  **Save** Cantina Energy`;
+						break;
+
+					case 1: // Sunday
 						activity = 'Cantina Battles';
 						desc = `
 :zap:  **Spend** Cantina Energy
@@ -279,46 +286,39 @@ export default class DailyActivities {
 :heavy_multiplication_x:  **Save** Galactic War Battles (unless reset available)`;
 						break;
 
-					case 1: // Monday
+					case 2: // Monday
 						activity = 'Light Side Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Light Side Battles
 :heavy_multiplication_x:  **Save** Galactic War Battles`;
 						break;
 
-					case 2: // Tuesday
+					case 3: // Tuesday
 						activity = 'Galactic War Battles';
 						desc = `
 :boom:  **Complete** Galactic War Battles
 :heavy_multiplication_x:  **Save** Normal Energy`;
 						break;
 
-					case 3: // Wednesday
+					case 4: // Wednesday
 						activity = 'Hard Mode Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Hard Mode Battles
 :heavy_multiplication_x:  **Save** Challenges`;
 						break;
 
-					case 4: // Thursday
+					case 5: // Thursday
 						activity = 'Challenges';
 						desc = `
 :boom:  **Complete** Challenges
 :heavy_multiplication_x:  **Save** Normal Energy`;
 						break;
 
-					case 5: // Friday
+					case 6: // Friday
 						activity = 'Dark Side Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Dark Side Battles
 :heavy_multiplication_x:  **Save** Arena Battles`;
-						break;
-
-					case 6: // Saturday
-						activity = 'Arena Battles';
-						desc = `
-:boom:  **Complete** Arena Battles
-:heavy_multiplication_x:  **Save** Cantina Energy`;
 						break;
 				}
 
