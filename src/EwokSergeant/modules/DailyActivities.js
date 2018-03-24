@@ -3,21 +3,21 @@ const DEV = false;
 import Discord from 'discord.js';
 
 const channels = {
-		guild_lounge: '423830199633969152',
+		guild_lounge: '423829996461621248',
 		bot_playground: '371742456653414410'
 	},
 	roles = {
-		officer: '423875851436818442',
-		member: '423828012325404673'
+		officer: '423875440806199305',
+		member: '423827855420686336'
 	},
 	resetTimeUTC = {
-		hour: 2,
+		hour: 23,
 		minute: 30
 	};
 
 export default class DailyActivities {
 	constructor(Client) {
-		console.log(`WookieeSergeant.DailyActivities ready${DEV ? ' (DEV mode)' : ''}`);
+		console.log(`EwokSergeant.DailyActivities ready${DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
 
@@ -27,7 +27,7 @@ export default class DailyActivities {
 		if (DEV) {
 			this.clearChannel(this.channels.bot_playground, true);
 		} else {
-			this.channels.bot_playground.send(`WookieeSergeant.DailyActivities on duty!`);
+			this.channels.bot_playground.send(`EwokSergeant.DailyActivities on duty!`);
 		}
 
 		this.main();
@@ -35,7 +35,7 @@ export default class DailyActivities {
 
 	async main() {
 		try {
-			console.log('WookieeSergeant.DailyActivities.main()');
+			console.log('EwokSergeant.DailyActivities.main()');
 
 			this.scheduleReminder();
 		} catch (err) {
@@ -254,13 +254,13 @@ export default class DailyActivities {
 		if (manualReminder) {
 			this.channels.guild_lounge.send(`<@&${roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
 		} else {
-			console.log(`WookieeSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
+			console.log(`EwokSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
 
 			let reminderDiff = diff - (remindHoursBefore * 60 * 60 * 1000);
 
 			if (reminderDiff > 0) {
 				setTimeout(() => {
-					this.channels.guild_lounge.send(`<@&${roles.member}> ${remindHoursBefore} hours left to get your 400 (or more) daily tickets. Go grab them now!`);
+					this.channels.guild_lounge.send(`<@&${roles.member}> ${remindHoursBefore} hours left to get your 600 daily tickets. Go grab them now!`);
 				}, reminderDiff);
 			}
 
@@ -368,7 +368,7 @@ Thank you for your raid tickets contribution!`;
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		console.log(`WookieeSergeant.DailyActivities.clearChannel()`);
+		console.log(`EwokSergeant.DailyActivities.clearChannel()`);
 
 		if (removeAll) {
 			const messages = await channel.fetchMessages();

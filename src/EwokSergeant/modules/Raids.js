@@ -9,19 +9,19 @@ const MongoClient = mongodb.MongoClient,
 	jsonPath = '../../../data/raids.json',
 	jsonStablePath = '../../../data/raidsstable.json',
 	channels = {
-		sergeants_office: '426510238821253131',
-		raid_log: '425797346270642176',
-		raids_comm: '424323044035657738',
+		sergeants_office: '426510072584077316',
+		raid_log: '425797428642316288',
+		raids_comm: '424322828167413770',
 		bot_playground: '371742456653414410'
 	},
 	roles = {
-		officer: '423875851436818442',
-		member: '423828012325404673'
+		officer: '423875440806199305',
+		member: '423827855420686336'
 	};
 
 export default class Raids {
 	constructor(Client) {
-		console.log(`WookieeSergeant.Raids ready${DEV ? ' (DEV mode)' : ''}`);
+		console.log(`EwokSergeant.Raids ready${DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
 		this.timeouts = [];
@@ -33,7 +33,7 @@ export default class Raids {
 			this.clearChannel(this.channels.bot_playground, true);
 			this.restoreJSON();
 		} else {
-			this.channels.bot_playground.send(`WookieeSergeant.Raids on duty!`);
+			this.channels.bot_playground.send(`EwokSergeant.Raids on duty!`);
 		}
 
 		this.main();
@@ -123,7 +123,7 @@ export default class Raids {
 
 	async main() {
 		try {
-			console.log('WookieeSergeant.Raids.main()');
+			console.log('EwokSergeant.Raids.main()');
 			this.readJSON();
 		} catch (err) {
 			console.log(err);
@@ -131,7 +131,7 @@ export default class Raids {
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		console.log(`WookieeSergeant.Raids.clearChannel()`);
+		console.log(`EwokSergeant.Raids.clearChannel()`);
 
 		if (removeAll) {
 			const messages = await channel.fetchMessages();
@@ -154,22 +154,22 @@ export default class Raids {
 
 		if (DEV) {
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath))).raids;
-			console.log(`WookieeSergeant.Raids.readJSON(): local ${typeof that.json}`);
+			console.log(`EwokSergeant.Raids.readJSON(): local ${typeof that.json}`);
 			this.processRaids();
 		} else {
 			if (!this.json) {
 				MongoClient.connect(mongoUrl, function (err, db) {
 					if (err) throw err;
-					db.collection('WookieeSergeant').findOne({}, function (err, result) {
+					db.collection('EwokSergeant').findOne({}, function (err, result) {
 						if (err) throw err;
 						that.json = result.raids;
 						db.close();
-						console.log(`WookieeSergeant.Raids.readJSON(): MongoDB ${typeof that.json}`);
+						console.log(`EwokSergeant.Raids.readJSON(): MongoDB ${typeof that.json}`);
 						that.processRaids();
 					});
 				});
 			} else {
-				console.log(`WookieeSergeant.Raids.readJSON(): local ${typeof that.json}`);
+				console.log(`EwokSergeant.Raids.readJSON(): local ${typeof that.json}`);
 				this.processRaids();
 			}
 		}
@@ -186,9 +186,9 @@ export default class Raids {
 
 			MongoClient.connect(mongoUrl, function (err, db) {
 				if (err) throw err;
-				db.collection('WookieeSergeant').updateOne({}, json, function (err, result) {
+				db.collection('EwokSergeant').updateOne({}, json, function (err, result) {
 					if (err) throw err;
-					console.log(`WookieeSergeant.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
+					console.log(`EwokSergeant.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 					db.close();
 				});
 			});
@@ -197,7 +197,7 @@ export default class Raids {
 
 	restoreJSON() {
 		if (DEV) {
-			console.log(`WookieeSergeant.Raids.restoreJSON()`);
+			console.log(`EwokSergeant.Raids.restoreJSON()`);
 
 			let jsonStable = fs.readFileSync(path.resolve(__dirname, jsonStablePath));
 
@@ -349,7 +349,7 @@ export default class Raids {
 				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.scheduleReminder(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
+			console.log(`EwokSergeant.Raids.scheduleReminder(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
@@ -378,12 +378,12 @@ export default class Raids {
 				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.scheduleReminder(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
+			console.log(`EwokSergeant.Raids.scheduleReminder(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
 		}
 	}
 
 	clearTimeouts() {
-		console.log(`WookieeSergeant.Raids.clearTimeouts(): ${this.timeouts.length} timeouts`);
+		console.log(`EwokSergeant.Raids.clearTimeouts(): ${this.timeouts.length} timeouts`);
 
 		if (this.timeouts) {
 			this.timeouts.forEach((timeout) => {
