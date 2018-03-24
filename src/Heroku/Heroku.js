@@ -3,7 +3,7 @@ const appName = 'swgoh-bots';
 const dynoName = 'worker';
 const resetTimeUTC = {
 	hour: 23,
-	minute: 57
+	minute: 53
 };
 
 export default class Heroku {

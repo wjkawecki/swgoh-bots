@@ -308,7 +308,7 @@ export default class Raids {
 	}
 
 	scheduleReminder() {
-		let remindMinutesBefore = 2,
+		let remindMinutesBefore = 5,
 			raid = this.nextEvent,
 			diff = raid.diff - (remindMinutesBefore * 60 * 1000),
 			nextRaidDiff,
