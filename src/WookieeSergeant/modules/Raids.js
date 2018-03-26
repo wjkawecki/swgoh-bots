@@ -239,7 +239,7 @@ export default class Raids {
 					phase: 1
 				};
 
-				this.channels.raids_comm.send(`<@&${roles.member}> ${nextPhase}__${raidName}__ is now OPEN!`);
+				this.channels.raids_comm.send(`<@&${roles.member}> ${nextPhase}__${raidName}__ is now OPEN! :boom:`);
 			}
 
 			if (!DEV) {
@@ -342,7 +342,7 @@ export default class Raids {
 
 			this.timeouts.push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${roles.officer}> Start __${raid.type}__ NOW! After that type \`-start ${raid.type.toLowerCase()}\``
+					`<@&${roles.officer}> Start __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
 				);
 
 				// this.updateJSON();
@@ -363,7 +363,7 @@ export default class Raids {
 
 			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
 				this.channels.raids_comm.send(
-					`<@&${roles.member}> ${nextPhase}__${raid.type}__ is now OPEN!`
+					`<@&${roles.member}> ${nextPhase}__${raid.type}__ is now OPEN! :boom:`
 				);
 
 				if (isLastPhase) { // this was the last phase - move raid to logs
