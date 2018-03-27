@@ -260,7 +260,7 @@ export default class DailyActivities {
 
 			if (reminderDiff > 0) {
 				setTimeout(() => {
-					this.channels.guild_lounge.send(`<@&${roles.member}> ${remindHoursBefore} hours left to get your 400 (or more) daily tickets. Go grab them now!`);
+					this.channels.guild_lounge.send(`<@&${roles.member}> ${remindHoursBefore} hours left to get your :four::zero::zero: (or more) daily tickets. Go grab them now!`);
 				}, reminderDiff);
 			}
 
