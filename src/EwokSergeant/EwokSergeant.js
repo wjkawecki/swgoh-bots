@@ -11,7 +11,7 @@ export default class EwokSergeant {
 		this.Client.on('ready', async () => {
 			console.log('EwokSergeant.Client');
 
-			this.Client.user.setGame('FTB Shaved Teebo');
+			this.Client.user.setGame('FTB TiNT');
 
 			new Raids(this.Client);
 			new DailyActivities(this.Client);

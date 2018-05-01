@@ -231,7 +231,7 @@ export default class DailyActivities {
 			.setAuthor(`${day}`)
 			.addField(`${before.activity} - before reset`, before.desc)
 			.addField(`${after.activity} - after reset`, after.desc)
-			.setColor(0x1abc9c);
+			.setColor(0xf0c330);
 
 		msg.channel.send(embed);
 	}
@@ -329,7 +329,7 @@ Thank you for your raid tickets contribution!`;
 				embed
 					.setAuthor(`New Guild Activity: ${activity}`)
 					.setDescription(desc)
-					.setColor(0x1abc9c);
+					.setColor(0xf0c330);
 
 				this.channels.guild_lounge.send(embed);
 

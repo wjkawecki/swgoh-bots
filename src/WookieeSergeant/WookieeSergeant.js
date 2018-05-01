@@ -11,7 +11,7 @@ export default class WookieeSergeant {
 		this.Client.on('ready', async () => {
 			console.log('WookieeSergeant.Client');
 
-			this.Client.user.setGame('FTB Finding Wookiees');
+			this.Client.user.setGame('FTB FiWi');
 
 			new Raids(this.Client);
 			new DailyActivities(this.Client);
