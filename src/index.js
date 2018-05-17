@@ -1,6 +1,6 @@
 import './secret';
 
-const DEV = false;
+const DEV = process.env.DEV_MODE || false;
 
 const CONFIG = {
 	DEV,
