@@ -154,7 +154,7 @@ export default class Raids {
 			if (!this.json) {
 				MongoClient.connect(this.config.mongoUrl, function (err, db) {
 					if (err) throw err;
-					db.collection(this.config.mongoCollection).findOne({}, function (err, result) {
+					db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
 						if (err) throw err;
 						that.json = result.raids;
 						db.close();
