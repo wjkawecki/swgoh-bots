@@ -1,39 +1,26 @@
-const DEV = false;
-
 import * as mongodb from 'mongodb';
 import path from 'path';
 import * as fs from 'fs';
 
-const MongoClient = mongodb.MongoClient,
-	mongoUrl = process.env.MONGODB_URI,
-	jsonPath = '../../../data/raids.json',
-	jsonStablePath = '../../../data/raidsstable.json',
-	channels = {
-		sergeants_office: '426510238821253131',
-		raid_log: '425797346270642176',
-		raids_comm: '424323044035657738',
-		bot_playground: '371742456653414410'
-	},
-	roles = {
-		officer: '423875851436818442',
-		member: '423828012325404673'
-	};
+// const MongoClient = mongodb.MongoClient;
 
 export default class Raids {
-	constructor(Client) {
-		console.log(`WookieeSergeant.Raids ready${DEV ? ' (DEV mode)' : ''}`);
+	constructor(Client, config) {
+		this.config = config;
+
+		console.log(`=== ${config.guildName}.Raids ready${config.DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
-		this.timeouts = [];
+		this.timeouts = {};
 
-		this.initChannels(channels);
+		this.initChannels(config.channels);
 		this.listenToMessages();
 
-		if (DEV) {
-			this.clearChannel(this.channels.bot_playground, true);
+		if (config.DEV) {
+			// this.clearChannel(this.channels.bot_playground, true);
 			this.restoreJSON();
 		} else {
-			this.channels.bot_playground.send(`WookieeSergeant.Raids on duty!`);
+			this.channels.bot_playground.send(`${config.guildName}.Raids on duty!`);
 		}
 
 		this.main();
@@ -43,7 +30,7 @@ export default class Raids {
 		this.channels = {};
 
 		for (let key in channels) {
-			if (DEV) {
+			if (this.config.DEV) {
 				this.channels[key] = this.Client.channels.get(channels.bot_playground);
 			} else {
 				this.channels[key] = this.Client.channels.get(channels[key]);
@@ -57,25 +44,31 @@ export default class Raids {
 
 				case '-start rancor':
 				case '- start rancor':
-					if (msg.member.roles.has(roles.officer))
+					if (msg.member.roles.has(this.config.roles.officer))
 						this.startRaid('Rancor', msg);
 					break;
 
 				case '-start aat':
 				case '- start aat':
-					if (msg.member.roles.has(roles.officer))
+					if (msg.member.roles.has(this.config.roles.officer))
 						this.startRaid('AAT', msg);
+					break;
+
+				case '-start sith':
+				case '- start sith':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.startRaid('Sith', msg);
 					break;
 
 				case '-undo':
 				case '- undo':
-					if (msg.member.roles.has(roles.officer))
+					if (msg.member.roles.has(this.config.roles.officer))
 						this.undo(msg);
 					break;
 
 				case '-json':
 				case '- json':
-					if (msg.member.roles.has(roles.officer))
+					if (msg.member.roles.has(this.config.roles.officer))
 						console.log(JSON.stringify(this.json, null, 4));
 					break;
 
@@ -95,6 +88,7 @@ export default class Raids {
 		msg.reply(`here is the list of my __Raids__ commands:
 \`-start rancor\` *- officer only*. Starts next Rancor according to schedule.
 \`-start aat\` *- officer only*. Starts next AAT according to schedule.
+\`-start sith\` *- officer only*. Starts next Sith according to schedule.
 \`-undo\` *- officer only*. Undo your last action!
 \`-help\` - this is what you are reading right now.`);
 	}
@@ -106,7 +100,7 @@ export default class Raids {
 			this.json = JSON.parse(JSON.stringify(this.undoJson));
 			this.undoJson = null;
 
-			if (!DEV) {
+			if (!this.config.DEV) {
 				this.clearChannel(this.channels.raid_log);
 			}
 
@@ -121,74 +115,74 @@ export default class Raids {
 		return msg.mentions.users.has(this.Client.user.id);
 	}
 
-	async main() {
+	async main(raid = '') {
 		try {
-			console.log('WookieeSergeant.Raids.main()');
-			this.readJSON();
+			console.log(`${this.config.guildName}.Raids.main(${raid})`);
+			this.readJSON(raid);
 		} catch (err) {
 			console.log(err);
 		}
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		console.log(`WookieeSergeant.Raids.clearChannel()`);
+		console.log(`${this.config.guildName}.Raids.clearChannel()`);
 
 		if (removeAll) {
-			const messages = await channel.fetchMessages();
+			const messages = await channel.fetchMessages().catch(console.error);
 
 			if (messages) {
 				messages.forEach(async (message) => {
-					await message.delete();
+					await message.delete().catch(console.error);
 				});
 			}
 		} else {
-			const message = await channel.fetchMessage(this.lastMessageId);
+			const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
 
 			if (message)
-				await message.delete();
+				await message.delete().catch(console.error);
 		}
 	}
 
-	readJSON() {
+	readJSON(raid) {
 		let that = this;
 
-		if (DEV) {
-			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath))).raids;
-			console.log(`WookieeSergeant.Raids.readJSON(): local ${typeof that.json}`);
-			this.processRaids();
+		if (this.config.DEV) {
+			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, this.config.jsonPath))).raids;
+			console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
+			this.processRaids(raid);
 		} else {
 			if (!this.json) {
-				MongoClient.connect(mongoUrl, function (err, db) {
+				mongodb.MongoClient.connect(this.config.mongoUrl, function (err, db) {
 					if (err) throw err;
-					db.collection('WookieeSergeant').findOne({}, function (err, result) {
+					db.collection(this.config.mongoCollection).findOne({}, function (err, result) {
 						if (err) throw err;
 						that.json = result.raids;
 						db.close();
-						console.log(`WookieeSergeant.Raids.readJSON(): MongoDB ${typeof that.json}`);
-						that.processRaids();
+						console.log(`${this.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
+						that.processRaids(raid);
 					});
 				});
 			} else {
-				console.log(`WookieeSergeant.Raids.readJSON(): local ${typeof that.json}`);
-				this.processRaids();
+				console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
+				this.processRaids(raid);
 			}
 		}
 
 	}
 
 	updateJSON() {
-		if (DEV) {
-			fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify({'raids': this.json}));
-			this.channels.bot_playground.send(JSON.stringify(this.json));
+		if (this.config.DEV) {
+			fs.writeFileSync(path.resolve(__dirname, this.config.jsonPath), JSON.stringify({'raids': this.json}));
+			// this.channels.bot_playground.send(JSON.stringify(this.json));
 		} else {
 			let that = this,
 				json = {raids: that.json};
 
-			MongoClient.connect(mongoUrl, function (err, db) {
+			mongodb.MongoClient.connect(this.config.mongoUrl, function (err, db) {
 				if (err) throw err;
-				db.collection('WookieeSergeant').updateOne({}, json, function (err, result) {
+				db.collection(this.config.mongoCollection).updateOne({}, json, function (err, result) {
 					if (err) throw err;
-					console.log(`WookieeSergeant.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
+					console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 					db.close();
 				});
 			});
@@ -196,19 +190,22 @@ export default class Raids {
 	}
 
 	restoreJSON() {
-		if (DEV) {
-			console.log(`WookieeSergeant.Raids.restoreJSON()`);
+		if (this.config.DEV) {
+			console.log(`${this.config.guildName}.Raids.restoreJSON()`);
 
-			let jsonStable = fs.readFileSync(path.resolve(__dirname, jsonStablePath));
+			let jsonStable = fs.readFileSync(path.resolve(__dirname, this.config.jsonStablePath));
 
-			fs.writeFileSync(path.resolve(__dirname, jsonPath), jsonStable);
+			fs.writeFileSync(path.resolve(__dirname, this.config.jsonPath), jsonStable);
 		}
 	}
 
-	processRaids() {
-		this.findNextEvent();
-		this.clearTimeouts();
-		this.scheduleReminder();
+	processRaids(raid) {
+		if (raid) {
+			this.clearTimeouts(raid);
+			this.scheduleReminder(this.findNextEvents().find(event => event.type === raid));
+		} else {
+			this.findNextEvents().forEach(event => this.scheduleReminder(event));
+		}
 	}
 
 	startRaid(raidName, msg) {
@@ -218,7 +215,7 @@ export default class Raids {
 		if (raid.active) {
 			msg.reply(`don't fool me! __${raidName}__ is already active!`);
 		} else {
-			msg.reply(`yes sir! Adding new __${raidName}__ to the <#${channels.raid_log}>`);
+			msg.reply(`adding new __${raidName}__ to the <#${channels.raid_log}>`);
 
 			this.undoJson = JSON.parse(JSON.stringify(this.json));
 
@@ -239,10 +236,10 @@ export default class Raids {
 					phase: 1
 				};
 
-				this.channels.raids_comm.send(`<@&${roles.member}> ${nextPhase}__${raidName}__ is now OPEN! :boom:`);
+				this.channels.raids_comm.send(`<@&${this.config.roles.member}> ${nextPhase}__${raidName}__ is now OPEN! :boom:`);
 			}
 
-			if (!DEV) {
+			if (!this.config.DEV) {
 				let that = this;
 
 				this.channels.raid_log
@@ -255,7 +252,7 @@ export default class Raids {
 			};
 
 			this.updateJSON();
-			this.main();
+			this.main(raidName);
 		}
 	}
 
@@ -263,7 +260,7 @@ export default class Raids {
 		this.lastMessageId = msgId;
 	}
 
-	findNextEvent() {
+	findNextEvents() {
 		let now = new Date(),
 			nowHour = now.getUTCHours(),
 			nextEvents = [];
@@ -304,15 +301,16 @@ export default class Raids {
 			return a.diff - b.diff;
 		});
 
-		this.nextEvent = nextEvents[0];
+		return nextEvents;
 	}
 
-	scheduleReminder() {
+	scheduleReminder(raid) {
 		let remindMinutesBefore = 5,
-			raid = this.nextEvent,
 			diff = raid.diff - (remindMinutesBefore * 60 * 1000),
 			nextRaidDiff,
 			nextRaidDiffVerbose;
+
+		this.timeouts[raid.type] = this.timeouts[raid.type] || [];
 
 		if (raid.phase === 0) { // remind @Officer to start raid
 			if (raid.config.registrationHours === 0) {
@@ -326,44 +324,45 @@ export default class Raids {
 					nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
 				}
 
-				this.timeouts.push(setTimeout(() => {
+				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
 						`Next __${raid.type}__ will probably start in ${nextRaidDiffVerbose} (if we have tickets).`
 					);
 				}, nextRaidDiff));
 			}
 
-			this.timeouts.push(setTimeout(() => {
+			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
+					`<@&${this.config.roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
 				);
 			}, diff));
 
-			this.timeouts.push(setTimeout(() => {
+			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${roles.officer}> Start __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
+					`<@&${this.config.roles.officer}> Start __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
 				);
-
-				// this.updateJSON();
-				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.scheduleReminder(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
+			this.timeouts[raid.type].push(setTimeout(() => {
+				this.main(raid.type);
+			}, raid.diff + 120000));
+
+			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
 			if (raid.config.phases.count <= 1) {
-				this.timeouts.push(setTimeout(() => {
+				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
-						`<@&${roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
+						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
 					);
 				}, diff));
 			}
 
-			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
+			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
 				this.channels.raids_comm.send(
-					`<@&${roles.member}> ${nextPhase}__${raid.type}__ is now OPEN! :boom:`
+					`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ is now OPEN! :boom:`
 				);
 
 				if (isLastPhase) { // this was the last phase - move raid to logs
@@ -375,18 +374,21 @@ export default class Raids {
 				}
 
 				this.updateJSON();
-				this.main();
 			}, raid.diff));
 
-			console.log(`WookieeSergeant.Raids.scheduleReminder(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
+			this.timeouts[raid.type].push(setTimeout(() => {
+				this.main(raid.type);
+			}, raid.diff + 120000));
+
+			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${nextPhase}${raid.type} opens in ${this.getReadableTime(raid.diff)}`);
 		}
 	}
 
-	clearTimeouts() {
-		console.log(`WookieeSergeant.Raids.clearTimeouts(): ${this.timeouts.length} timeouts`);
+	clearTimeouts(raid) {
+		console.log(`${this.config.guildName}.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
 
-		if (this.timeouts) {
-			this.timeouts.forEach((timeout) => {
+		if (raid && this.timeouts[raid]) {
+			this.timeouts[raid].forEach((timeout) => {
 				clearTimeout(timeout);
 			});
 		}

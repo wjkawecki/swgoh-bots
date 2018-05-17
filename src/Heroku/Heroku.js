@@ -25,7 +25,7 @@ export default class Heroku {
 			this.restartDyno(appName, dynoName);
 		}, diff);
 
-		console.log(`Heroku.restartDyno ${appName}/${dynoName} in [${this.getReadableTime(diff)}]`);
+		console.log(`=== Heroku.restartDyno ${appName}/${dynoName} in [${this.getReadableTime(diff)}]`);
 	}
 
 	restartDyno(appName, dynoName) {

@@ -11,7 +11,7 @@ export default class BB8 {
 		this.main = this.main.bind(this);
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => {
-			this.client.user.setGame(clientGame);
+			this.client.user.setActivity(clientGame);
 			this.readChannel = this.client.channels.get(readChannelId);
 			this.writeChannel = this.client.channels.get(writeChannelId);
 			this.initializeBot();
@@ -61,7 +61,7 @@ export default class BB8 {
 				}
 			}
 
-			console.log('BB8 ready');
+			console.log('=== BB8 ready');
 		} catch (err) {
 			console.log(err);
 		}

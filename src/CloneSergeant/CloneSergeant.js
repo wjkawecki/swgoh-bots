@@ -11,7 +11,7 @@ export default class CloneSergeant {
 		this.Client.on('ready', async () => {
 			console.log('CloneSergeant.Client');
 
-			this.Client.user.setGame('FTB DST');
+			this.Client.user.setActivity('FTB DST');
 
 			new Raids(this.Client);
 			new DailyActivities(this.Client);

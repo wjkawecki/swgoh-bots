@@ -1,6 +1,6 @@
 {
 	"_id": {
-		"$oid": "59f1edf6f36d28556930f7d3"
+		"$oid": "5ae82f57f36d282906c4b488"
 	},
 	"raids": {
 		"Rancor": {
@@ -15,149 +15,106 @@
 					21
 				]
 			},
-			"active": null,
+			"active": {
+				"rotationTimeUTC": 21,
+				"initiatorID": "210092114187386880",
+				"phase": 0
+			},
 			"next": {
 				"rotationTimeUTC": 15
 			},
 			"log": [
 				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
-				},
-				{
-					"rotationTimeUTC": 12,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
-				},
-				{
-					"rotationTimeUTC": 12,
+					"rotationTimeUTC": 21,
 					"initiatorID": "309607586200813579"
 				},
 				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
+					"rotationTimeUTC": 15,
+					"initiatorID": "215241370716209152"
 				},
 				{
-					"rotationTimeUTC": 12,
+					"rotationTimeUTC": 21,
+					"initiatorID": "215241370716209152"
+				},
+				{
+					"rotationTimeUTC": 15,
+					"initiatorID": "215241370716209152"
+				},
+				{
+					"rotationTimeUTC": 21,
 					"initiatorID": "209632024783355904"
 				},
 				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "308879941850628096"
+					"rotationTimeUTC": 15,
+					"initiatorID": "210092114187386880"
 				},
 				{
-					"rotationTimeUTC": 12,
+					"rotationTimeUTC": 21,
 					"initiatorID": "209632024783355904"
 				},
 				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
-				},
-				{
-					"rotationTimeUTC": 12,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
-				},
-				{
-					"rotationTimeUTC": 12,
-					"initiatorID": "309607586200813579"
-				},
-				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
-				},
-				{
-					"rotationTimeUTC": 12,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
-				},
-				{
-					"rotationTimeUTC": 12,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 0,
-					"initiatorID": "297208034860597248"
+					"rotationTimeUTC": 15,
+					"initiatorID": "215241370716209152"
 				}
 			]
 		},
 		"AAT": {
 			"config": {
-				"registrationHours": 0,
+				"registrationHours": 24,
 				"phases": {
-					"count": 4,
-					"holdHours": 6
+					"count": 1,
+					"holdHours": 0
 				},
 				"rotationTimesUTC": [
-					5,
-					11,
-					17,
-					23
+					10,
+					16,
+					22
 				]
 			},
-			"active": {
-				"rotationTimeUTC": 17,
-				"initiatorID": "309607586200813579",
-				"phase": 3
-			},
+			"active": null,
 			"next": {
-				"rotationTimeUTC": 23
+				"rotationTimeUTC": 22
 			},
 			"log": [
 				{
-					"rotationTimeUTC": 23,
-					"initiatorID": "308879941850628096"
+					"rotationTimeUTC": 16,
+					"initiatorID": "210092114187386880"
 				},
 				{
-					"rotationTimeUTC": 5,
-					"initiatorID": "307729886540333056"
+					"rotationTimeUTC": 22,
+					"initiatorID": "322143525468766209"
 				},
 				{
-					"rotationTimeUTC": 11,
+					"rotationTimeUTC": 4,
 					"initiatorID": "209632024783355904"
 				},
 				{
-					"rotationTimeUTC": 17,
+					"rotationTimeUTC": 10,
 					"initiatorID": "209632024783355904"
 				},
 				{
-					"rotationTimeUTC": 23,
-					"initiatorID": "308879941850628096"
-				},
-				{
-					"rotationTimeUTC": 5,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 11,
-					"initiatorID": "309607586200813579"
-				},
-				{
-					"rotationTimeUTC": 17,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 23,
-					"initiatorID": "308879941850628096"
-				},
-				{
-					"rotationTimeUTC": 5,
-					"initiatorID": "209632024783355904"
-				},
-				{
-					"rotationTimeUTC": 11,
-					"initiatorID": "209632024783355904"
+					"rotationTimeUTC": 16,
+					"initiatorID": "370980413780393985"
 				}
 			]
+		},
+		"Sith": {
+			"config": {
+				"registrationHours": 0,
+				"phases": {
+					"count": 4,
+					"holdHours": 8
+				},
+				"rotationTimesUTC": [
+					0,
+					17
+				]
+			},
+			"active": null,
+			"next": {
+				"rotationTimeUTC": 17
+			},
+			"log": []
 		}
 	}
 }

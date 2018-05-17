@@ -1,33 +1,20 @@
-const DEV = false;
-
 import Discord from 'discord.js';
 
-const channels = {
-		guild_lounge: '423830199633969152',
-		bot_playground: '371742456653414410'
-	},
-	roles = {
-		officer: '423875851436818442',
-		member: '423828012325404673'
-	},
-	resetTimeUTC = {
-		hour: 2,
-		minute: 30
-	};
-
 export default class DailyActivities {
-	constructor(Client) {
-		console.log(`WookieeSergeant.DailyActivities ready${DEV ? ' (DEV mode)' : ''}`);
+	constructor(Client, config) {
+		this.config = config;
+
+		console.log(`=== ${config.guildName}.DailyActivities ready${config.DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
 
-		this.initChannels(channels);
+		this.initChannels(config.channels);
 		this.listenToMessages();
 
-		if (DEV) {
-			this.clearChannel(this.channels.bot_playground, true);
+		if (config.DEV) {
+			// this.clearChannel(this.channels.bot_playground, true);
 		} else {
-			this.channels.bot_playground.send(`WookieeSergeant.DailyActivities on duty!`);
+			this.channels.bot_playground.send(`${config.guildName}.DailyActivities on duty!`);
 		}
 
 		this.main();
@@ -35,7 +22,7 @@ export default class DailyActivities {
 
 	async main() {
 		try {
-			console.log('WookieeSergeant.DailyActivities.main()');
+			console.log(`${this.config.guildName}.DailyActivities.main()`);
 
 			this.scheduleReminder();
 		} catch (err) {
@@ -47,7 +34,7 @@ export default class DailyActivities {
 		this.channels = {};
 
 		for (let key in channels) {
-			if (DEV) {
+			if (this.config.DEV) {
 				this.channels[key] = this.Client.channels.get(channels.bot_playground);
 			} else {
 				this.channels[key] = this.Client.channels.get(channels[key]);
@@ -231,7 +218,7 @@ export default class DailyActivities {
 			.setAuthor(`${day}`)
 			.addField(`${before.activity} - before reset`, before.desc)
 			.addField(`${after.activity} - after reset`, after.desc)
-			.setColor(0xe67e22);
+			.setColor(0xf0c330);
 
 		msg.channel.send(embed);
 	}
@@ -242,25 +229,25 @@ export default class DailyActivities {
 			reset = new Date(now),
 			diff;
 
-		reset.setUTCHours(resetTimeUTC.hour, resetTimeUTC.minute, 0, 0);
+		reset.setUTCHours(this.config.resetTimeUTC.hour, this.config.resetTimeUTC.minute, 0, 0);
 		if (reset < now) reset.setDate(reset.getDate() + 1);
 		this.resetDay = reset.getUTCDay();
 		diff = reset.getTime() - now.getTime();
 
-		if (DEV) {
+		if (this.config.DEV) {
 			// diff = 30000;
 		}
 
 		if (manualReminder) {
-			this.channels.guild_lounge.send(`<@&${roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
+			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
 		} else {
-			console.log(`WookieeSergeant.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
+			console.log(`${this.config.guildName}.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
 
 			let reminderDiff = diff - (remindHoursBefore * 60 * 60 * 1000);
 
 			if (reminderDiff > 0) {
 				setTimeout(() => {
-					this.channels.guild_lounge.send(`<@&${roles.member}> ${remindHoursBefore} hours left to get your :four::zero::zero: (or more) daily tickets. Go grab them now!`);
+					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> ${remindHoursBefore} hours left to get your :six::zero::zero: daily tickets. Go grab them now!`);
 				}, reminderDiff);
 			}
 
@@ -271,14 +258,7 @@ export default class DailyActivities {
 
 				switch (resetDay) {
 
-					case 0: // Saturday
-						activity = 'Arena Battles';
-						desc = `
-:boom:  **Complete** Arena Battles
-:heavy_multiplication_x:  **Save** Cantina Energy`;
-						break;
-
-					case 1: // Sunday
+					case 0: // Sunday
 						activity = 'Cantina Battles';
 						desc = `
 :zap:  **Spend** Cantina Energy
@@ -286,39 +266,46 @@ export default class DailyActivities {
 :heavy_multiplication_x:  **Save** Galactic War Battles (unless reset available)`;
 						break;
 
-					case 2: // Monday
+					case 1: // Monday
 						activity = 'Light Side Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Light Side Battles
 :heavy_multiplication_x:  **Save** Galactic War Battles`;
 						break;
 
-					case 3: // Tuesday
+					case 2: // Tuesday
 						activity = 'Galactic War Battles';
 						desc = `
 :boom:  **Complete** Galactic War Battles
 :heavy_multiplication_x:  **Save** Normal Energy`;
 						break;
 
-					case 4: // Wednesday
+					case 3: // Wednesday
 						activity = 'Hard Mode Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Hard Mode Battles
 :heavy_multiplication_x:  **Save** Challenges`;
 						break;
 
-					case 5: // Thursday
+					case 4: // Thursday
 						activity = 'Challenges';
 						desc = `
 :boom:  **Complete** Challenges
 :heavy_multiplication_x:  **Save** Normal Energy`;
 						break;
 
-					case 6: // Friday
+					case 5: // Friday
 						activity = 'Dark Side Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Dark Side Battles
 :heavy_multiplication_x:  **Save** Arena Battles`;
+						break;
+
+					case 6: // Saturday
+						activity = 'Arena Battles';
+						desc = `
+:boom:  **Complete** Arena Battles
+:heavy_multiplication_x:  **Save** Cantina Energy`;
 						break;
 				}
 
@@ -329,7 +316,7 @@ Thank you for your raid tickets contribution!`;
 				embed
 					.setAuthor(`New Guild Activity: ${activity}`)
 					.setDescription(desc)
-					.setColor(0xe67e22);
+					.setColor(0xf0c330);
 
 				this.channels.guild_lounge.send(embed);
 
@@ -368,21 +355,21 @@ Thank you for your raid tickets contribution!`;
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		console.log(`WookieeSergeant.DailyActivities.clearChannel()`);
+		console.log(`${this.config.guildName}.DailyActivities.clearChannel()`);
 
 		if (removeAll) {
-			const messages = await channel.fetchMessages();
+			const messages = await channel.fetchMessages().catch(console.error);
 
 			if (messages) {
 				messages.forEach(async (message) => {
-					await message.delete();
+					await message.delete().catch(console.error);
 				});
 			}
 		} else {
-			const message = await channel.fetchMessage(this.lastMessageId);
+			const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
 
 			if (message)
-				await message.delete();
+				await message.delete().catch(console.error);
 		}
 	}
 }

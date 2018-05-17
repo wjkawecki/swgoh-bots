@@ -1,4 +1,4 @@
-const DEV = false;
+const DEV = true;
 
 import * as mongodb from 'mongodb';
 import path from 'path';
@@ -15,8 +15,8 @@ const MongoClient = mongodb.MongoClient,
 		bot_playground: '371742456653414410'
 	},
 	roles = {
-		officer: '440635030658613269',
-		member: '440634741826256896'
+		officer: DEV ? 'officer' : '440635030658613269',
+		member: DEV ? 'member' : '440634741826256896'
 	};
 
 export default class Raids {
@@ -24,7 +24,7 @@ export default class Raids {
 		console.log(`CloneSergeant.Raids ready${DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
-		this.timeouts = [];
+		this.timeouts = {};
 
 		this.initChannels(channels);
 		this.listenToMessages();
@@ -67,6 +67,12 @@ export default class Raids {
 						this.startRaid('AAT', msg);
 					break;
 
+				case '-start sith':
+				case '- start sith':
+					if (msg.member.roles.has(roles.officer))
+						this.startRaid('Sith', msg);
+					break;
+
 				case '-undo':
 				case '- undo':
 					if (msg.member.roles.has(roles.officer))
@@ -95,6 +101,7 @@ export default class Raids {
 		msg.reply(`here is the list of my __Raids__ commands:
 \`-start rancor\` *- officer only*. Starts next Rancor according to schedule.
 \`-start aat\` *- officer only*. Starts next AAT according to schedule.
+\`-start sith\` *- officer only*. Starts next Sith according to schedule.
 \`-undo\` *- officer only*. Undo your last action!
 \`-help\` - this is what you are reading right now.`);
 	}
@@ -121,10 +128,10 @@ export default class Raids {
 		return msg.mentions.users.has(this.Client.user.id);
 	}
 
-	async main() {
+	async main(raid = '') {
 		try {
-			console.log('CloneSergeant.Raids.main()');
-			this.readJSON();
+			console.log(`CloneSergeant.Raids.main(${raid})`);
+			this.readJSON(raid);
 		} catch (err) {
 			console.log(err);
 		}
@@ -149,13 +156,13 @@ export default class Raids {
 		}
 	}
 
-	readJSON() {
+	readJSON(raid) {
 		let that = this;
 
 		if (DEV) {
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, jsonPath))).raids;
-			console.log(`CloneSergeant.Raids.readJSON(): local ${typeof that.json}`);
-			this.processRaids();
+			console.log(`CloneSergeant.Raids.readJSON(${raid}): local ${typeof that.json}`);
+			this.processRaids(raid);
 		} else {
 			if (!this.json) {
 				MongoClient.connect(mongoUrl, function (err, db) {
@@ -164,13 +171,13 @@ export default class Raids {
 						if (err) throw err;
 						that.json = result.raids;
 						db.close();
-						console.log(`CloneSergeant.Raids.readJSON(): MongoDB ${typeof that.json}`);
-						that.processRaids();
+						console.log(`CloneSergeant.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
+						that.processRaids(raid);
 					});
 				});
 			} else {
-				console.log(`CloneSergeant.Raids.readJSON(): local ${typeof that.json}`);
-				this.processRaids();
+				console.log(`CloneSergeant.Raids.readJSON(${raid}): local ${typeof that.json}`);
+				this.processRaids(raid);
 			}
 		}
 
@@ -179,7 +186,7 @@ export default class Raids {
 	updateJSON() {
 		if (DEV) {
 			fs.writeFileSync(path.resolve(__dirname, jsonPath), JSON.stringify({'raids': this.json}));
-			this.channels.bot_playground.send(JSON.stringify(this.json));
+			// this.channels.bot_playground.send(JSON.stringify(this.json));
 		} else {
 			let that = this,
 				json = {raids: that.json};
@@ -205,10 +212,13 @@ export default class Raids {
 		}
 	}
 
-	processRaids() {
-		this.findNextEvent();
-		this.clearTimeouts();
-		this.scheduleReminder();
+	processRaids(raid) {
+		if (raid) {
+			this.clearTimeouts(raid);
+			this.scheduleReminder(this.findNextEvents().find(event => event.type === raid));
+		} else {
+			this.findNextEvents().forEach(event => this.scheduleReminder(event));
+		}
 	}
 
 	startRaid(raidName, msg) {
@@ -255,7 +265,7 @@ export default class Raids {
 			};
 
 			this.updateJSON();
-			this.main();
+			this.main(raidName);
 		}
 	}
 
@@ -263,7 +273,7 @@ export default class Raids {
 		this.lastMessageId = msgId;
 	}
 
-	findNextEvent() {
+	findNextEvents() {
 		let now = new Date(),
 			nowHour = now.getUTCHours(),
 			nextEvents = [];
@@ -304,15 +314,16 @@ export default class Raids {
 			return a.diff - b.diff;
 		});
 
-		this.nextEvent = nextEvents[0];
+		return nextEvents;
 	}
 
-	scheduleReminder() {
+	scheduleReminder(raid) {
 		let remindMinutesBefore = 5,
-			raid = this.nextEvent,
 			diff = raid.diff - (remindMinutesBefore * 60 * 1000),
 			nextRaidDiff,
 			nextRaidDiffVerbose;
+
+		this.timeouts[raid.type] = this.timeouts[raid.type] || [];
 
 		if (raid.phase === 0) { // remind @Officer to start raid
 			if (raid.config.registrationHours === 0) {
@@ -326,42 +337,43 @@ export default class Raids {
 					nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
 				}
 
-				this.timeouts.push(setTimeout(() => {
+				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
 						`Next __${raid.type}__ will probably start in ${nextRaidDiffVerbose} (if we have tickets).`
 					);
 				}, nextRaidDiff));
 			}
 
-			this.timeouts.push(setTimeout(() => {
+			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
 					`<@&${roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
 				);
 			}, diff));
 
-			this.timeouts.push(setTimeout(() => {
+			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
 					`<@&${roles.officer}> Start __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
 				);
-
-				// this.updateJSON();
-				this.main();
 			}, raid.diff));
 
-			console.log(`CloneSergeant.Raids.scheduleReminder(): ${raid.type} start in ${this.getReadableTime(raid.diff)}`);
+			this.timeouts[raid.type].push(setTimeout(() => {
+				this.main(raid.type);
+			}, raid.diff + 120000));
+
+			console.log(`CloneSergeant.Raids.scheduleReminder(${raid.type}): ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
 			if (raid.config.phases.count <= 1) {
-				this.timeouts.push(setTimeout(() => {
+				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
 						`<@&${roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
 					);
 				}, diff));
 			}
 
-			this.timeouts.push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
+			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
 				this.channels.raids_comm.send(
 					`<@&${roles.member}> ${nextPhase}__${raid.type}__ is now OPEN! :boom:`
 				);
@@ -375,18 +387,21 @@ export default class Raids {
 				}
 
 				this.updateJSON();
-				this.main();
 			}, raid.diff));
 
-			console.log(`CloneSergeant.Raids.scheduleReminder(): ${nextPhase}${raid.type} in ${this.getReadableTime(raid.diff)}`);
+			this.timeouts[raid.type].push(setTimeout(() => {
+				this.main(raid.type);
+			}, raid.diff + 120000));
+
+			console.log(`CloneSergeant.Raids.scheduleReminder(${raid.type}): ${nextPhase}${raid.type} opens in ${this.getReadableTime(raid.diff)}`);
 		}
 	}
 
-	clearTimeouts() {
-		console.log(`CloneSergeant.Raids.clearTimeouts(): ${this.timeouts.length} timeouts`);
+	clearTimeouts(raid) {
+		console.log(`CloneSergeant.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
 
-		if (this.timeouts) {
-			this.timeouts.forEach((timeout) => {
+		if (raid && this.timeouts[raid]) {
+			this.timeouts[raid].forEach((timeout) => {
 				clearTimeout(timeout);
 			});
 		}

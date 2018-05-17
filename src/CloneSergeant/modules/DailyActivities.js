@@ -1,4 +1,4 @@
-const DEV = false;
+const DEV = true;
 
 import Discord from 'discord.js';
 
@@ -25,7 +25,7 @@ export default class DailyActivities {
 		this.listenToMessages();
 
 		if (DEV) {
-			this.clearChannel(this.channels.bot_playground, true);
+			// this.clearChannel(this.channels.bot_playground, true);
 		} else {
 			this.channels.bot_playground.send(`CloneSergeant.DailyActivities on duty!`);
 		}
