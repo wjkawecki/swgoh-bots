@@ -2,7 +2,7 @@ import * as mongodb from 'mongodb';
 import path from 'path';
 import * as fs from 'fs';
 
-// const MongoClient = mongodb.MongoClient;
+const MongoClient = mongodb.MongoClient;
 
 export default class Raids {
 	constructor(Client, config) {
@@ -152,7 +152,7 @@ export default class Raids {
 			this.processRaids(raid);
 		} else {
 			if (!this.json) {
-				mongodb.MongoClient.connect(this.config.mongoUrl, function (err, db) {
+				MongoClient.connect(this.config.mongoUrl, function (err, db) {
 					if (err) throw err;
 					db.collection(this.config.mongoCollection).findOne({}, function (err, result) {
 						if (err) throw err;
@@ -178,7 +178,7 @@ export default class Raids {
 			let that = this,
 				json = {raids: that.json};
 
-			mongodb.MongoClient.connect(this.config.mongoUrl, function (err, db) {
+			MongoClient.connect(this.config.mongoUrl, function (err, db) {
 				if (err) throw err;
 				db.collection(this.config.mongoCollection).updateOne({}, json, function (err, result) {
 					if (err) throw err;
