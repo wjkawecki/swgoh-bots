@@ -158,7 +158,7 @@ export default class Raids {
 						if (err) throw err;
 						that.json = result.raids;
 						db.close();
-						console.log(`${this.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
+						console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
 						that.processRaids(raid);
 					});
 				});
@@ -180,9 +180,9 @@ export default class Raids {
 
 			MongoClient.connect(this.config.mongoUrl, function (err, db) {
 				if (err) throw err;
-				db.collection(this.config.mongoCollection).updateOne({}, json, function (err, result) {
+				db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
 					if (err) throw err;
-					console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
+					console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 					db.close();
 				});
 			});
