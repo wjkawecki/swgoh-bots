@@ -101,7 +101,7 @@ export default class Raids {
 			this.undoJson = null;
 
 			if (!this.config.DEV) {
-				this.clearChannel(this.channels.raid_log);
+				this.clearChannel(this.channels.raids_log);
 			}
 
 			this.updateJSON();
@@ -215,7 +215,7 @@ export default class Raids {
 		if (raid.active) {
 			msg.reply(`don't fool me! __${raidName}__ is already active!`);
 		} else {
-			msg.reply(`adding new __${raidName}__ to the <#${this.config.channels.raid_log}>`);
+			msg.reply(`adding new __${raidName}__ to the <#${this.config.channels.raids_log}>`);
 
 			this.undoJson = JSON.parse(JSON.stringify(this.json));
 
@@ -242,7 +242,7 @@ export default class Raids {
 			if (!this.config.DEV) {
 				let that = this;
 
-				this.channels.raid_log
+				this.channels.raids_log
 					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC/GMT started by <@${msg.author.id}>`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}

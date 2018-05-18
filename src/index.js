@@ -17,7 +17,7 @@ const GUILDS = [
 		channels: {
 			guild_lounge: '440636860100902915',
 			sergeants_office: '440640683624103936',
-			raid_log: '440795802777157642',
+			raids_log: '440795802777157642',
 			raids_comm: '440641211066482707',
 			bot_playground: '371742456653414410'
 		},
@@ -37,7 +37,7 @@ const GUILDS = [
 		channels: {
 			guild_lounge: '423829996461621248',
 			sergeants_office: '426510072584077316',
-			raid_log: '425797428642316288',
+			raids_log: '425797428642316288',
 			raids_comm: '424322828167413770',
 			bot_playground: '371742456653414410'
 		},
