@@ -56,7 +56,7 @@ const GUILDS = [
 		botToken: process.env.TOKEN_RoF_OS,
 		channels: {
 			guild_lounge: '401427486531125248',
-			sergeants_office: '436703724694405120',
+			sergeants_office: '401428642955264000',
 			raids_log: '445592372206764043',
 			raids_comm: '401427486531125248',
 			bot_playground: '401432399180857345'
@@ -74,12 +74,8 @@ const GUILDS = [
 
 import Heroku from './Heroku/Heroku';
 import BB8 from './BB8/BB8';
-// import CloneSergeant from './CloneSergeant/CloneSergeant';
-// import EwokSergeant from './EwokSergeant/EwokSergeant';
 import Guild from './Guild/Guild';
 
 new Heroku();
 new BB8();
-// new CloneSergeant();
-// new EwokSergeant();
 GUILDS.forEach(guild => new Guild({ ...CONFIG, ...guild}));

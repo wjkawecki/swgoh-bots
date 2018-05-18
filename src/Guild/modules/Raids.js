@@ -321,16 +321,17 @@ export default class Raids {
 				if (raid.diff > reminderTime) {
 					nextRaidDiff = raid.diff - reminderTime;
 					nextRaidDiffVerbose = `${remindHoursBefore} hours`;
-				} else {
-					nextRaidDiff = remindMinutesBefore * 60 * 1000;
-					nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
-				}
 
-				this.timeouts[raid.type].push(setTimeout(() => {
-					this.channels.raids_comm.send(
-						`Next __${raid.type}__ will probably start in ${nextRaidDiffVerbose} (__if we have tickets__).`
-					);
-				}, nextRaidDiff));
+					this.timeouts[raid.type].push(setTimeout(() => {
+						this.channels.raids_comm.send(
+							`__${raid.type}__ will _probably_ start in ${nextRaidDiffVerbose} (__if we have tickets__).`
+						);
+					}, nextRaidDiff));
+				}
+				// } else {
+				// 	nextRaidDiff = remindMinutesBefore * 60 * 1000;
+				// 	nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
+				// }
 			}
 
 			this.timeouts[raid.type].push(setTimeout(() => {
