@@ -243,7 +243,7 @@ export default class Raids {
 				let that = this;
 
 				this.channels.raid_log
-					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>`)
+					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC/GMT started by <@${msg.author.id}>`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
@@ -306,7 +306,9 @@ export default class Raids {
 
 	scheduleReminder(raid) {
 		let remindMinutesBefore = 5,
-			diff = raid.diff - (remindMinutesBefore * 60 * 1000),
+			remindHoursBefore = 6,
+			diffMinutes = raid.diff - (remindMinutesBefore * 60 * 1000),
+			diffHours = raid.diff - (remindHoursBefore  * 60 * 60 * 1000),
 			nextRaidDiff,
 			nextRaidDiffVerbose;
 
@@ -314,11 +316,11 @@ export default class Raids {
 
 		if (raid.phase === 0) { // remind @Officer to start raid
 			if (raid.config.registrationHours === 0) {
-				let phaseHold = raid.config.phases.holdHours * 60 * 60 * 1000;
+				let reminderTime = remindHoursBefore * 60 * 60 * 1000;
 
-				if (raid.diff > phaseHold) {
-					nextRaidDiff = raid.diff - phaseHold;
-					nextRaidDiffVerbose = `${raid.config.phases.holdHours} hours`;
+				if (raid.diff > reminderTime) {
+					nextRaidDiff = raid.diff - reminderTime;
+					nextRaidDiffVerbose = `${remindHoursBefore} hours`;
 				} else {
 					nextRaidDiff = remindMinutesBefore * 60 * 1000;
 					nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
@@ -326,7 +328,7 @@ export default class Raids {
 
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
-						`Next __${raid.type}__ will probably start in ${nextRaidDiffVerbose} (if we have tickets).`
+						`Next __${raid.type}__ will probably start in ${nextRaidDiffVerbose} (__if we have tickets__).`
 					);
 				}, nextRaidDiff));
 			}
@@ -336,7 +338,7 @@ export default class Raids {
 					`<@&${this.config.roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
 				);
-			}, diff));
+			}, diffMinutes));
 
 			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
@@ -352,12 +354,20 @@ export default class Raids {
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
-			if (raid.config.phases.count <= 1) {
+			if (raid.diff > diffHours && raid.config.phases.count <= 1) {
+				this.timeouts[raid.type].push(setTimeout(() => {
+					this.channels.raids_comm.send(
+						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} hours.`
+					);
+				}, diffHours));
+			}
+
+			if (raid.diff > diffMinutes && raid.config.phases.count <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
 						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
 					);
-				}, diff));
+				}, diffMinutes));
 			}
 
 			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
