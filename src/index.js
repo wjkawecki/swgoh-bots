@@ -66,7 +66,7 @@ const GUILDS = [
 			member: DEV ? 'RoF/OS member' : '447053006282686465'
 		},
 		resetTimeUTC: {
-			hour: 20,
+			hour: 21,
 			minute: 30
 		}
 	},
