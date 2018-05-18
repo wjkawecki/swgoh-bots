@@ -308,7 +308,7 @@ export default class Raids {
 		let remindMinutesBefore = 5,
 			remindHoursBefore = 6,
 			diffMinutes = raid.diff - (remindMinutesBefore * 60 * 1000),
-			diffHours = raid.diff - (remindHoursBefore  * 60 * 60 * 1000),
+			diffHours = raid.diff - (remindHoursBefore * 60 * 60 * 1000),
 			nextRaidDiff,
 			nextRaidDiffVerbose;
 
@@ -355,7 +355,7 @@ export default class Raids {
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
-			if (raid.diff > diffHours && raid.config.phases.count <= 1) {
+			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.count <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
 						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} hours.`
@@ -363,7 +363,7 @@ export default class Raids {
 				}, diffHours));
 			}
 
-			if (raid.diff > diffMinutes && raid.config.phases.count <= 1) {
+			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.count <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
 						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
