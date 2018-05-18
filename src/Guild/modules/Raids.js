@@ -215,7 +215,7 @@ export default class Raids {
 		if (raid.active) {
 			msg.reply(`don't fool me! __${raidName}__ is already active!`);
 		} else {
-			msg.reply(`adding new __${raidName}__ to the <#${channels.raid_log}>`);
+			msg.reply(`adding new __${raidName}__ to the <#${this.config.channels.raid_log}>`);
 
 			this.undoJson = JSON.parse(JSON.stringify(this.json));
 
