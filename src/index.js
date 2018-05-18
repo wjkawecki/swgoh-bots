@@ -63,7 +63,7 @@ const GUILDS = [
 		},
 		roles: {
 			officer: DEV ? 'RoF/OS officer' : '447053084397404160',
-			member: DEV ? 'RoF/OS member' : '447150315809144834'
+			member: DEV ? 'RoF/OS member' : '447052481151762443'
 		},
 		resetTimeUTC: {
 			hour: 23,
