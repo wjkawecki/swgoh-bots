@@ -243,7 +243,7 @@ export default class Raids {
 				let that = this;
 
 				this.channels.raids_log
-					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC/GMT started by <@${msg.author.id}>`)
+					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC/GMT started by <@${msg.author.id}> [next rotation: ${nextRotationTimeUTC} UTC/GMT]`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
