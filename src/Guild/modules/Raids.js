@@ -376,9 +376,7 @@ export default class Raids {
 					`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ is now OPEN! :boom:`
 				);
 
-				if (isLastPhase) { // this was the last phase - move raid to logs
-					delete this.json[raid.type].active.phase;
-					this.json[raid.type].log.push(this.json[raid.type].active);
+				if (isLastPhase) { // this was the last phase
 					this.json[raid.type].active = null;
 				} else {
 					this.json[raid.type].active.phase++;
