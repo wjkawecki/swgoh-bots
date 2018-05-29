@@ -117,14 +117,13 @@ export default class DailyActivities {
 				before = {
 					activity: 'Cantina Battles',
 					desc: `:zap:  **Spend** Cantina Energy
-:heavy_multiplication_x:  **Save** Normal Energy
-:heavy_multiplication_x:  **Save** Galactic War (unless reset available)`
+:heavy_multiplication_x:  **Save** Normal Energy`
 				};
 
 				after = {
 					activity: 'Light Side Battles',
 					desc: `:zap:  **Spend** Normal Energy on Light Side Battles
-:heavy_multiplication_x:  **Save** Galactic War (unless reset available)`
+:heavy_multiplication_x:  **Save** any other Energy (don't forget your 600)`
 				};
 				break;
 
@@ -132,21 +131,19 @@ export default class DailyActivities {
 				before = {
 					activity: 'Light Side Battles',
 					desc: `:zap:  **Spend** Normal Energy on Light Side Battles
-:heavy_multiplication_x:  **Save** Galactic War`
+:heavy_multiplication_x:  **Save** any other Energy (don't forget your 600)`
 				};
 
 				after = {
-					activity: 'Galactic War Battles',
-					desc: `:boom:  **Complete** Galactic War Battles (24 with restart)
-:heavy_multiplication_x:  **Save** Normal Energy`
+					activity: 'Energy Battles',
+					desc: `:zap:  **Spend** any Energy in Battles`
 				};
 				break;
 
 			case 'Wednesday':
 				before = {
-					activity: 'Galactic War Battles',
-					desc: `:boom:  **Complete** Galactic War Battles (12)
-:heavy_multiplication_x:  **Save** Normal Energy`
+					activity: 'Energy Battles',
+					desc: `:zap:  **Spend** any Energy in Battles`
 				};
 
 				after = {
