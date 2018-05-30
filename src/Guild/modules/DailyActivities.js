@@ -259,22 +259,20 @@ export default class DailyActivities {
 						activity = 'Cantina Battles';
 						desc = `
 :zap:  **Spend** Cantina Energy
-:heavy_multiplication_x:  **Save** Normal Energy
-:heavy_multiplication_x:  **Save** Galactic War Battles (unless reset available)`;
+:heavy_multiplication_x:  **Save** Normal Energy`;
 						break;
 
 					case 1: // Monday
 						activity = 'Light Side Battles';
 						desc = `
 :zap:  **Spend** Normal Energy on Light Side Battles
-:heavy_multiplication_x:  **Save** Galactic War Battles`;
+:heavy_multiplication_x:  **Save** any other Energy (don't forget your 600)`;
 						break;
 
 					case 2: // Tuesday
-						activity = 'Galactic War Battles';
+						activity = 'Energy Battles';
 						desc = `
-:boom:  **Complete** Galactic War Battles
-:heavy_multiplication_x:  **Save** Normal Energy`;
+:zap:  **Spend** any Energy in Battles`;
 						break;
 
 					case 3: // Wednesday
