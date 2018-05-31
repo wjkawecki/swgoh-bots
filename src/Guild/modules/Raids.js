@@ -243,7 +243,7 @@ export default class Raids {
 				let that = this;
 
 				this.channels.raids_log
-					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC/GMT started by <@${msg.author.id}> [next rotation: ${nextRotationTimeUTC} UTC/GMT]`)
+					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}> [next rotation: ${nextRotationTimeUTC} UTC]`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
@@ -324,7 +324,7 @@ export default class Raids {
 
 					this.timeouts[raid.type].push(setTimeout(() => {
 						this.channels.raids_comm.send(
-							`__${raid.type}__ will _probably_ start in ${nextRaidDiffVerbose} (__if we have tickets__).`
+							`__${raid.type}__ will _probably_ start in ${nextRaidDiffVerbose} - ${raid.hour} UTC (__if we have tickets__).`
 						);
 					}, nextRaidDiff));
 				}
@@ -358,7 +358,7 @@ export default class Raids {
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.count <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm.send(
-						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} hours.`
+						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} hours - ${raid.hour} UTC.`
 					);
 				}, diffHours));
 			}
