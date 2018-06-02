@@ -51,6 +51,26 @@ const GUILDS = [
 		}
 	},
 	{
+		guildName: 'TeN fOuR',
+		mongoCollection: 'TeN_fOuR',
+		botToken: process.env.TOKEN_TeN_fOuR,
+		channels: {
+			guild_lounge: '451656613552455682',
+			sergeants_office: '452542377320513538',
+			raids_log: '452542450410586123',
+			raids_comm: '451656996429627393',
+			bot_playground: '371742456653414410'
+		},
+		roles: {
+			officer: DEV ? 'fOuR officer' : '451637963881840640',
+			member: DEV ? 'fOuR member' : '451637316931289093'
+		},
+		resetTimeUTC: {
+			hour: 22,
+			minute: 30
+		}
+	},
+	{
 		guildName: 'RoF/OS',
 		mongoCollection: 'RoF_OS',
 		botToken: process.env.TOKEN_RoF_OS,
