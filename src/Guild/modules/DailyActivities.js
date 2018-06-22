@@ -221,7 +221,7 @@ export default class DailyActivities {
 	}
 
 	scheduleReminder(manualReminder = false) {
-		let remindHoursBefore = 2,
+		let remindMinutesBefore = 30,
 			now = new Date(),
 			reset = new Date(now),
 			diff;
@@ -240,11 +240,11 @@ export default class DailyActivities {
 		} else {
 			console.log(`${this.config.guildName}.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
 
-			let reminderDiff = diff - (remindHoursBefore * 60 * 60 * 1000);
+			let reminderDiff = diff - (remindMinutesBefore * 60 * 1000);
 
 			if (reminderDiff > 0) {
 				setTimeout(() => {
-					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> ${remindHoursBefore} hours left to get your :six::zero::zero: daily tickets. Go grab them now!`);
+					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> :six::zero::zero:  **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`);
 				}, reminderDiff);
 			}
 

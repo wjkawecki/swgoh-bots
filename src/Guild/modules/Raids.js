@@ -306,33 +306,29 @@ export default class Raids {
 
 	scheduleReminder(raid) {
 		let remindMinutesBefore = 5,
-			remindHoursBefore = 6,
+			remindHoursBefore = 1,
 			diffMinutes = raid.diff - (remindMinutesBefore * 60 * 1000),
-			diffHours = raid.diff - (remindHoursBefore * 60 * 60 * 1000),
-			nextRaidDiff,
-			nextRaidDiffVerbose;
+			diffHours = raid.diff - (remindHoursBefore * 60 * 60 * 1000);
+			// nextRaidDiff,
+			// nextRaidDiffVerbose;
 
 		this.timeouts[raid.type] = this.timeouts[raid.type] || [];
 
 		if (raid.phase === 0) { // remind @Officer to start raid
-			if (raid.config.registrationHours === 0) {
-				let reminderTime = remindHoursBefore * 60 * 60 * 1000;
-
-				if (raid.diff > reminderTime) {
-					nextRaidDiff = raid.diff - reminderTime;
-					nextRaidDiffVerbose = `${remindHoursBefore} hours`;
-
-					this.timeouts[raid.type].push(setTimeout(() => {
-						this.channels.raids_comm.send(
-							`__${raid.type}__ will _probably_ start in ${nextRaidDiffVerbose} - ${raid.hour} UTC (__if we have tickets__).`
-						);
-					}, nextRaidDiff));
-				}
-				// } else {
-				// 	nextRaidDiff = remindMinutesBefore * 60 * 1000;
-				// 	nextRaidDiffVerbose = this.getReadableTime(raid.diff - nextRaidDiff);
-				// }
-			}
+			// if (raid.config.registrationHours === 0) {
+			// 	let reminderTime = remindHoursBefore * 60 * 60 * 1000;
+			//
+			// 	if (raid.diff > reminderTime) {
+			// 		nextRaidDiff = raid.diff - reminderTime;
+			// 		nextRaidDiffVerbose = `${remindHoursBefore} hours`;
+			//
+			// 		this.timeouts[raid.type].push(setTimeout(() => {
+			// 			this.channels.raids_comm.send(
+			// 				`__${raid.type}__ will _probably_ start in ${nextRaidDiffVerbose} - ${raid.hour} UTC (__if we have tickets__).`
+			// 			);
+			// 		}, nextRaidDiff));
+			// 	}
+			// }
 
 			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
@@ -352,7 +348,7 @@ export default class Raids {
 			}, raid.diff + 120000));
 
 			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
-		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind @Shaved Wookiee about open phase
+		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind members about open phase
 			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
 
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.count <= 1) {
