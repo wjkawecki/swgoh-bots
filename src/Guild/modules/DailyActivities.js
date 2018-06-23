@@ -244,7 +244,7 @@ export default class DailyActivities {
 
 			if (reminderDiff > 0) {
 				setTimeout(() => {
-					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> :six::zero::zero:  **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`);
+					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`);
 				}, reminderDiff);
 			}
 

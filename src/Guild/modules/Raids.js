@@ -353,17 +353,15 @@ export default class Raids {
 
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.count <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
-					this.channels.raids_comm.send(
-						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} hours - ${raid.hour} UTC.`
-					);
+					this.channels.raids_comm
+						.send(`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${raid.hour} UTC.`);
 				}, diffHours));
 			}
 
 			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.count <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
-					this.channels.raids_comm.send(
-						`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`
-					);
+					this.channels.raids_comm
+						.send(`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`);
 				}, diffMinutes));
 			}
 
