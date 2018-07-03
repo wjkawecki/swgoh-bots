@@ -71,9 +71,9 @@ const GUILDS = [
 		}
 	},
 	{
-		guildName: 'RoF/OS',
-		mongoCollection: 'RoF_OS',
-		botToken: process.env.TOKEN_RoF_OS,
+		guildName: 'RoF',
+		mongoCollection: 'RoF',
+		botToken: process.env.TOKEN_RoF,
 		channels: {
 			guild_lounge: '401427486531125248',
 			sergeants_office: '401428642955264000',
@@ -82,8 +82,8 @@ const GUILDS = [
 			bot_playground: '401432399180857345'
 		},
 		roles: {
-			officer: DEV ? 'RoF/OS officer' : '447052849290018816',
-			member: DEV ? 'RoF/OS member' : '447052481151762443'
+			officer: DEV ? 'RoF officer' : '447052849290018816',
+			member: DEV ? 'RoF member' : '403959166244356116'
 		},
 		resetTimeUTC: {
 			hour: 23,
