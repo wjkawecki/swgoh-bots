@@ -226,9 +226,9 @@ export default class Raids {
 					phase: 0
 				};
 
-				this.channels.raids_comm.send(`__${raidName}__ is now open for registration.`);
+				this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours}h.`);
 			} else {
-				let nextPhase = (raid.config.phases.count > 1) ? `P1 ` : '';
+				let nextPhase = raid.config.phases[0].text;
 
 				this.json[raidName].active = {
 					rotationTimeUTC: raid.next.rotationTimeUTC,
@@ -236,7 +236,7 @@ export default class Raids {
 					phase: 1
 				};
 
-				this.channels.raids_comm.send(`<@&${this.config.roles.member}> ${nextPhase}__${raidName}__ is now OPEN! :boom:`);
+				this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:`);
 			}
 
 			if (!this.config.DEV) {
@@ -275,7 +275,8 @@ export default class Raids {
 			raid = this.json[raid];
 
 			if (raid.active) {
-				nextEvent.hour = (raid.active.rotationTimeUTC + raid.config.registrationHours + raid.active.phase * raid.config.phases.holdHours) % 24;
+				const holdHours = raid.config.phases.reduce((total, phase, index) => index <= raid.active.phase ? total + phase.holdHours : total, 0);
+				nextEvent.hour = (raid.active.rotationTimeUTC + raid.config.registrationHours + holdHours) % 24;
 				nextEvent.phase = raid.active.phase + 1;
 			} else if (raid.next) {
 				nextEvent.hour = raid.next.rotationTimeUTC;
@@ -348,26 +349,27 @@ export default class Raids {
 			}, raid.diff + 120000));
 
 			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
-		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.count) { // remind members about open phase
-			let nextPhase = (raid.config.phases.count > 1) ? `P${raid.phase} ` : '';
+		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.length) { // remind members about open phase
+			// let nextPhase = (raid.config.phases.length > 1) ? `P${raid.phase} ` : '';
+			let nextPhase = raid.config.phases[raid.phase - 1].text;
 
-			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.count <= 1) {
+			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${raid.hour} UTC.`);
+						.send(`__${raid.type}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${raid.hour} UTC.`);
 				}, diffHours));
 			}
 
-			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.count <= 1) {
+			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ will open in ${remindMinutesBefore} minutes.`);
+						.send(`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`);
 				}, diffMinutes));
 			}
 
-			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.count)) => {
+			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.length)) => {
 				this.channels.raids_comm.send(
-					`<@&${this.config.roles.member}> ${nextPhase}__${raid.type}__ is now OPEN! :boom:`
+					`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} is now OPEN! :boom:`
 				);
 
 				if (isLastPhase) { // this was the last phase
@@ -383,7 +385,7 @@ export default class Raids {
 				this.main(raid.type);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${nextPhase}${raid.type} opens in ${this.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} ${nextPhase} opens in ${this.getReadableTime(raid.diff)}`);
 		}
 	}
 
