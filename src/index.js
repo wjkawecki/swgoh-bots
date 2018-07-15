@@ -82,7 +82,7 @@ const GUILDS = [
 			bot_playground: '401432399180857345'
 		},
 		roles: {
-			officer: DEV ? 'RoF officer' : '447052849290018816',
+			officer: DEV ? 'RoF officer' : '401426523447361537',
 			member: DEV ? 'RoF member' : '403959166244356116'
 		},
 		resetTimeUTC: {
