@@ -368,15 +368,19 @@ export default class Raids {
 			}
 
 			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.length)) => {
-				this.channels.raids_comm.send(
-					`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} is now OPEN! :boom:`
-				);
+				let nextPhaseHold;
 
 				if (isLastPhase) { // this was the last phase
+					nextPhaseHold = '';
 					this.json[raid.type].active = null;
 				} else {
+					nextPhaseHold = raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours ? ` \n Next phase opens in ${raid.config.phases[raid.phase].holdHours}h.` : '';
 					this.json[raid.type].active.phase++;
 				}
+
+				this.channels.raids_comm.send(
+					`<@&${this.config.roles.member}> :boom: \n __${raid.type}__ ${nextPhase} is now OPEN!${nextPhaseHold}`
+				);
 
 				this.updateJSON();
 			}, raid.diff));
