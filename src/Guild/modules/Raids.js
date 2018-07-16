@@ -389,7 +389,7 @@ export default class Raids {
 				this.main(raid.type);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} ${nextPhase} opens in ${this.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} ${nextPhase} opens in ${this.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours}h`);
 		}
 	}
 
