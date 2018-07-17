@@ -229,7 +229,7 @@ export default class Raids {
 				this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours}h.`);
 			} else {
 				let nextPhase = raid.config.phases[0].text;
-				let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\nNext phase opens in ${raid.config.phases[1].holdHours}h.` : '';
+				let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\n\n[next phase opens in ${raid.config.phases[1].holdHours}h]` : '';
 
 				this.json[raidName].active = {
 					rotationTimeUTC: raid.next.rotationTimeUTC,
@@ -237,7 +237,7 @@ export default class Raids {
 					phase: 1
 				};
 
-				this.channels.raids_comm.send(`<@&${this.config.roles.member}> :boom:\n__${raidName}__ ${nextPhase} is now OPEN!${nextPhaseHold}`);
+				this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`);
 			}
 
 			if (!this.config.DEV) {
@@ -334,14 +334,14 @@ export default class Raids {
 
 			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${this.config.roles.officer}>\nPrepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
+					`<@&${this.config.roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
 				);
 			}, diffMinutes));
 
 			this.timeouts[raid.type].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${this.config.roles.officer}>\nStart __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
+					`<@&${this.config.roles.officer}> Start __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
 				);
 			}, raid.diff));
 
@@ -364,7 +364,7 @@ export default class Raids {
 			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`<@&${this.config.roles.member}>\n__${raid.type}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`);
+						.send(`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`);
 				}, diffMinutes));
 			}
 
@@ -375,12 +375,12 @@ export default class Raids {
 					nextPhaseHold = '';
 					this.json[raid.type].active = null;
 				} else {
-					nextPhaseHold = raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours ? `\nNext phase opens in ${raid.config.phases[raid.phase].holdHours}h.` : '';
+					nextPhaseHold = raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours ? `\n\n[next phase opens in ${raid.config.phases[raid.phase].holdHours}h]` : '';
 					this.json[raid.type].active.phase++;
 				}
 
 				this.channels.raids_comm.send(
-					`<@&${this.config.roles.member}> :boom:\n__${raid.type}__ ${nextPhase} is now OPEN!${nextPhaseHold}`
+					`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`
 				);
 
 				this.updateJSON();
