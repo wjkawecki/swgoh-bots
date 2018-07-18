@@ -244,7 +244,7 @@ export default class Raids {
 				let that = this;
 
 				this.channels.raids_log
-					.send(`__${raidName}__ ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>\n[next rotation: ${nextRotationTimeUTC} UTC]`)
+					.send(`__${raidName}__ ${this.convert24to12(raid.next.rotationTimeUTC)} / ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>\n[next rotation: ${this.convert24to12(raid.next.rotationTimeUTC)} / ${raid.next.rotationTimeUTC} UTC]`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
@@ -357,7 +357,7 @@ export default class Raids {
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.type].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`__${raid.type}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${raid.hour} UTC.`);
+						.send(`__${raid.type}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} / ${raid.hour} UTC.`);
 				}, diffHours));
 			}
 
@@ -408,6 +408,10 @@ export default class Raids {
 		return function (rotationTimesUTC) {
 			return (rotationTimesUTC > nowHour);
 		}
+	}
+
+	convert24to12(hour) {
+		return `${(hour % 12) || 12} ${hour < 12 ? 'AM' : 'PM'}`;
 	}
 
 	getReadableTime(time, showSeconds = false) {
