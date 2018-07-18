@@ -244,7 +244,7 @@ export default class Raids {
 				let that = this;
 
 				this.channels.raids_log
-					.send(`__${raidName}__ ${this.convert24to12(raid.next.rotationTimeUTC)} / ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>\n[next rotation: ${this.convert24to12(raid.next.rotationTimeUTC)} / ${raid.next.rotationTimeUTC} UTC]`)
+					.send(`__${raidName}__ ${this.convert24to12(raid.next.rotationTimeUTC)} / ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>\n[next rotation: ${this.convert24to12(nextRotationTimeUTC)} / ${nextRotationTimeUTC} UTC]`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
