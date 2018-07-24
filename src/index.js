@@ -76,7 +76,7 @@ const GUILDS = [
 		botToken: process.env.TOKEN_RoF,
 		channels: {
 			guild_lounge: '401427486531125248',
-			sergeants_office: '401428642955264000',
+			sergeants_office: '471294810993721344',
 			raids_log: '445592372206764043',
 			raids_comm: '401427486531125248',
 			bot_playground: '401432399180857345'
