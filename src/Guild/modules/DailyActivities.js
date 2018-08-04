@@ -22,7 +22,7 @@ export default class DailyActivities {
 
 	async main() {
 		try {
-			console.log(`${this.config.guildName}.DailyActivities.main()`);
+			// console.log(`${this.config.guildName}.DailyActivities.main()`);
 
 			this.scheduleReminder();
 		} catch (err) {
@@ -238,7 +238,7 @@ export default class DailyActivities {
 		if (manualReminder) {
 			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
 		} else {
-			console.log(`${this.config.guildName}.DailyActivities.scheduleReminder(): ${this.getReadableTime(diff)} to reset`);
+			console.log(`${this.config.guildName}: ${this.getReadableTime(diff)} to reset`);
 
 			let reminderDiff = diff - (remindMinutesBefore * 60 * 1000);
 
@@ -350,7 +350,7 @@ Thank you for your raid tickets contribution!`;
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		console.log(`${this.config.guildName}.DailyActivities.clearChannel()`);
+		// console.log(`${this.config.guildName}.DailyActivities.clearChannel()`);
 
 		if (removeAll) {
 			const messages = await channel.fetchMessages().catch(console.error);

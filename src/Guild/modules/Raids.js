@@ -8,7 +8,7 @@ export default class Raids {
 	constructor(Client, config) {
 		this.config = config;
 
-		console.log(`=== ${config.guildName}.Raids ready${config.DEV ? ' (DEV mode)' : ''}`);
+		// console.log(`=== ${config.guildName}.Raids ready${config.DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
 		this.timeouts = {};
@@ -117,7 +117,7 @@ export default class Raids {
 
 	async main(raid = '') {
 		try {
-			console.log(`${this.config.guildName}.Raids.main(${raid})`);
+			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
 			this.readJSON(raid);
 		} catch (err) {
 			console.log(err);
@@ -125,7 +125,7 @@ export default class Raids {
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		console.log(`${this.config.guildName}.Raids.clearChannel()`);
+		// console.log(`${this.config.guildName}.Raids.clearChannel()`);
 
 		if (removeAll) {
 			const messages = await channel.fetchMessages().catch(console.error);
@@ -148,7 +148,7 @@ export default class Raids {
 
 		if (this.config.DEV) {
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, this.config.jsonPath))).raids;
-			console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
+			// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
 			this.processRaids(raid);
 		} else {
 			if (!this.json) {
@@ -158,12 +158,12 @@ export default class Raids {
 						if (err) throw err;
 						that.json = result.raids;
 						db.close();
-						console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
+						// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
 						that.processRaids(raid);
 					});
 				});
 			} else {
-				console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
+				// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
 				this.processRaids(raid);
 			}
 		}
@@ -182,7 +182,7 @@ export default class Raids {
 				if (err) throw err;
 				db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
 					if (err) throw err;
-					console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
+					// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 					db.close();
 				});
 			});
@@ -191,7 +191,7 @@ export default class Raids {
 
 	restoreJSON() {
 		if (this.config.DEV) {
-			console.log(`${this.config.guildName}.Raids.restoreJSON()`);
+			// console.log(`${this.config.guildName}.Raids.restoreJSON()`);
 
 			let jsonStable = fs.readFileSync(path.resolve(__dirname, this.config.jsonStablePath));
 
@@ -349,7 +349,7 @@ export default class Raids {
 				this.main(raid.type);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.guildName}: ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.length) { // remind members about open phase
 			// let nextPhase = (raid.config.phases.length > 1) ? `P${raid.phase} ` : '';
 			let nextPhase = raid.config.phases[raid.phase - 1].text;
@@ -390,12 +390,12 @@ export default class Raids {
 				this.main(raid.type);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}.Raids.scheduleReminder(${raid.type}): ${raid.type} ${nextPhase} opens in ${this.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
+			console.log(`${this.config.guildName}: ${raid.type} ${nextPhase} opens in ${this.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
 		}
 	}
 
 	clearTimeouts(raid) {
-		console.log(`${this.config.guildName}.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
+		// console.log(`${this.config.guildName}.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
 
 		if (raid && this.timeouts[raid]) {
 			this.timeouts[raid].forEach((timeout) => {
