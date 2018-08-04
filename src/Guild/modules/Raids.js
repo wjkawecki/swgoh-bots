@@ -215,7 +215,7 @@ export default class Raids {
 		if (raid.active) {
 			msg.reply(`don't fool me! __${raidName}__ is already active!`);
 		} else {
-			msg.reply(`adding new __${raidName}__ to the <#${this.config.channels.raids_log}>`);
+			msg.reply(`added __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
 
 			this.undoJson = JSON.parse(JSON.stringify(this.json));
 
@@ -226,10 +226,10 @@ export default class Raids {
 					phase: 0
 				};
 
-				this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours}h.`);
+				this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours} hours.`);
 			} else {
 				let nextPhase = raid.config.phases[0].text;
-				let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\n\n[next phase opens in ${raid.config.phases[1].holdHours}h]` : '';
+				let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\nNext phase opens in ${raid.config.phases[1].holdHours} hours.` : '';
 
 				this.json[raidName].active = {
 					rotationTimeUTC: raid.next.rotationTimeUTC,
@@ -244,7 +244,7 @@ export default class Raids {
 				let that = this;
 
 				this.channels.raids_log
-					.send(`__${raidName}__ ${this.convert24to12(raid.next.rotationTimeUTC)} / ${raid.next.rotationTimeUTC} UTC started by <@${msg.author.id}>\n[next rotation: ${this.convert24to12(nextRotationTimeUTC)} / ${nextRotationTimeUTC} UTC]`)
+					.send(`__${raidName}__: ${this.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`)
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
@@ -410,8 +410,9 @@ export default class Raids {
 		}
 	}
 
-	convert24to12(hour) {
-		return `${(hour % 12) || 12} ${hour < 12 ? 'AM' : 'PM'}`;
+	convert24to12(hour, returnString = true) {
+		const string = hour < 12 ? ' AM' : ' PM';
+		return `${(hour % 12) || 12}${returnString ? string : ''}`;
 	}
 
 	getReadableTime(time, showSeconds = false) {
