@@ -4,7 +4,7 @@ export default class DailyActivities {
 	constructor(Client, config) {
 		this.config = config;
 
-		console.log(`=== ${config.guildName}.DailyActivities ready${config.DEV ? ' (DEV mode)' : ''}`);
+		// console.log(`=== ${config.guildName}.DailyActivities ready${config.DEV ? ' (DEV mode)' : ''}`);
 
 		this.Client = Client;
 
