@@ -120,7 +120,7 @@ export default class Raids {
 			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
 			this.readJSON(raid);
 		} catch (err) {
-			console.log(err);
+			console.log(err.message);
 		}
 	}
 
@@ -152,16 +152,21 @@ export default class Raids {
 			this.processRaids(raid);
 		} else {
 			if (!this.json) {
-				MongoClient.connect(this.config.mongoUrl, function (err, db) {
-					if (err) throw err;
-					db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
+				try {
+					MongoClient.connect(this.config.mongoUrl, function (err, db) {
 						if (err) throw err;
-						that.json = result.raids;
-						db.close();
-						// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
-						that.processRaids(raid);
+						db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
+							if (err) throw err;
+							that.json = result.raids;
+							db.close();
+							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
+							that.processRaids(raid);
+						});
 					});
-				});
+				} catch (err) {
+					console.log(`${that.config.guildName}.Raids.readJSON(): MongoDB read error`, err.message);
+					this.readJSON(raid);
+				}
 			} else {
 				// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
 				this.processRaids(raid);
@@ -178,14 +183,19 @@ export default class Raids {
 			let that = this,
 				json = {raids: that.json};
 
-			MongoClient.connect(this.config.mongoUrl, function (err, db) {
-				if (err) throw err;
-				db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
+			try {
+				MongoClient.connect(this.config.mongoUrl, function (err, db) {
 					if (err) throw err;
-					// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
-					db.close();
+					db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
+						if (err) throw err;
+						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
+						db.close();
+					});
 				});
-			});
+			} catch (err) {
+				console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
+				this.updateJSON();
+			}
 		}
 	}
 
