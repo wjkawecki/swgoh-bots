@@ -47,7 +47,7 @@ export default class Raids {
 			switch (command) {
 
 				case 'start':
-					if (msg.member.roles.has(this.config.roles.officer) && args[0])
+					if (msg.member.roles.has(this.config.roles.officer))
 						this.startRaid(msg, args[0]);
 					break;
 
@@ -271,7 +271,7 @@ export default class Raids {
 
 	startRaid(msg, raidKey) {
 		console.log(raidKey, this.json[raidKey]);
-		
+
 		if (raidKey && this.json[raidKey]) {
 			const raidName = this.json[raidKey].name || raidKey;
 			const raid = this.json[raidKey],
