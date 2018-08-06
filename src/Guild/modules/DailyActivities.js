@@ -14,7 +14,7 @@ export default class DailyActivities {
 		if (config.DEV) {
 			// this.clearChannel(this.channels.bot_playground, true);
 		} else {
-			this.channels.bot_playground.send(`${config.guildName}.DailyActivities on duty!`);
+			// this.channels.bot_playground.send(`${config.guildName}.DailyActivities on duty!`);
 		}
 
 		this.main();

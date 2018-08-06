@@ -85,9 +85,10 @@ export default class Raids {
 		if (raidKey) {
 			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
 		} else {
-			this.json.forEach(raidKey => {
+			for (let raidKey in this.json) {
+				console.log(raidKey);
 				this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
-			});
+			}
 		}
 	}
 
