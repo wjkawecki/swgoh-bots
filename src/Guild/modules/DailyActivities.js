@@ -49,60 +49,70 @@ export default class DailyActivities {
 				case '-tickets':
 				case '- tickets':
 				case '!tickets':
-					this.scheduleReminder(true);
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.scheduleReminder(true);
 					break;
 
 				case '-monday':
 				case '- monday':
 				case '!monday':
-					this.dayReminder(msg, 'Monday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Monday');
 					break;
 
 				case '-tuesday':
 				case '- tuesday':
 				case '!tuesday':
-					this.dayReminder(msg, 'Tuesday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Tuesday');
 					break;
 
 				case '-wednesday':
 				case '- wednesday':
 				case '!wednesday':
-					this.dayReminder(msg, 'Wednesday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Wednesday');
 					break;
 
 				case '-thursday':
 				case '- thursday':
 				case '!thursday':
-					this.dayReminder(msg, 'Thursday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Thursday');
 					break;
 
 				case '-friday':
 				case '- friday':
 				case '!friday':
-					this.dayReminder(msg, 'Friday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Friday');
 					break;
 
 				case '-saturday':
 				case '- saturday':
 				case '!saturday':
-					this.dayReminder(msg, 'Saturday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Saturday');
 					break;
 
 				case '-sunday':
 				case '- sunday':
 				case '!sunday':
-					this.dayReminder(msg, 'Sunday');
+					if (msg.member.roles.has(this.config.roles.member))
+						this.dayReminder(msg, 'Sunday');
 					break;
 
 				case '-help':
 				case '- help':
 				case '!help':
-					this.helpReply(msg);
+					if (msg.member.roles.has(this.config.roles.member))
+						this.helpReply(msg);
 					break;
 			}
 
 			if (this.isBotMentioned(msg))
-				this.helpReply(msg);
+				if (msg.member.roles.has(this.config.roles.member))
+					this.helpReply(msg);
 		});
 	}
 

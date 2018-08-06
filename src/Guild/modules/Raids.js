@@ -73,12 +73,14 @@ export default class Raids {
 					break;
 
 				case 'help':
-					this.helpReply(msg);
+					if (msg.member.roles.has(this.config.roles.member))
+						this.helpReply(msg);
 					break;
 			}
 
 			if (this.isBotMentioned(msg))
-				this.helpReply(msg);
+				if (msg.member.roles.has(this.config.roles.member))
+					this.helpReply(msg);
 		});
 	}
 
