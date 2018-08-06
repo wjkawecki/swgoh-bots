@@ -148,7 +148,7 @@ export default class Raids {
 		if (this.undoJsonArray && this.undoJsonArray.length) {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
 
-			console.log(this.undoJsonArray);
+			console.log(JSON.stringify(this.undoJsonArray, null, 4));
 
 			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
 
