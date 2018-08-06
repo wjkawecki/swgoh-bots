@@ -214,8 +214,8 @@ export default class Raids {
 						db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
 							if (err) throw err;
 							that.json = result.raids;
-							this.undoJsonArray = this.undoJsonArray || [];
-							this.undoJsonArray.push(JSON.parse(JSON.stringify(that.json)));
+							that.undoJsonArray = that.undoJsonArray || [];
+							that.undoJsonArray.push(JSON.parse(JSON.stringify(that.json)));
 							db.close();
 							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
 							that.processRaids(raidKey);
