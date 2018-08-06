@@ -103,8 +103,9 @@ export default class Raids {
 
 			this.updateJSON();
 			this.processRaids(raidKey);
+			this.printRaid(msg, raidKey);
 		} else {
-			msg.reply(`please specify which raid you want to change. Example \'-next rancor\'`);
+			msg.reply(`please specify which raid you want to change. Example \`-next rancor\``);
 		}
 	}
 
