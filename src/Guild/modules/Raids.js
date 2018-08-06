@@ -109,7 +109,7 @@ export default class Raids {
 			this.printRaid(msg, raidKey);
 			this.main(raidKey);
 		} else {
-			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to change. Example \`-next rancor\``);
+			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to change. Example: \`-next rancor\``);
 		}
 	}
 
@@ -145,17 +145,18 @@ export default class Raids {
 	}
 
 	undo(msg) {
-		if (this.undoJson) {
+		if (this.undoJsonArray && this.undoJsonArray.length) {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
 
-			this.json = JSON.parse(JSON.stringify(this.undoJson));
-			this.undoJson = null;
+			console.log(this.undoJsonArray);
+
+			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
 
 			if (!this.config.DEV) {
 				this.clearChannel(this.channels.raids_log);
 			}
 
-			this.updateJSON();
+			// this.updateJSON();
 			this.main();
 		} else {
 			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
@@ -220,6 +221,8 @@ export default class Raids {
 				}
 			} else {
 				// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
+				this.undoJsonArray = this.undoJsonArray || [];
+				this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
 				this.processRaids(raidKey);
 			}
 		}
@@ -270,8 +273,6 @@ export default class Raids {
 	}
 
 	startRaid(msg, raidKey) {
-		console.log(raidKey, this.json[raidKey]);
-
 		if (raidKey && this.json[raidKey]) {
 			const raidName = this.json[raidKey].name || raidKey;
 			const raid = this.json[raidKey],
@@ -281,8 +282,6 @@ export default class Raids {
 				msg.reply(`don't fool me! __${raidName}__ is already active!`);
 			} else {
 				msg.reply(`added __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
-
-				this.undoJson = JSON.parse(JSON.stringify(this.json));
 
 				if (raid.config.registrationHours > 0) {
 					this.json[raidKey].active = {
@@ -321,7 +320,7 @@ export default class Raids {
 				this.main(raidKey);
 			}
 		} else {
-			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to start. Example \`-start rancor\``);
+			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to start. Example: \`-start rancor\``);
 		}
 	}
 
