@@ -175,7 +175,7 @@ export default class Raids {
 			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
 			this.readJSON(raidKey);
 		} catch (err) {
-			console.log(err.message);
+			console.log('main', err.message);
 			this.readJSON(raidKey);
 		}
 	}
@@ -198,7 +198,7 @@ export default class Raids {
 					await message.delete().catch(console.error);
 			}
 		} catch (err) {
-			console.log(err.message);
+			console.log('clearChannel', err.message);
 		}
 	}
 
