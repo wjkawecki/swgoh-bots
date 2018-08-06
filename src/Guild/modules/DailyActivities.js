@@ -14,7 +14,7 @@ export default class DailyActivities {
 		if (config.DEV) {
 			// this.clearChannel(this.channels.bot_playground, true);
 		} else {
-			this.channels.bot_playground.send('Reporting for duty!').catch(console.error);
+			this.channels.bot_playground.send('Reporting for duty!');
 		}
 
 		this.main();
@@ -35,9 +35,9 @@ export default class DailyActivities {
 
 		for (let key in channels) {
 			if (this.config.DEV) {
-				this.channels[key] = this.Client.channels.get(channels.bot_playground).catch(console.error);
+				this.channels[key] = this.Client.channels.get(channels.bot_playground);
 			} else {
-				this.channels[key] = this.Client.channels.get(channels[key]).catch(console.error);
+				this.channels[key] = this.Client.channels.get(channels[key]);
 			}
 		}
 	}
@@ -227,7 +227,7 @@ export default class DailyActivities {
 			.addField(`${after.activity} - after reset`, after.desc)
 			.setColor(0x7289da);
 
-		msg.channel.send(embed).catch(console.error);
+		msg.channel.send(embed);
 	}
 
 	scheduleReminder(manualReminder = false) {
@@ -246,7 +246,7 @@ export default class DailyActivities {
 		}
 
 		if (manualReminder) {
-			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`).catch(console.error);
+			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
 		} else {
 			console.log(`${this.config.guildName}: ${this.getReadableTime(diff)} to reset`);
 
@@ -254,7 +254,7 @@ export default class DailyActivities {
 
 			if (reminderDiff > 0) {
 				setTimeout(() => {
-					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`).catch(console.error);
+					this.channels.guild_lounge.send(`<@&${this.config.roles.member}> **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`);
 				}, reminderDiff);
 			}
 
@@ -323,7 +323,7 @@ Thank you for your raid tickets contribution!`;
 					.setDescription(desc)
 					.setColor(0x7289da);
 
-				this.channels.guild_lounge.send(embed).catch(console.error);
+				this.channels.guild_lounge.send(embed);
 
 				this.main();
 			}, diff);
