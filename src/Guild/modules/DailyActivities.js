@@ -14,7 +14,7 @@ export default class DailyActivities {
 		if (config.DEV) {
 			// this.clearChannel(this.channels.bot_playground, true);
 		} else {
-			// this.channels.bot_playground.send(`${config.guildName}.DailyActivities on duty!`);
+			this.channels.bot_playground.send('Reporting for duty!');
 		}
 
 		this.main();
@@ -225,7 +225,7 @@ export default class DailyActivities {
 			.setAuthor(`${day}`)
 			.addField(`${before.activity} - before reset`, before.desc)
 			.addField(`${after.activity} - after reset`, after.desc)
-			.setColor(0xf0c330);
+			.setColor(0x7289da);
 
 		msg.channel.send(embed);
 	}
@@ -321,7 +321,7 @@ Thank you for your raid tickets contribution!`;
 				embed
 					.setAuthor(`New Guild Activity: ${activity}`)
 					.setDescription(desc)
-					.setColor(0xf0c330);
+					.setColor(0x7289da);
 
 				this.channels.guild_lounge.send(embed);
 

@@ -130,7 +130,7 @@ export default class Raids {
 			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} settings`)
 			.setDescription(desc)
 			.setThumbnail(thumbnailSrc)
-			.setColor(0xf0c330);
+			.setColor(0x7289da);
 
 		return embed;
 	}
@@ -149,7 +149,7 @@ export default class Raids {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
 
 			console.log(JSON.stringify(this.undoJsonArray, null, 4));
-			
+
 			this.undoJsonArray.pop();
 			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
 
@@ -157,7 +157,8 @@ export default class Raids {
 				this.clearChannel(this.channels.raids_log);
 			}
 
-			// this.updateJSON();
+			this.updateJSON();
+			this.printRaid(msg);
 			this.main();
 		} else {
 			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
