@@ -7,7 +7,7 @@ export default class Guild {
 		console.log(`${config.guildName} ready`);
 		this.Client = new Discord.Client();
 		this.Client.login(config.botToken).catch(console.error);
-		this.Client.on('ready', () => this.initGuild(config));
+		this.Client.on('ready', config => this.initGuild(config));
 	}
 
 	async initGuild(config) {
