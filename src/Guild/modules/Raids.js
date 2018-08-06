@@ -99,6 +99,8 @@ export default class Raids {
 			const raid = this.json[raidKey],
 				nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
 
+			raid.active = null;
+
 			raid.next = {
 				rotationTimeUTC: nextRotationTimeUTC
 			};
