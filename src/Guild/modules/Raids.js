@@ -102,10 +102,10 @@ export default class Raids {
 			};
 
 			this.updateJSON();
-			this.processRaids(raidKey);
 			this.printRaid(msg, raidKey);
+			this.main(raidKey);
 		} else {
-			msg.reply(`please specify which raid you want to change. Example \`-next rancor\``);
+			msg.reply(`please specify which raid (${Object.keys(this.json)}) you want to change. Example \`-next rancor\``);
 		}
 	}
 
@@ -266,52 +266,56 @@ export default class Raids {
 	}
 
 	startRaid(msg, raidKey) {
-		const raidName = this.json[raidKey].name || raidKey;
-		const raid = this.json[raidKey],
-			nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
+		if (raidKey && this.json[raidKey]) {
+			const raidName = this.json[raidKey].name || raidKey;
+			const raid = this.json[raidKey],
+				nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
 
-		if (raid.active) {
-			msg.reply(`don't fool me! __${raidName}__ is already active!`);
-		} else {
-			msg.reply(`added __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
-
-			this.undoJson = JSON.parse(JSON.stringify(this.json));
-
-			if (raid.config.registrationHours > 0) {
-				this.json[raidKey].active = {
-					rotationTimeUTC: raid.next.rotationTimeUTC,
-					initiatorID: msg.author.id,
-					phase: 0
-				};
-
-				this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours} hours.`);
+			if (raid.active) {
+				msg.reply(`don't fool me! __${raidName}__ is already active!`);
 			} else {
-				let nextPhase = raid.config.phases[0].text;
-				let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\nNext phase opens in ${raid.config.phases[1].holdHours} hours.` : '';
+				msg.reply(`added __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
 
-				this.json[raidKey].active = {
-					rotationTimeUTC: raid.next.rotationTimeUTC,
-					initiatorID: msg.author.id,
-					phase: 1
+				this.undoJson = JSON.parse(JSON.stringify(this.json));
+
+				if (raid.config.registrationHours > 0) {
+					this.json[raidKey].active = {
+						rotationTimeUTC: raid.next.rotationTimeUTC,
+						initiatorID: msg.author.id,
+						phase: 0
+					};
+
+					this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours} hours.`);
+				} else {
+					let nextPhase = raid.config.phases[0].text;
+					let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\nNext phase opens in ${raid.config.phases[1].holdHours} hours.` : '';
+
+					this.json[raidKey].active = {
+						rotationTimeUTC: raid.next.rotationTimeUTC,
+						initiatorID: msg.author.id,
+						phase: 1
+					};
+
+					this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`);
+				}
+
+				if (!this.config.DEV) {
+					let that = this;
+
+					this.channels.raids_log
+						.send(`__${raidName}__: ${this.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`)
+						.then(msg => that.saveLastMessage(msg.id));
+				}
+
+				this.json[raidKey].next = {
+					rotationTimeUTC: nextRotationTimeUTC
 				};
 
-				this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`);
+				this.updateJSON();
+				this.main(raidKey);
 			}
-
-			if (!this.config.DEV) {
-				let that = this;
-
-				this.channels.raids_log
-					.send(`__${raidName}__: ${this.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`)
-					.then(msg => that.saveLastMessage(msg.id));
-			}
-
-			this.json[raidKey].next = {
-				rotationTimeUTC: nextRotationTimeUTC
-			};
-
-			this.updateJSON();
-			this.main(raidKey);
+		} else {
+			msg.reply(`please specify which raid (${Object.keys(this.json)}) you want to start. Example \`-start rancor\``);
 		}
 	}
 
