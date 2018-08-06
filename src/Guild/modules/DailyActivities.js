@@ -360,21 +360,32 @@ Thank you for your raid tickets contribution!`;
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		// console.log(`${this.config.guildName}.DailyActivities.clearChannel()`);
+		try {
+			if (removeAll) {
+				const messages = await channel.fetchMessages().catch(console.error);
 
-		if (removeAll) {
-			const messages = await channel.fetchMessages().catch(console.error);
+				if (messages) {
+					messages.forEach(async (message) => {
+						try {
+							await message.delete();
+						} catch (err) {
+							console.log(err);
+						}
+					});
+				}
+			} else {
+				const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
 
-			if (messages) {
-				messages.forEach(async (message) => {
-					await message.delete().catch(console.error);
-				});
+				if (message) {
+					try {
+						await message.delete();
+					} catch (err) {
+						console.log(err);
+					}
+				}
 			}
-		} else {
-			const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
-
-			if (message)
-				await message.delete().catch(console.error);
+		} catch (err) {
+			console.log(err.message);
 		}
 	}
 }
