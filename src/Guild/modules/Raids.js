@@ -94,7 +94,15 @@ export default class Raids {
 
 	nextRaid(msg, raidKey = null) {
 		if (raidKey) {
-			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
+			const raid = this.json[raidKey],
+				nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
+
+			raid.next = {
+				rotationTimeUTC: nextRotationTimeUTC
+			};
+
+			this.updateJSON();
+			this.processRaids(raidKey);
 		} else {
 			msg.reply(`please specify which raid you want to change. Example \'-next rancor\'`);
 		}
