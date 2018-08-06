@@ -85,7 +85,7 @@ export default class Raids {
 	}
 
 	printRaid(msg, raidKey = null) {
-		if (raidKey) {
+		if (raidKey && this.json[raidKey]) {
 			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
 		} else {
 			for (let raidKey in this.json) {
@@ -95,7 +95,7 @@ export default class Raids {
 	}
 
 	nextRaid(msg, raidKey = null) {
-		if (raidKey) {
+		if (raidKey && this.json[raidKey]) {
 			const raid = this.json[raidKey],
 				nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
 
