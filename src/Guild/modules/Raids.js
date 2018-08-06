@@ -98,9 +98,11 @@ export default class Raids {
 		raid = this.json[raidKey];
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
-		desc = `**UTC rotations"** ${raid.config.rotationTimesUTC}
-**Active** ${raid.active ? raid.active.rotationTimeUTC : 'no'}
-**Next** ${raid.next ? raid.next.rotationTimeUTC : 'no'}`
+		desc = `**UTC rotations:** ${raid.config.rotationTimesUTC}
+**Active:** ${raid.active ? raid.active.rotationTimeUTC : 'no'}
+**Next:** ${raid.next ? raid.next.rotationTimeUTC : 'no'}
+
+\`-next ${raidKey}\` to immediately move to next rotation`;
 
 		embed = new Discord.RichEmbed()
 			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} settings`)
