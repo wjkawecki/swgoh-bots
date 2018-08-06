@@ -109,7 +109,7 @@ export default class Raids {
 			this.printRaid(msg, raidKey);
 			this.main(raidKey);
 		} else {
-			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to change. Example: \`-next rancor\``);
+			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to change. Example: \`-next rancor\``);
 		}
 	}
 
@@ -329,7 +329,7 @@ export default class Raids {
 				this.main(raidKey);
 			}
 		} else {
-			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to start. Example: \`-start rancor\``);
+			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to start. Example: \`-start rancor\``);
 		}
 	}
 
