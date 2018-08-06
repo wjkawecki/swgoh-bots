@@ -123,9 +123,9 @@ export default class Raids {
 		
 :arrow_forward: Active: ${raid.active ? this.convert24to12(raid.active.rotationTimeUTC) : '-'}
 :fast_forward: Next: ${raid.next ? this.convert24to12(raid.next.rotationTimeUTC) : '-'}
-
-${raid.active ? '' : `\`-start ${raidKey}\` to start ${this.convert24to12(raid.next.rotationTimeUTC)} raid.`}
-\`-next ${raidKey}\` to ${raid.active ? 'remove active raid and ' : ''}move to next rotation without starting.
+${raid.active ? '' : `
+\`-start ${raidKey}\` to start ${this.convert24to12(raid.next.rotationTimeUTC)} raid.`}
+\`-next ${raidKey}\` to move to next rotation without starting.
 \`-undo\` to revert your last action.`;
 
 		embed = new Discord.RichEmbed()
