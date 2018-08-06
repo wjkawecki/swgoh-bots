@@ -107,7 +107,7 @@ export default class Raids {
 			this.printRaid(msg, raidKey);
 			this.main(raidKey);
 		} else {
-			msg.reply(`please specify which raid (${Object.keys(this.json)}) you want to change. Example \`-next rancor\``);
+			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to change. Example \`-next rancor\``);
 		}
 	}
 
@@ -117,7 +117,7 @@ export default class Raids {
 		raid = this.json[raidKey];
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
-		desc = `:calendar_spiral: UTC rotations: ${raid.config.rotationTimesUTC}
+		desc = `:calendar_spiral: UTC rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.join(', ')}
 		
 :arrow_forward: Active: ${raid.active ? raid.active.rotationTimeUTC : '-'}
 :fast_forward: Next: ${raid.next ? raid.next.rotationTimeUTC : '-'}
@@ -135,9 +135,9 @@ export default class Raids {
 
 	helpReply(msg) {
 		msg.reply(`here is the list of my __Raids__ commands:
-\`-start [rancor, aat, sith]\` *- officer only*. Starts next [raid] according to schedule.
-\`-raid [rancor, aat, sith]\` *- officer only*. Display current [raid] settings.
-\`-next [rancor, aat, sith]\` *- officer only*. Change [raid] setting to next rotation.
+\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next [raid] according to schedule.
+\`-raid [${Object.keys(this.json).join(', ')}]\` *- officer only*. Display current [raid] settings.
+\`-next [${Object.keys(this.json).join(', ')}]\` *- officer only*. Change [raid] setting to next rotation.
 \`-undo\` *- officer only*. Undo your last action!
 \`-help\` - this is what you are reading right now.`);
 	}
@@ -317,7 +317,7 @@ export default class Raids {
 				this.main(raidKey);
 			}
 		} else {
-			msg.reply(`please specify which raid (${Object.keys(this.json)}) you want to start. Example \`-start rancor\``);
+			msg.reply(`please specify which raid (${Object.keys(this.json).join(', ')}) you want to start. Example \`-start rancor\``);
 		}
 	}
 
