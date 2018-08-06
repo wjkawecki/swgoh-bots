@@ -32,9 +32,9 @@ export default class Raids {
 
 		for (let key in channels) {
 			if (this.config.DEV) {
-				this.channels[key] = this.Client.channels.get(channels.bot_playground);
+				this.channels[key] = this.Client.channels.get(channels.bot_playground).catch(console.error);
 			} else {
-				this.channels[key] = this.Client.channels.get(channels[key]);
+				this.channels[key] = this.Client.channels.get(channels[key]).catch(console.error);
 			}
 		}
 	}
@@ -86,10 +86,10 @@ export default class Raids {
 
 	printRaid(msg, raidKey = null) {
 		if (raidKey && this.json[raidKey]) {
-			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
+			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey)).catch(console.error);
 		} else {
 			for (let raidKey in this.json) {
-				this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
+				this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey)).catch(console.error);
 			}
 		}
 	}
@@ -109,7 +109,7 @@ export default class Raids {
 			this.printRaid(msg, raidKey);
 			this.main(raidKey);
 		} else {
-			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to change. Example: \`-next rancor\``);
+			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to change. Example: \`-next rancor\``).catch(console.error);
 		}
 	}
 
@@ -148,12 +148,12 @@ ${raid.active ? '' : `
 
 	undo(msg) {
 		if (this.undoJsonArray && this.undoJsonArray.length > 1) {
-			msg.reply(`I have reverted your last action. Just like nothing happened!`);
+			msg.reply(`I have reverted your last action. Just like nothing happened!`).catch(console.error);
 
 			console.log(JSON.stringify(this.undoJsonArray, null, 4));
 
 			this.undoJsonArray.pop();
-			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
+			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop())).catch(console.error);
 
 			if (!this.config.DEV) {
 				this.clearChannel(this.channels.raids_log);
@@ -163,7 +163,7 @@ ${raid.active ? '' : `
 			this.printRaid(msg);
 			this.main();
 		} else {
-			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
+			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`).catch(console.error);
 		}
 	}
 
@@ -224,7 +224,7 @@ ${raid.active ? '' : `
 							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
 							that.processRaids(raidKey);
 						});
-					});
+					}).catch(console.error);
 				} catch (err) {
 					console.log(`${that.config.guildName}.Raids.readJSON(): MongoDB read error`, err.message);
 					this.readJSON(raidKey);
@@ -255,7 +255,7 @@ ${raid.active ? '' : `
 						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 						db.close();
 					});
-				});
+				}).catch(console.error);
 			} catch (err) {
 				console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
 				this.updateJSON();
@@ -289,9 +289,9 @@ ${raid.active ? '' : `
 				nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
 
 			if (raid.active) {
-				msg.reply(`don't fool me! __${raidName}__ is already active!`);
+				msg.reply(`don't fool me! __${raidName}__ is already active!`).catch(console.error);
 			} else {
-				msg.reply(`added __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
+				msg.reply(`added __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`).catch(console.error);
 
 				if (raid.config.registrationHours > 0) {
 					this.json[raidKey].active = {
@@ -300,7 +300,7 @@ ${raid.active ? '' : `
 						phase: 0
 					};
 
-					this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours} hours.`);
+					this.channels.raids_comm.send(`__${raidName}__ registration is now open for ${raid.config.registrationHours} hours.`).catch(console.error);
 				} else {
 					let nextPhase = raid.config.phases[0].text;
 					let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\nNext phase opens in ${raid.config.phases[1].holdHours} hours.` : '';
@@ -311,7 +311,7 @@ ${raid.active ? '' : `
 						phase: 1
 					};
 
-					this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`);
+					this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`).catch(console.error);
 				}
 
 				if (!this.config.DEV) {
@@ -319,7 +319,8 @@ ${raid.active ? '' : `
 
 					this.channels.raids_log
 						.send(`__${raidName}__: ${this.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`)
-						.then(msg => that.saveLastMessage(msg.id));
+						.then(msg => that.saveLastMessage(msg.id))
+						.catch(console.error);
 				}
 
 				this.json[raidKey].next = {
@@ -330,7 +331,7 @@ ${raid.active ? '' : `
 				this.main(raidKey);
 			}
 		} else {
-			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to start. Example: \`-start rancor\``);
+			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to start. Example: \`-start rancor\``).catch(console.error);
 		}
 	}
 
@@ -414,13 +415,13 @@ ${raid.active ? '' : `
 				this.channels.sergeants_office.send(
 					`<@&${this.config.roles.officer}> Prepare to start ${raid.name} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
-				);
+				).catch(console.error);
 			}, diffMinutes));
 
 			this.timeouts[raid.raidKey].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
 					`<@&${this.config.roles.officer}> Start __${raid.name}__ NOW and type \`-start ${raid.raidKey}\``
-				);
+				).catch(console.error);
 			}, raid.diff));
 
 			this.timeouts[raid.raidKey].push(setTimeout(() => {
@@ -435,14 +436,14 @@ ${raid.active ? '' : `
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} UTC.`);
+						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} UTC.`).catch(console.error);
 				}, diffHours));
 			}
 
 			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`);
+						.send(`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`).catch(console.error);
 				}, diffMinutes));
 			}
 
@@ -459,7 +460,7 @@ ${raid.active ? '' : `
 
 				this.channels.raids_comm.send(
 					`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`
-				);
+				).catch(console.error);
 
 				this.updateJSON();
 			}, raid.diff));

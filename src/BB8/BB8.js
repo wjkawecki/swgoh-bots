@@ -12,7 +12,7 @@ export default class BB8 {
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => this.initBot());
 
-		this.client.login(process.env.TOKEN_BB8);
+		this.client.login(process.env.TOKEN_BB8).catch(console.error);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
 
 		this.parseXlsx();
@@ -34,16 +34,16 @@ export default class BB8 {
 
 	async initBot() {
 		try {
-			this.client.user.setActivity(clientGame);
+			this.client.user.setActivity(clientGame).catch(console.error);
 			// this.readChannel = this.client.channels.get(readChannelId);
-			this.writeChannel = this.client.channels.get(writeChannelId);
+			this.writeChannel = this.client.channels.get(writeChannelId).catch(console.error);
 
-			const messages = await this.writeChannel.fetchMessages();
+			const messages = await this.writeChannel.fetchMessages().catch(console.error);
 
 			if (messages) {
 				if (messages.array().length === 0) {
 					try {
-						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()}).catch(console.error);
 					} catch (err) {
 						console.log(err);
 					}
@@ -51,13 +51,13 @@ export default class BB8 {
 					if (messages.last().embeds.length === 0) {
 						messages.forEach(async (message) => {
 							try {
-								await message.delete();
+								await message.delete().catch(console.error);
 							} catch (err) {
 								console.log(err);
 							}
 						});
 
-						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()}).catch(console.error);
 					} else {
 						this.message = messages.last();
 					}
@@ -155,7 +155,7 @@ export default class BB8 {
 				.setAuthor('Next payout in:')
 				.setTimestamp();
 
-			await this.message.edit({embed});
+			await this.message.edit({embed}).catch(console.error);
 		} catch (err) {
 			console.log('sendMessage', err.message);
 		}
