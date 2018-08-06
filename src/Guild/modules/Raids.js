@@ -52,17 +52,13 @@ export default class Raids {
 					break;
 
 				case 'raids':
-					if (msg.member.roles.has(this.config.roles.officer))
-						this.printRaid(msg);
-					break;
-
 				case 'raid':
-					if (msg.member.roles.has(this.config.roles.officer) && args[0])
+					if (msg.member.roles.has(this.config.roles.officer))
 						this.printRaid(msg, args[0]);
 					break;
 
 				case 'next':
-					if (msg.member.roles.has(this.config.roles.officer) && args[0])
+					if (msg.member.roles.has(this.config.roles.officer))
 						this.nextRaid(msg, args[0]);
 					break;
 
@@ -111,8 +107,9 @@ export default class Raids {
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
 		desc = `**:calendar_spiral: UTC rotations:** ${raid.config.rotationTimesUTC}
-**:boom: Active:** ${raid.active ? raid.active.rotationTimeUTC : 'no'}
-**:track_next: Next:** ${raid.next ? raid.next.rotationTimeUTC : 'no'}
+		
+**:boom: Active:** ${raid.active ? raid.active.rotationTimeUTC : '-'}
+**:track_next: Next:** ${raid.next ? raid.next.rotationTimeUTC : '-'}
 
 \`-next ${raidKey}\` to immediately move to next rotation`;
 
