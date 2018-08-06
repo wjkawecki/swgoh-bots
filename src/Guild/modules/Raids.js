@@ -270,6 +270,8 @@ export default class Raids {
 	}
 
 	startRaid(msg, raidKey) {
+		console.log(raidKey, this.json[raidKey]);
+		
 		if (raidKey && this.json[raidKey]) {
 			const raidName = this.json[raidKey].name || raidKey;
 			const raid = this.json[raidKey],
