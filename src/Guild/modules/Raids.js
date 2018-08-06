@@ -61,6 +61,11 @@ export default class Raids {
 						this.printRaid(msg, args[0]);
 					break;
 
+				case 'next':
+					if (msg.member.roles.has(this.config.roles.officer) && args[0])
+						this.nextRaid(msg, args[0]);
+					break;
+
 				case 'undo':
 					if (msg.member.roles.has(this.config.roles.officer))
 						this.undo(msg);
@@ -88,6 +93,14 @@ export default class Raids {
 			for (let raidKey in this.json) {
 				this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
 			}
+		}
+	}
+
+	nextRaid(msg, raidKey = null) {
+		if (raidKey) {
+			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
+		} else {
+			msg.reply(`please specify which raid you want to change. Example \'-next rancor\'`);
 		}
 	}
 
