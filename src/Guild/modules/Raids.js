@@ -86,7 +86,6 @@ export default class Raids {
 			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
 		} else {
 			for (let raidKey in this.json) {
-				console.log(raidKey);
 				this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
 			}
 		}
@@ -98,9 +97,9 @@ export default class Raids {
 		raid = this.json[raidKey];
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
-		desc = `**UTC rotations:** ${raid.config.rotationTimesUTC}
-**Active:** ${raid.active ? raid.active.rotationTimeUTC : 'no'}
-**Next:** ${raid.next ? raid.next.rotationTimeUTC : 'no'}
+		desc = `**:calendar_spiral: UTC rotations:** ${raid.config.rotationTimesUTC}
+**:boom: Active:** ${raid.active ? raid.active.rotationTimeUTC : 'no'}
+**:track_next: Next:** ${raid.next ? raid.next.rotationTimeUTC : 'no'}
 
 \`-next ${raidKey}\` to immediately move to next rotation`;
 
