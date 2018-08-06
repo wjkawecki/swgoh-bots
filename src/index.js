@@ -4,9 +4,15 @@ const DEV = process.env.DEV_MODE || false;
 
 const CONFIG = {
 	DEV,
+	commandPrefix: '-',
 	mongoUrl: process.env.MONGODB_URI,
 	jsonPath: '../../../data/raids.json',
 	jsonStablePath: '../../../data/raidsstable.json',
+	thumbnails: {
+		rancor: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_rancor.jpg',
+		aat: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_aat.jpg',
+		sith: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_triumvirate.jpg'
+	}
 };
 
 const GUILDS = [

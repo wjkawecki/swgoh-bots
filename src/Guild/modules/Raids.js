@@ -1,3 +1,4 @@
+import Discord from 'discord.js';
 import * as mongodb from 'mongodb';
 import path from 'path';
 import * as fs from 'fs';
@@ -20,7 +21,7 @@ export default class Raids {
 			// this.clearChannel(this.channels.bot_playground, true);
 			this.restoreJSON();
 		} else {
-			this.channels.bot_playground.send(`${config.guildName}.Raids on duty!`);
+			// this.channels.bot_playground.send(`${config.guildName}.Raids on duty!`);
 		}
 
 		this.main();
@@ -40,41 +41,37 @@ export default class Raids {
 
 	listenToMessages() {
 		this.Client.on('message', msg => {
-			switch (msg.content.toLowerCase()) {
+			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
+			const command = args.shift();
 
-				case '-start rancor':
-				case '- start rancor':
-					if (msg.member.roles.has(this.config.roles.officer))
-						this.startRaid('Rancor', msg);
+			switch (command) {
+
+				case 'start':
+					if (msg.member.roles.has(this.config.roles.officer) && args[0])
+						this.startRaid(msg, args[0]);
 					break;
 
-				case '-start aat':
-				case '- start aat':
+				case 'raids':
 					if (msg.member.roles.has(this.config.roles.officer))
-						this.startRaid('AAT', msg);
+						this.printRaid(msg);
 					break;
 
-				case '-start sith':
-				case '- start sith':
-					if (msg.member.roles.has(this.config.roles.officer))
-						this.startRaid('Sith', msg);
+				case 'raid':
+					if (msg.member.roles.has(this.config.roles.officer) && args[0])
+						this.printRaid(msg, args[0]);
 					break;
 
-				case '-undo':
-				case '- undo':
+				case 'undo':
 					if (msg.member.roles.has(this.config.roles.officer))
 						this.undo(msg);
 					break;
 
-				case '-json':
-				case '- json':
+				case 'json':
 					if (msg.member.roles.has(this.config.roles.officer))
 						console.log(JSON.stringify(this.json, null, 4));
 					break;
 
-				case '-help':
-				case '- help':
-				case '!help':
+				case 'help':
 					this.helpReply(msg);
 					break;
 			}
@@ -82,6 +79,35 @@ export default class Raids {
 			if (this.isBotMentioned(msg))
 				this.helpReply(msg);
 		});
+	}
+
+	printRaid(msg, raidKey = null) {
+		if (raidKey) {
+			this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
+		} else {
+			this.json.forEach(raidKey => {
+				this.Client.channels.get(msg.channel.id).send(this.buildRaidEmbed(raidKey));
+			});
+		}
+	}
+
+	buildRaidEmbed(raidKey) {
+		let embed, raid, desc, thumbnailSrc;
+
+		raid = this.json[raidKey];
+		thumbnailSrc = this.config.thumbnails[raidKey] || null;
+
+		desc = `**UTC rotations"** ${raid.config.rotationTimesUTC}
+**Active** ${raid.active ? raid.active.rotationTimeUTC : 'no'}
+**Next** ${raid.next ? raid.next.rotationTimeUTC : 'no'}`
+
+		embed = new Discord.RichEmbed()
+			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} settings`)
+			.setDescription(desc)
+			.setThumbnail(thumbnailSrc)
+			.setColor(0xf0c330);
+
+		return embed;
 	}
 
 	helpReply(msg) {
@@ -115,10 +141,10 @@ export default class Raids {
 		return msg.mentions.users.has(this.Client.user.id);
 	}
 
-	async main(raid = '') {
+	async main(raidKey = '') {
 		try {
 			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
-			this.readJSON(raid);
+			this.readJSON(raidKey);
 		} catch (err) {
 			console.log(err.message);
 		}
@@ -143,13 +169,13 @@ export default class Raids {
 		}
 	}
 
-	readJSON(raid) {
+	readJSON(raidKey) {
 		let that = this;
 
 		if (this.config.DEV) {
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, this.config.jsonPath))).raids;
 			// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
-			this.processRaids(raid);
+			this.processRaids(raidKey);
 		} else {
 			if (!this.json) {
 				try {
@@ -160,16 +186,16 @@ export default class Raids {
 							that.json = result.raids;
 							db.close();
 							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
-							that.processRaids(raid);
+							that.processRaids(raidKey);
 						});
 					});
 				} catch (err) {
 					console.log(`${that.config.guildName}.Raids.readJSON(): MongoDB read error`, err.message);
-					this.readJSON(raid);
+					this.readJSON(raidKey);
 				}
 			} else {
 				// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
-				this.processRaids(raid);
+				this.processRaids(raidKey);
 			}
 		}
 
@@ -209,17 +235,18 @@ export default class Raids {
 		}
 	}
 
-	processRaids(raid) {
-		if (raid) {
-			this.clearTimeouts(raid);
-			this.scheduleReminder(this.findNextEvents().find(event => event.type === raid));
+	processRaids(raidKey) {
+		if (raidKey) {
+			this.clearTimeouts(raidKey);
+			this.scheduleReminder(this.findNextEvents().find(event => event.raidKey === raidKey));
 		} else {
 			this.findNextEvents().forEach(event => this.scheduleReminder(event));
 		}
 	}
 
-	startRaid(raidName, msg) {
-		const raid = this.json[raidName],
+	startRaid(msg, raidKey) {
+		const raidName = this.json[raidKey].name || raidKey;
+		const raid = this.json[raidKey],
 			nextRotationTimeUTC = raid.config.rotationTimesUTC.filter(this.findNextLaunchHour(raid.next.rotationTimeUTC))[0] || raid.config.rotationTimesUTC[0];
 
 		if (raid.active) {
@@ -230,7 +257,7 @@ export default class Raids {
 			this.undoJson = JSON.parse(JSON.stringify(this.json));
 
 			if (raid.config.registrationHours > 0) {
-				this.json[raidName].active = {
+				this.json[raidKey].active = {
 					rotationTimeUTC: raid.next.rotationTimeUTC,
 					initiatorID: msg.author.id,
 					phase: 0
@@ -241,7 +268,7 @@ export default class Raids {
 				let nextPhase = raid.config.phases[0].text;
 				let nextPhaseHold = raid.config.phases[1] && raid.config.phases[1].holdHours ? `\nNext phase opens in ${raid.config.phases[1].holdHours} hours.` : '';
 
-				this.json[raidName].active = {
+				this.json[raidKey].active = {
 					rotationTimeUTC: raid.next.rotationTimeUTC,
 					initiatorID: msg.author.id,
 					phase: 1
@@ -258,12 +285,12 @@ export default class Raids {
 					.then(msg => that.saveLastMessage(msg.id));
 			}
 
-			this.json[raidName].next = {
+			this.json[raidKey].next = {
 				rotationTimeUTC: nextRotationTimeUTC
 			};
 
 			this.updateJSON();
-			this.main(raidName);
+			this.main(raidKey);
 		}
 	}
 
@@ -282,7 +309,7 @@ export default class Raids {
 				nextEventTime = new Date(),
 				diff;
 
-			nextEvent.type = raid;
+			nextEvent.raidKey = raid;
 			raid = this.json[raid];
 
 			if (raid.active) {
@@ -305,6 +332,7 @@ export default class Raids {
 
 			nextEvent.diff = diff;
 			nextEvent.config = raid.config;
+			nextEvent.name = raid.name;
 
 			nextEvents.push(nextEvent);
 		}
@@ -324,7 +352,7 @@ export default class Raids {
 			// nextRaidDiff,
 			// nextRaidDiffVerbose;
 
-		this.timeouts[raid.type] = this.timeouts[raid.type] || [];
+		this.timeouts[raid.raidKey] = this.timeouts[raid.raidKey] || [];
 
 		if (raid.phase === 0) { // remind @Officer to start raid
 			// if (raid.config.registrationHours === 0) {
@@ -342,73 +370,73 @@ export default class Raids {
 			// 	}
 			// }
 
-			this.timeouts[raid.type].push(setTimeout(() => {
+			this.timeouts[raid.raidKey].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${this.config.roles.officer}> Prepare to start ${raid.type} in ${remindMinutesBefore} minutes.`,
+					`<@&${this.config.roles.officer}> Prepare to start ${raid.name} in ${remindMinutesBefore} minutes.`,
 					{'tts': true}
 				);
 			}, diffMinutes));
 
-			this.timeouts[raid.type].push(setTimeout(() => {
+			this.timeouts[raid.raidKey].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
-					`<@&${this.config.roles.officer}> Start __${raid.type}__ NOW and type \`-start ${raid.type.toLowerCase()}\``
+					`<@&${this.config.roles.officer}> Start __${raid.name}__ NOW and type \`-start ${raid.raidKey}\``
 				);
 			}, raid.diff));
 
-			this.timeouts[raid.type].push(setTimeout(() => {
-				this.main(raid.type);
+			this.timeouts[raid.raidKey].push(setTimeout(() => {
+				this.main(raid.raidKey);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}: ${raid.type} starts in ${this.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.guildName}: ${raid.name} starts in ${this.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.length) { // remind members about open phase
 			// let nextPhase = (raid.config.phases.length > 1) ? `P${raid.phase} ` : '';
 			let nextPhase = raid.config.phases[raid.phase - 1].text;
 
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
-				this.timeouts[raid.type].push(setTimeout(() => {
+				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`__${raid.type}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} / ${raid.hour} UTC.`);
+						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} / ${raid.hour} UTC.`);
 				}, diffHours));
 			}
 
 			if (raid.diff > (remindMinutesBefore * 60 * 1000) && raid.config.phases.length <= 1) {
-				this.timeouts[raid.type].push(setTimeout(() => {
+				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`);
+						.send(`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} opens in ${remindMinutesBefore} minutes.`);
 				}, diffMinutes));
 			}
 
-			this.timeouts[raid.type].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.length)) => {
+			this.timeouts[raid.raidKey].push(setTimeout((isLastPhase = (raid.phase === raid.config.phases.length)) => {
 				let nextPhaseHold;
 
 				if (isLastPhase) { // this was the last phase
 					nextPhaseHold = '';
-					this.json[raid.type].active = null;
+					this.json[raid.raidKey].active = null;
 				} else {
 					nextPhaseHold = raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours ? `\n\n[next phase opens in ${raid.config.phases[raid.phase].holdHours}h]` : '';
-					this.json[raid.type].active.phase++;
+					this.json[raid.raidKey].active.phase++;
 				}
 
 				this.channels.raids_comm.send(
-					`<@&${this.config.roles.member}> __${raid.type}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`
+					`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`
 				);
 
 				this.updateJSON();
 			}, raid.diff));
 
-			this.timeouts[raid.type].push(setTimeout(() => {
-				this.main(raid.type);
+			this.timeouts[raid.raidKey].push(setTimeout(() => {
+				this.main(raid.raidKey);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}: ${raid.type} ${nextPhase} opens in ${this.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
+			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${this.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
 		}
 	}
 
-	clearTimeouts(raid) {
+	clearTimeouts(raidKey) {
 		// console.log(`${this.config.guildName}.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
 
-		if (raid && this.timeouts[raid]) {
-			this.timeouts[raid].forEach((timeout) => {
+		if (raidKey && this.timeouts[raidKey]) {
+			this.timeouts[raidKey].forEach((timeout) => {
 				clearTimeout(timeout);
 			});
 		}

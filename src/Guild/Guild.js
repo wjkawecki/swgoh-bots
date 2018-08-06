@@ -8,8 +8,6 @@ export default class Guild {
 		this.Client = new Discord.Client();
 		this.Client.login(config.botToken);
 		this.Client.on('ready', async () => {
-			console.log(`${config.guildName}.Client`);
-
 			this.Client.user.setActivity(config.guildName);
 
 			new Raids(this.Client, config);
