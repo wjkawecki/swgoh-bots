@@ -173,25 +173,29 @@ export default class Raids {
 			this.readJSON(raidKey);
 		} catch (err) {
 			console.log(err.message);
+			this.readJSON(raidKey);
 		}
 	}
 
 	async clearChannel(channel, removeAll = false) {
 		// console.log(`${this.config.guildName}.Raids.clearChannel()`);
+		try {
+			if (removeAll) {
+				const messages = await channel.fetchMessages().catch(console.error);
 
-		if (removeAll) {
-			const messages = await channel.fetchMessages().catch(console.error);
+				if (messages) {
+					messages.forEach(async (message) => {
+						await message.delete().catch(console.error);
+					});
+				}
+			} else {
+				const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
 
-			if (messages) {
-				messages.forEach(async (message) => {
+				if (message)
 					await message.delete().catch(console.error);
-				});
 			}
-		} else {
-			const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
-
-			if (message)
-				await message.delete().catch(console.error);
+		} catch (err) {
+			console.log(err.message);
 		}
 	}
 
