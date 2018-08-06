@@ -145,11 +145,12 @@ export default class Raids {
 	}
 
 	undo(msg) {
-		if (this.undoJsonArray && this.undoJsonArray.length) {
+		if (this.undoJsonArray && this.undoJsonArray.length > 1) {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
 
 			console.log(JSON.stringify(this.undoJsonArray, null, 4));
-
+			
+			this.undoJsonArray.pop();
 			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
 
 			if (!this.config.DEV) {
