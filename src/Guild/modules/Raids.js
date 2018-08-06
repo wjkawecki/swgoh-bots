@@ -124,7 +124,8 @@ export default class Raids {
 :arrow_forward: Active: ${raid.active ? raid.active.rotationTimeUTC : '-'}
 :fast_forward: Next: ${raid.next ? raid.next.rotationTimeUTC : '-'}
 
-\`-next ${raidKey}\` to immediately move to next rotation`;
+\`-next ${raidKey}\` to immediately move to next rotation
+\`-undo\` to revert my last action`;
 
 		embed = new Discord.RichEmbed()
 			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} settings`)
