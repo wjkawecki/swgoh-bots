@@ -119,16 +119,17 @@ export default class Raids {
 		raid = this.json[raidKey];
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
-		desc = `:calendar_spiral: UTC rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.join(', ')}
+		desc = `:repeat: UTC Rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.map(hour => this.convert24to12(hour)).join(', ')}
 		
-:arrow_forward: Active: ${raid.active ? raid.active.rotationTimeUTC : '-'}
-:fast_forward: Next: ${raid.next ? raid.next.rotationTimeUTC : '-'}
+:arrow_forward: Active: ${raid.active ? this.convert24to12(raid.active.rotationTimeUTC) : '-'}
+:fast_forward: Next: ${raid.next ? this.convert24to12(raid.next.rotationTimeUTC) : '-'}
 
-\`-next ${raidKey}\` to immediately move to next rotation
-\`-undo\` to revert my last action`;
+${raid.active ? '' : `\`-start ${raidKey}\` to start ${this.convert24to12(raid.next.rotationTimeUTC)} raid.`}
+\`-next ${raidKey}\` to ${raid.active ? 'remove active raid and ' : ''}move to next rotation without starting.
+\`-undo\` to revert your last action.`;
 
 		embed = new Discord.RichEmbed()
-			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} settings`)
+			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} Raid Settings`)
 			.setDescription(desc)
 			.setThumbnail(thumbnailSrc)
 			.setColor(0x7289da);
@@ -137,9 +138,9 @@ export default class Raids {
 	}
 
 	helpReply(msg) {
-		msg.reply(`here is the list of my __Raids__ commands:
-\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next [raid] according to schedule.
+		msg.reply(`here is the list of my __Raids__ commands:]
 \`-raid [${Object.keys(this.json).join(', ')}]\` *- officer only*. Display current [raid] settings.
+\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next [raid] according to schedule.
 \`-next [${Object.keys(this.json).join(', ')}]\` *- officer only*. Change [raid] setting to next rotation.
 \`-undo\` *- officer only*. Undo your last action!
 \`-help\` - this is what you are reading right now.`);
@@ -434,7 +435,7 @@ export default class Raids {
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} / ${raid.hour} UTC.`);
+						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} UTC.`);
 				}, diffHours));
 			}
 
