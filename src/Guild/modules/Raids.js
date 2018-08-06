@@ -114,10 +114,10 @@ export default class Raids {
 		raid = this.json[raidKey];
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
-		desc = `**:calendar_spiral: UTC rotations:** ${raid.config.rotationTimesUTC}
+		desc = `:calendar_spiral: UTC rotations: ${raid.config.rotationTimesUTC}
 		
-**:boom: Active:** ${raid.active ? raid.active.rotationTimeUTC : '-'}
-**:track_next: Next:** ${raid.next ? raid.next.rotationTimeUTC : '-'}
+:arrow_forward: Active: ${raid.active ? raid.active.rotationTimeUTC : '-'}
+:fast_forward: Next: ${raid.next ? raid.next.rotationTimeUTC : '-'}
 
 \`-next ${raidKey}\` to immediately move to next rotation`;
 
@@ -132,9 +132,9 @@ export default class Raids {
 
 	helpReply(msg) {
 		msg.reply(`here is the list of my __Raids__ commands:
-\`-start rancor\` *- officer only*. Starts next Rancor according to schedule.
-\`-start aat\` *- officer only*. Starts next AAT according to schedule.
-\`-start sith\` *- officer only*. Starts next Sith according to schedule.
+\`-start [rancor, aat, sith]\` *- officer only*. Starts next [raid] according to schedule.
+\`-raid [rancor, aat, sith]\` *- officer only*. Display current [raid] settings.
+\`-next [rancor, aat, sith]\` *- officer only*. Change [raid] setting to next rotation.
 \`-undo\` *- officer only*. Undo your last action!
 \`-help\` - this is what you are reading right now.`);
 	}
