@@ -6,6 +6,11 @@ const resetTimeUTC = {
 	minute: 53
 };
 
+process.on('unhandledRejection', function(reason, p){
+	console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+	// application specific logging here
+});
+
 export default class Heroku {
 	constructor() {
 		this.scheduleRestart(appName, dynoName);
