@@ -435,7 +435,7 @@ ${raid.active ? '' : `
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - ${this.convert24to12(raid.hour)} UTC.`);
+						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - :clock${this.convert24to12(nextRotationTimeUTC, false)}: ${this.convert24to12(raid.hour)} UTC.`);
 				}, diffHours));
 			}
 
@@ -453,7 +453,7 @@ ${raid.active ? '' : `
 					nextPhaseHold = '';
 					this.json[raid.raidKey].active = null;
 				} else {
-					nextPhaseHold = raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours ? `\n\n[next phase opens in ${raid.config.phases[raid.phase].holdHours}h]` : '';
+					nextPhaseHold = raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours ? `\n:no_entry: ${raid.config.phases[raid.phase].text} is on hold for ${raid.config.phases[raid.phase].holdHours} hours.` : '';
 					this.json[raid.raidKey].active.phase++;
 				}
 
