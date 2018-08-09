@@ -7,7 +7,7 @@ const resetTimeUTC = {
 };
 
 process.on('unhandledRejection', function(reason, p){
-	console.log("Possibly Unhandled Rejection at: ==PROMISE==: ", p, " ==REASON==: ", reason);
+	console.log('===== Possibly Unhandled Rejection at: ==PROMISE==: ', p, ' ==REASON==: ', reason);
 	// application specific logging here
 });
 
