@@ -7,7 +7,7 @@ const resetTimeUTC = {
 };
 
 process.on('unhandledRejection', function(reason, p){
-	console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+	console.log("Possibly Unhandled Rejection at: ==PROMISE==: ", p, " ==REASON==: ", reason);
 	// application specific logging here
 });
 
@@ -35,19 +35,37 @@ export default class Heroku {
 
 	restartDyno(appName, dynoName) {
 		if (appName && dynoName) {
-			let xhr = new XMLHttpRequest();
+			const https = require('https');
 
-			xhr.open(
-				'DELETE',
-				'https://api.heroku.com/apps/' + appName + '/dynos/' + dynoName
-			);
-			xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.setRequestHeader('Accept', 'application/vnd.heroku+json; version=3');
-			xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-			xhr.onload = function () {
-				console.log(xhr.response);
+			const options = {
+				hostname: 'api.heroku.com',
+				port: 443,
+				path: '/apps/' + appName + '/dynos/' + dynoName,
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/vnd.heroku+json; version=3',
+					'Authorization': 'Bearer ' + token
+				}
 			};
-			xhr.send();
+
+			const req = https.request(options, (res) => {
+				console.log(`STATUS: ${res.statusCode}`);
+				console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+				res.setEncoding('utf8');
+				res.on('data', (chunk) => {
+					console.log(`BODY: ${chunk}`);
+				});
+				res.on('end', () => {
+					console.log('No more data in response.');
+				});
+			});
+
+			req.on('error', (e) => {
+				console.error(`problem with request: ${e.message}`);
+			});
+
+			req.end();
 		}
 	}
 
