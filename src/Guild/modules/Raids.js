@@ -214,8 +214,9 @@ ${raid.active ? '' : `
 		} else {
 			if (!this.json) {
 				try {
-					MongoClient.connect(this.config.mongoUrl, function (err, db) {
+					MongoClient.connect(this.config.mongoUrl, function (err, client) {
 						if (err) throw err;
+						let db = client.db();
 						db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
 							if (err) throw err;
 							that.json = result.raids;
@@ -249,8 +250,9 @@ ${raid.active ? '' : `
 				json = {raids: that.json};
 
 			try {
-				MongoClient.connect(this.config.mongoUrl, function (err, db) {
+				MongoClient.connect(this.config.mongoUrl, function (err, client) {
 					if (err) throw err;
+					let db = client.db();
 					db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
 						if (err) throw err;
 						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
