@@ -150,7 +150,7 @@ ${raid.active ? '' : `
 		if (this.undoJsonArray && this.undoJsonArray.length > 1) {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
 
-			console.log(JSON.stringify(this.undoJsonArray, null, 4));
+			console.log(`== ${this.config.guildName}: succesfull undo`);
 
 			this.undoJsonArray.pop();
 			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
@@ -164,6 +164,7 @@ ${raid.active ? '' : `
 			this.main();
 		} else {
 			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
+			console.log(`== ${this.config.guildName}: failed undo`);
 		}
 	}
 
@@ -176,7 +177,7 @@ ${raid.active ? '' : `
 			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
 			this.readJSON(raidKey);
 		} catch (err) {
-			console.log('main', err.message);
+			console.log(`${this.config.guildName}: main`, err.message);
 			this.readJSON(raidKey);
 		}
 	}
@@ -199,7 +200,7 @@ ${raid.active ? '' : `
 					await message.delete().catch(console.error);
 			}
 		} catch (err) {
-			console.log('clearChannel', err.message);
+			console.log(`${this.config.guildName}: clearChannel`, err.message);
 		}
 	}
 

@@ -50,19 +50,20 @@ export default class Heroku {
 			};
 
 			const req = https.request(options, (res) => {
-				console.log(`STATUS: ${res.statusCode}`);
-				console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+				console.log('===== Heroku.js RESET START =====');
+				console.log(`== STATUS: ${res.statusCode}`);
+				console.log(`== HEADERS: ${JSON.stringify(res.headers)}`);
 				res.setEncoding('utf8');
 				res.on('data', (chunk) => {
-					console.log(`BODY: ${chunk}`);
+					console.log(`== BODY: ${chunk}`);
 				});
 				res.on('end', () => {
-					console.log('No more data in response.');
+					console.log('===== Heroku.js RESET END =====');
 				});
 			});
 
 			req.on('error', (e) => {
-				console.error(`problem with request: ${e.message}`);
+				console.error(`== Problem with request: ${e.message}`);
 			});
 
 			req.end();
