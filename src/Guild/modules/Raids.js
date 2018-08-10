@@ -214,7 +214,7 @@ ${raid.active ? '' : `
 		} else {
 			if (!this.json) {
 				try {
-					MongoClient.connect(this.config.mongoUrl, function (err, client) {
+					MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, function (err, client) {
 						if (err) throw err;
 						let db = client.db();
 						db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
@@ -250,7 +250,7 @@ ${raid.active ? '' : `
 				json = {raids: that.json};
 
 			try {
-				MongoClient.connect(this.config.mongoUrl, function (err, client) {
+				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, function (err, client) {
 					if (err) throw err;
 					let db = client.db();
 					db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
