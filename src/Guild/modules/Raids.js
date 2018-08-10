@@ -222,7 +222,7 @@ ${raid.active ? '' : `
 							that.json = result.raids;
 							that.undoJsonArray = that.undoJsonArray || [];
 							that.undoJsonArray.push(JSON.parse(JSON.stringify(that.json)));
-							db.close();
+							client.close();
 							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
 							that.processRaids(raidKey);
 						});
@@ -256,7 +256,7 @@ ${raid.active ? '' : `
 					db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
 						if (err) throw err;
 						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
-						db.close();
+						client.close();
 					});
 				});
 			} catch (err) {
