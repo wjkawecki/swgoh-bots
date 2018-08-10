@@ -253,7 +253,7 @@ ${raid.active ? '' : `
 				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, function (err, client) {
 					if (err) throw err;
 					let db = client.db();
-					db.collection(that.config.mongoCollection).updateOne({}, json, function (err, result) {
+					db.collection(that.config.mongoCollection).updateOne({}, { $set: json }, function (err, result) {
 						if (err) throw err;
 						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
 						client.close();
