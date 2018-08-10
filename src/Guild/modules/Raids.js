@@ -45,16 +45,20 @@ export default class Raids {
 			const command = args.shift();
 
 			switch (command) {
+				case 'raids':
+				case 'raid':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.printRaid(msg, args[0]);
+					break;
 
 				case 'start':
 					if (msg.member.roles.has(this.config.roles.officer))
 						this.startRaid(msg, args[0]);
 					break;
 
-				case 'raids':
-				case 'raid':
+				case 'stop':
 					if (msg.member.roles.has(this.config.roles.officer))
-						this.printRaid(msg, args[0]);
+						this.stopRaid(msg, args[0]);
 					break;
 
 				case 'next':
@@ -94,6 +98,20 @@ export default class Raids {
 		}
 	}
 
+	stopRaid(msg, raidKey = null) {
+		if (raidKey && this.json[raidKey]) {
+			const raid = this.json[raidKey];
+
+			raid.active = null;
+
+			this.updateJSON();
+			this.printRaid(msg, raidKey);
+			this.main(raidKey);
+		} else {
+			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to stop. Example: \`-stop rancor\``);
+		}
+	}
+
 	nextRaid(msg, raidKey = null) {
 		if (raidKey && this.json[raidKey]) {
 			const raid = this.json[raidKey],
@@ -123,7 +141,8 @@ export default class Raids {
 		
 :arrow_forward: Active: ${raid.active ? this.convert24to12(raid.active.rotationTimeUTC) : '-'}
 :fast_forward: Next: ${raid.next ? this.convert24to12(raid.next.rotationTimeUTC) : '-'}
-${raid.active ? '' : `
+${raid.active ? `
+\`-stop ${raidKey}\` to stop active raid.` : `
 \`-start ${raidKey}\` to start ${this.convert24to12(raid.next.rotationTimeUTC)} raid.`}
 \`-next ${raidKey}\` to move to next rotation without starting.
 \`-undo\` to revert your last action.`;
@@ -139,9 +158,10 @@ ${raid.active ? '' : `
 
 	helpReply(msg) {
 		msg.reply(`here is the list of my __Raids__ commands:]
-\`-raid [${Object.keys(this.json).join(', ')}]\` *- officer only*. Display current [raid] settings.
-\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next [raid] according to schedule.
-\`-next [${Object.keys(this.json).join(', ')}]\` *- officer only*. Change [raid] setting to next rotation.
+\`-raid [${Object.keys(this.json).join(', ')}]\` *- officer only*. Display current raid settings.
+\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next raid according to schedule.
+\`-stop [${Object.keys(this.json).join(', ')}]\` *- officer only*. Stop active raid.
+\`-next [${Object.keys(this.json).join(', ')}]\` *- officer only*. Change raid setting to next rotation.
 \`-undo\` *- officer only*. Undo your last action!
 \`-help\` - this is what you are reading right now.`);
 	}
