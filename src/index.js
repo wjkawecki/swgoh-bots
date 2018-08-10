@@ -17,7 +17,7 @@ const CONFIG = {
 
 const GUILDS = [
 	{
-		guildName: 'TeN DST',
+		guildName: 'DST',
 		mongoCollection: 'TeN_DST',
 		botToken: process.env.TOKEN_TeN_DST,
 		channels: {
@@ -37,7 +37,7 @@ const GUILDS = [
 		}
 	},
 	{
-		guildName: 'TeN TiNT',
+		guildName: 'TiNT',
 		mongoCollection: 'TeN_TiNT',
 		botToken: process.env.TOKEN_TeN_TiNT,
 		channels: {
@@ -57,7 +57,7 @@ const GUILDS = [
 		}
 	},
 	{
-		guildName: 'TeN fOuR',
+		guildName: 'fOuR',
 		mongoCollection: 'TeN_fOuR',
 		botToken: process.env.TOKEN_TeN_fOuR,
 		channels: {
