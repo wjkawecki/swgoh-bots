@@ -314,7 +314,7 @@ ${raid.active ? `
 			if (raid.active) {
 				msg.reply(`don't fool me! __${raidName}__ is already active!`);
 			} else {
-				msg.reply(`added ${this.convert24to12(raid.next.rotationTimeUTC)} __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
+				msg.reply(`added ${this.convert24to12(raid.next.rotationTimeUTC)} UTC __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
 
 				if (raid.config.registrationHours > 0) {
 					this.json[raidKey].active = {
