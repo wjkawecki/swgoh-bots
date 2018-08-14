@@ -11,7 +11,7 @@ export default class BB8 {
 		this.main = this.main.bind(this);
 		this.Client = new Discord.Client();
 		this.Client.login(process.env.TOKEN_BB8);
-		this.Client.on('ready',  () => this.initBot());
+		this.Client.on('ready', () => this.initBot());
 		this.Client.on('error', error => console.log(`BB8: Client error`, error.message));
 
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
@@ -33,18 +33,18 @@ export default class BB8 {
 		}
 	}
 
-	async initBot() {
+	initBot() {
 		try {
 			this.Client.user.setActivity(clientGame);
 			// this.readChannel = this.Client.channels.get(readChannelId);
 			this.writeChannel = this.Client.channels.get(writeChannelId);
 
-			const messages = await this.writeChannel.fetchMessages();
+			const messages = this.writeChannel.fetchMessages();
 
 			if (messages) {
 				if (messages.array().length === 0) {
 					try {
-						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+						this.message = this.writeChannel.send({embed: new Discord.RichEmbed()});
 					} catch (err) {
 						console.log(err);
 					}
@@ -58,7 +58,7 @@ export default class BB8 {
 							}
 						});
 
-						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
+						this.message = this.writeChannel.send({embed: new Discord.RichEmbed()});
 					} else {
 						this.message = messages.last();
 					}
