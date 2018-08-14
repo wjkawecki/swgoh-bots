@@ -13,7 +13,7 @@ export default class BB8 {
 		this.Client.on('ready',  () => this.initBot());
 		this.Client.on('error', error => console.log(`BB8: Client error`, error.message));
 
-		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
+		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../../data/BB8.xlsx')).Sheets.shard);
 
 		this.parseXlsx();
 		this.main();
