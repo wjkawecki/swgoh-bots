@@ -9,11 +9,12 @@ const clientGame = 'Arena';
 export default class BB8 {
 	constructor() {
 		this.main = this.main.bind(this);
-		this.client = new Discord.Client();
-		this.client.on('ready', async () => this.initBot());
-		this.client.on('error', console.error);
+		this.Client = new Discord.Client();
+		this.Client.login(process.env.TOKEN_BB8);
+		this.Client
+			.on('ready', this.initBot())
+			.on('error', console.log(`BB8: Client error`, error.message));
 
-		this.client.login(process.env.TOKEN_BB8);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
 
 		this.parseXlsx();
@@ -35,9 +36,9 @@ export default class BB8 {
 
 	async initBot() {
 		try {
-			this.client.user.setActivity(clientGame);
-			// this.readChannel = this.client.channels.get(readChannelId);
-			this.writeChannel = this.client.channels.get(writeChannelId);
+			this.Client.user.setActivity(clientGame);
+			// this.readChannel = this.Client.channels.get(readChannelId);
+			this.writeChannel = this.Client.channels.get(writeChannelId);
 
 			const messages = await this.writeChannel.fetchMessages();
 
