@@ -2,7 +2,6 @@ import Discord from 'discord.js';
 import XLSX from 'xlsx';
 import path from 'path';
 
-const readChannelId = '360337936203382796';
 const writeChannelId = '360337936203382796';
 const clientGame = 'Arena';
 

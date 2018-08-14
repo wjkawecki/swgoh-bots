@@ -1,3 +1,5 @@
+import helpers from '../../helpers/helpers';
+
 const token = process.env.HEROKU_API_KEY;
 const appName = 'swgoh-bots';
 const dynoName = 'worker';
@@ -23,14 +25,13 @@ export default class Heroku {
 
 		reset.setUTCHours(resetTimeUTC.hour, resetTimeUTC.minute, 0, 0);
 		if (reset < now) reset.setDate(reset.getDate() + 1);
-		this.resetDay = reset.getUTCDay();
 		diff = reset.getTime() - now.getTime();
 
 		setTimeout(() => {
 			this.restartDyno(appName, dynoName);
 		}, diff);
 
-		console.log(`=== Heroku.restartDyno ${appName}/${dynoName} in [${this.getReadableTime(diff)}]`);
+		console.log(`=== Heroku.restartDyno ${appName}/${dynoName} in [${helpers.getReadableTime(diff)}]`);
 	}
 
 	restartDyno(appName, dynoName) {
@@ -68,17 +69,5 @@ export default class Heroku {
 
 			req.end();
 		}
-	}
-
-	getReadableTime(time, showSeconds = false) {
-		time = new Date(time);
-
-		if (showSeconds) {
-			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}:${String(time.getUTCSeconds()).padStart(2, '00')}`;
-		} else {
-			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}`;
-		}
-
-		return time;
 	}
 }

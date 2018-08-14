@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import * as mongodb from 'mongodb';
 import path from 'path';
 import * as fs from 'fs';
+import helpers from '../../../helpers/helpers';
 
 const MongoClient = mongodb.MongoClient;
 
@@ -82,7 +83,7 @@ export default class Raids {
 					break;
 			}
 
-			if (this.isBotMentioned(msg))
+			if (helpers.isBotMentioned(msg, this.Client))
 				if (msg.member.roles.has(this.config.roles.member))
 					this.helpReply(msg);
 		});
@@ -137,13 +138,13 @@ export default class Raids {
 		raid = this.json[raidKey];
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
-		desc = `:repeat: UTC Rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.map(hour => this.convert24to12(hour)).join(', ')}
+		desc = `:repeat: UTC Rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.map(hour => helpers.convert24to12(hour)).join(', ')}
 		
-:arrow_forward: Active: ${raid.active ? this.convert24to12(raid.active.rotationTimeUTC) : '-'}
-:fast_forward: Next: ${raid.next ? this.convert24to12(raid.next.rotationTimeUTC) : '-'}
+:arrow_forward: Active: ${raid.active ? helpers.convert24to12(raid.active.rotationTimeUTC) : '-'}
+:fast_forward: Next: ${raid.next ? helpers.convert24to12(raid.next.rotationTimeUTC) : '-'}
 ${raid.active ? `
 \`-stop ${raidKey}\` to stop active raid.` : `
-\`-start ${raidKey}\` to start ${this.convert24to12(raid.next.rotationTimeUTC)} raid.`}
+\`-start ${raidKey}\` to start ${helpers.convert24to12(raid.next.rotationTimeUTC)} raid.`}
 \`-next ${raidKey}\` to move to next rotation without starting.
 \`-undo\` to revert your last action.`;
 
@@ -188,10 +189,6 @@ ${raid.active ? `
 		}
 	}
 
-	isBotMentioned(msg) {
-		return msg.mentions.users.has(this.Client.user.id);
-	}
-
 	async main(raidKey = '') {
 		try {
 			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
@@ -229,24 +226,13 @@ ${raid.active ? `
 
 		if (this.config.DEV) {
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, this.config.jsonPath))).raids;
-			// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
 			this.processRaids(raidKey);
 		} else {
 			if (!this.json) {
 				try {
-					MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, function (err, client) {
-						if (err) throw err;
-						let db = client.db();
-						db.collection(that.config.mongoCollection).findOne({}, function (err, result) {
-							if (err) throw err;
-							that.json = result.raids;
-							that.undoJsonArray = that.undoJsonArray || [];
-							that.undoJsonArray.push(JSON.parse(JSON.stringify(that.json)));
-							client.close();
-							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
-							that.processRaids(raidKey);
-						});
-					});
+					this.json = helpers.readMongo(this.config.mongoUrl, this.config.mongoCollection, () => that.processRaids(raidKey));
+					this.undoJsonArray = this.undoJsonArray || [];
+					this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
 				} catch (err) {
 					console.log(`${that.config.guildName}.Raids.readJSON(): MongoDB read error`, err.message);
 					this.readJSON(raidKey);
@@ -264,23 +250,11 @@ ${raid.active ? `
 	updateJSON() {
 		if (this.config.DEV) {
 			fs.writeFileSync(path.resolve(__dirname, this.config.jsonPath), JSON.stringify({'raids': this.json}));
-			// this.channels.bot_playground.send(JSON.stringify(this.json));
 		} else {
-			let that = this,
-				json = {raids: that.json};
-
 			try {
-				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, function (err, client) {
-					if (err) throw err;
-					let db = client.db();
-					db.collection(that.config.mongoCollection).updateOne({}, { $set: json }, function (err, result) {
-						if (err) throw err;
-						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
-						client.close();
-					});
-				});
+				helpers.updateMongo(this.config.mongoUrl, this.config.mongoCollection, { raids: this.json });
 			} catch (err) {
-				console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
+				console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
 				this.updateJSON();
 			}
 		}
@@ -314,7 +288,7 @@ ${raid.active ? `
 			if (raid.active) {
 				msg.reply(`don't fool me! __${raidName}__ is already active!`);
 			} else {
-				msg.reply(`added ${this.convert24to12(raid.next.rotationTimeUTC)} UTC __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`);
+				msg.reply(`added ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${helpers.convert24to12(nextRotationTimeUTC)} UTC**`);
 
 				if (raid.config.registrationHours > 0) {
 					this.json[raidKey].active = {
@@ -341,7 +315,7 @@ ${raid.active ? `
 					let that = this;
 
 					this.channels.raids_log
-						.send(`__${raidName}__: ${this.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${this.convert24to12(nextRotationTimeUTC, false)}: **${this.convert24to12(nextRotationTimeUTC)} UTC**`)
+						.send(`__${raidName}__: ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${helpers.convert24to12(nextRotationTimeUTC)} UTC**`)
 						.then(msg => that.saveLastMessage(msg.id));
 				}
 
@@ -450,7 +424,7 @@ ${raid.active ? `
 				this.main(raid.raidKey);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}: ${raid.name} starts in ${this.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.guildName}: ${raid.name} starts in ${helpers.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.length) { // remind members about open phase
 			// let nextPhase = (raid.config.phases.length > 1) ? `P${raid.phase} ` : '';
 			let nextPhase = raid.config.phases[raid.phase - 1].text;
@@ -458,7 +432,7 @@ ${raid.active ? `
 			if (raid.diff > (remindHoursBefore * 60 * 60 * 1000) && raid.config.phases.length <= 1) {
 				this.timeouts[raid.raidKey].push(setTimeout(() => {
 					this.channels.raids_comm
-						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - :clock${this.convert24to12(raid.hour, false)}: ${this.convert24to12(raid.hour)} UTC.`);
+						.send(`__${raid.name}__ ${nextPhase} opens in ${remindHoursBefore} ${remindHoursBefore > 1 ? 'hours' : 'hour'} - :clock${helpers.convert24to12(raid.hour, false)}: ${helpers.convert24to12(raid.hour)} UTC.`);
 				}, diffHours));
 			}
 
@@ -491,7 +465,7 @@ ${raid.active ? `
 				this.main(raid.raidKey);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${this.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
+			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
 		}
 	}
 
@@ -509,22 +483,5 @@ ${raid.active ? `
 		return function (rotationTimesUTC) {
 			return (rotationTimesUTC > nowHour);
 		}
-	}
-
-	convert24to12(hour, returnString = true) {
-		const string = hour < 12 ? ' AM' : ' PM';
-		return `${(hour % 12) || 12}${returnString ? string : ''}`;
-	}
-
-	getReadableTime(time, showSeconds = false) {
-		time = new Date(time);
-
-		if (showSeconds) {
-			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}:${String(time.getUTCSeconds()).padStart(2, '00')}`;
-		} else {
-			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}`;
-		}
-
-		return time;
 	}
 }

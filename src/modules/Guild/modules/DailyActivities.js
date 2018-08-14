@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import helpers from '../../../helpers/helpers';
 
 export default class DailyActivities {
 	constructor(Client, config) {
@@ -110,7 +111,7 @@ export default class DailyActivities {
 					break;
 			}
 
-			if (this.isBotMentioned(msg))
+			if (helpers.isBotMentioned(msg, this.Client))
 				if (msg.member.roles.has(this.config.roles.member))
 					this.helpReply(msg);
 		});
@@ -246,9 +247,9 @@ export default class DailyActivities {
 		}
 
 		if (manualReminder) {
-			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${this.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
+			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${helpers.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
 		} else {
-			console.log(`${this.config.guildName}: ${this.getReadableTime(diff)} to reset`);
+			console.log(`${this.config.guildName}: ${helpers.getReadableTime(diff)} to reset`);
 
 			let reminderDiff = diff - (remindMinutesBefore * 60 * 1000);
 
@@ -341,51 +342,5 @@ Thank you for your raid tickets contribution!`;
 \`-saturday\`
 \`-sunday\`
 \`-help\` - this is what you are reading right now.`);
-	}
-
-	isBotMentioned(msg) {
-		return msg.mentions.users.has(this.Client.user.id);
-	}
-
-	getReadableTime(time, showSeconds = false) {
-		time = new Date(time);
-
-		if (showSeconds) {
-			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}:${String(time.getUTCSeconds()).padStart(2, '00')}`;
-		} else {
-			time = `${String(time.getUTCHours()).padStart(2, '00')}:${String(time.getUTCMinutes()).padStart(2, '00')}`;
-		}
-
-		return time;
-	}
-
-	async clearChannel(channel, removeAll = false) {
-		try {
-			if (removeAll) {
-				const messages = await channel.fetchMessages().catch(console.error);
-
-				if (messages) {
-					messages.forEach(async (message) => {
-						try {
-							await message.delete();
-						} catch (err) {
-							console.log(err);
-						}
-					});
-				}
-			} else {
-				const message = await channel.fetchMessage(this.lastMessageId).catch(console.error);
-
-				if (message) {
-					try {
-						await message.delete();
-					} catch (err) {
-						console.log(err);
-					}
-				}
-			}
-		} catch (err) {
-			console.log(err.message);
-		}
 	}
 }

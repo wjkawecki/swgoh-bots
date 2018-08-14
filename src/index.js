@@ -98,9 +98,9 @@ const GUILDS = [
 	},
 ];
 
-import Heroku from './Heroku/Heroku';
-import BB8 from './BB8/BB8';
-import Guild from './Guild/Guild';
+import Heroku from './modules/Heroku/Heroku';
+import BB8 from './modules/BB8/BB8';
+import Guild from './modules/Guild/Guild';
 
 new Heroku();
 new BB8();
