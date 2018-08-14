@@ -6,9 +6,8 @@ export default class Guild {
 	constructor(config) {
 		this.Client = new Discord.Client();
 		this.Client.login(config.botToken);
-		this.Client
-			.on('ready', this.initGuild(config))
-			.on('error', console.log(`${config.guildName}: Client error`, error.message));
+		this.Client.on('ready', () => this.initGuild(config));
+		this.Client.on('error', console.log(`${config.guildName}: Client error`, error.message));
 	}
 
 	async initGuild(config) {
