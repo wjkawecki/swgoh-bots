@@ -25,7 +25,7 @@ const helpers = {
 	},
 
 
-	readMongo: (mongoUrl, mongoCollection, cb = null) => {
+	readMongo: (mongoUrl, mongoCollection) => {
 		let result = null;
 
 		MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
@@ -36,8 +36,6 @@ const helpers = {
 
 				client.close();
 
-				if (typeof cb === 'function') cb();
-
 				result = res;
 			});
 		});
@@ -45,15 +43,13 @@ const helpers = {
 		return result;
 	},
 
-	updateMongo: (mongoUrl, mongoCollection, data, cb = null) => MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
+	updateMongo: (mongoUrl, mongoCollection, data) => MongoClient.connect(mongoUrl, {useNewUrlParser: true}, (err, client) => {
 		if (err) throw err;
 
 		client.db().collection(mongoCollection).updateOne({}, {$set: data}, err => {
 			if (err) throw err;
 
 			client.close();
-
-			if (typeof cb === 'function') cb();
 		});
 	}),
 };

@@ -221,7 +221,7 @@ ${raid.active ? `
 		}
 	}
 
-	async readJSON(raidKey) {
+	readJSON(raidKey) {
 		let that = this;
 
 		if (this.config.DEV) {
@@ -230,9 +230,10 @@ ${raid.active ? `
 		} else {
 			if (!this.json) {
 				try {
-					await this.json = helpers.readMongo(this.config.mongoUrl, this.config.mongoCollection, () => that.processRaids(raidKey));
+					this.json = helpers.readMongo(this.config.mongoUrl, this.config.mongoCollection);
 					this.undoJsonArray = this.undoJsonArray || [];
 					this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
+					this.processRaids(raidKey);
 				} catch (err) {
 					console.log(`${that.config.guildName}.Raids.readJSON(): MongoDB read error`, err.message);
 					this.readJSON(raidKey);
@@ -247,12 +248,12 @@ ${raid.active ? `
 
 	}
 
-	async updateJSON() {
+	updateJSON() {
 		if (this.config.DEV) {
 			fs.writeFileSync(path.resolve(__dirname, this.config.jsonPath), JSON.stringify({'raids': this.json}));
 		} else {
 			try {
-				await helpers.updateMongo(this.config.mongoUrl, this.config.mongoCollection, { raids: this.json });
+				helpers.updateMongo(this.config.mongoUrl, this.config.mongoCollection, { raids: this.json });
 			} catch (err) {
 				console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
 				this.updateJSON();
