@@ -11,6 +11,7 @@ export default class BB8 {
 		this.main = this.main.bind(this);
 		this.client = new Discord.Client();
 		this.client.on('ready', async () => this.initBot());
+		this.client.on('error', console.error);
 
 		this.client.login(process.env.TOKEN_BB8);
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../data/BB8.xlsx')).Sheets.shard);
