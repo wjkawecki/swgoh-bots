@@ -230,7 +230,7 @@ ${raid.active ? `
 		} else {
 			if (!this.json) {
 				try {
-					this.json = helpers.readMongo(this.config.mongoUrl, this.config.mongoCollection);
+					this.json = helpers.readMongo(this.config.mongoUrl, this.config.mongoCollection).raids;
 					this.undoJsonArray = this.undoJsonArray || [];
 					this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
 					this.processRaids(raidKey);
