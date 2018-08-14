@@ -10,7 +10,7 @@ export default class Guild {
 		this.Client.on('error', error => console.log(`${config.guildName}: Client error`, error.message));
 	}
 
-	initGuild(config) {
+	async initGuild(config) {
 		try {
 			console.log(`${config.guildName}: Client ready`);
 			this.Client.user.setActivity(config.guildName);
@@ -19,7 +19,7 @@ export default class Guild {
 			new DailyActivities(this.Client, config);
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);
-			this.initGuild(config);
+			this.initGuild();
 		}
 	}
 }
