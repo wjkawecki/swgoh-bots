@@ -1,7 +1,3 @@
-import * as mongodb from 'mongodb';
-
-const MongoClient = mongodb.MongoClient;
-
 const helpers = {
 	getReadableTime: (time, showSeconds = false) => {
 		time = new Date(time);

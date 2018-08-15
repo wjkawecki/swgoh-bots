@@ -7,8 +7,9 @@ import helpers from '../../../helpers/helpers';
 const MongoClient = mongodb.MongoClient;
 
 export default class Raids {
-	constructor(Client, config) {
+	constructor(Client, config, mongo) {
 		this.config = config;
+		this.json = mongo;
 
 		// console.log(`=== ${config.guildName}.Raids ready${config.DEV ? ' (DEV mode)' : ''}`);
 
@@ -222,39 +223,13 @@ ${raid.active ? `
 	}
 
 	readJSON(raidKey) {
-		let that = this;
-
 		if (this.config.DEV) {
-
-
 			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, this.config.jsonPath))).raids;
 			this.processRaids(raidKey);
 		} else {
-			if (!this.json) {
-				try {
-					MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
-						if (err) throw err;
-						let db = client.db();
-						db.collection(that.config.mongoCollection).findOne({}, (err, result) => {
-							if (err) throw err;
-							that.json = result.raids;
-							that.undoJsonArray = that.undoJsonArray || [];
-							that.undoJsonArray.push(JSON.parse(JSON.stringify(that.json)));
-							client.close();
-							// console.log(`${that.config.guildName}.Raids.readJSON(${raid}): MongoDB ${typeof that.json}`);
-							that.processRaids(raidKey);
-						});
-					});
-				} catch (err) {
-					console.log(`${that.config.guildName}.Raids.readJSON(): MongoDB read error`, err.message);
-					this.readJSON(raidKey);
-				}
-			} else {
-				// console.log(`${this.config.guildName}.Raids.readJSON(${raid}): local ${typeof that.json}`);
-				this.undoJsonArray = this.undoJsonArray || [];
-				this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
-				this.processRaids(raidKey);
-			}
+			this.undoJsonArray = this.undoJsonArray || [];
+			this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
+			this.processRaids(raidKey);
 		}
 
 	}
@@ -266,10 +241,10 @@ ${raid.active ? `
 			try {
 				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
 					if (err) throw err;
-					let db = client.db();
-					db.collection(that.config.mongoCollection).updateOne({}, { $set: json }, err => {
+
+					client.db().collection(that.config.mongoCollection).updateOne({}, { $set: json }, err => {
 						if (err) throw err;
-						// console.log(`${that.config.guildName}.Raids.updateJSON(): MongoDB updated (${result.result.nModified})`);
+
 						client.close();
 					});
 				});
