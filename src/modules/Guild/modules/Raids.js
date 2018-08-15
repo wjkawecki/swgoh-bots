@@ -242,7 +242,7 @@ ${raid.active ? `
 				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
 					if (err) throw err;
 
-					client.db().collection(that.config.mongoCollection).updateOne({}, { $set: json }, err => {
+					client.db().collection(this.config.mongoCollection).updateOne({}, { $set: json }, err => {
 						if (err) throw err;
 
 						client.close();
