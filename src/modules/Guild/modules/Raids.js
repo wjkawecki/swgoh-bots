@@ -42,7 +42,6 @@ export default class Raids {
 			if (msg.author.bot) return;
 
 			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) {
-				msg.reply(`wrong channel, I'm not in DEV mode!`);
 				return;
 			}
 
