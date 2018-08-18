@@ -39,6 +39,8 @@ export default class Raids {
 			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
 			const command = args.shift();
 
+			if (msg.author.bot) return;
+
 			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) {
 				msg.reply(`wrong channel, I'm not in DEV mode!`);
 				return;
