@@ -1,6 +1,5 @@
 import Discord from 'discord.js';
 import * as mongodb from 'mongodb';
-import path from 'path';
 import * as fs from 'fs';
 import helpers from '../../../helpers/helpers';
 
@@ -10,9 +9,6 @@ export default class Raids {
 	constructor(Client, config, data) {
 		this.config = config;
 		this.json = data;
-
-		// console.log(`=== ${config.guildName}.Raids ready${config.DEV ? ' (DEV mode)' : ''}`);
-
 		this.Client = Client;
 		this.timeouts = {};
 
@@ -459,7 +455,7 @@ ${raid.active ? `
 				this.main(raid.raidKey);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)} / next in ${raid.config.phases[raid.phase] && raid.config.phases[raid.phase].holdHours} h`);
+			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)}`);
 		}
 	}
 
