@@ -19,7 +19,16 @@ export default class Guild {
 					if (err) throw err;
 
 					if (config.DEV) {
-						fs.writeFileSync(__dirname + '/../../..' + config.jsonMongoPath.replace('#guildName#', config.guildName), JSON.stringify(mongo));
+						const jsonMongoPath = __dirname + '/../../..' + config.jsonMongoPath.replace('#guildName#', config.guildName);
+						const jsonLocalPath = __dirname + '/../../..' + config.jsonLocalPath.replace('#guildName#', config.guildName);
+
+						fs.writeFileSync(jsonMongoPath, JSON.stringify(mongo));
+
+						try {
+							JSON.parse(fs.readFileSync(jsonLocalPath));
+						} catch (err) {
+							fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
+						}
 					}
 
 					this.initClient(config, mongo);
@@ -56,8 +65,12 @@ export default class Guild {
 		try {
 			this.Client.user.setActivity(config.guildName);
 
-			new Raids(this.Client, config, data.raids);
-			new DailyActivities(this.Client, config);
+			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length)
+				new DailyActivities(this.Client, config);
+
+			if (data.raids && Object.keys(data.raids).length)
+				new Raids(this.Client, config, data.raids);
+
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);
 			setTimeout(() => this.initGuild(config, data), 30);

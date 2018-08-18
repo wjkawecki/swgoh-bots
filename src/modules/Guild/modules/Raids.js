@@ -223,20 +223,9 @@ ${raid.active ? `
 	}
 
 	updateJSON() {
-		const jsonLocalPath = __dirname + '/../../../..' + this.config.jsonLocalPath.replace('#guildName#', this.config.guildName);
-		const jsonMongoPath = __dirname + '/../../../..' + this.config.jsonMongoPath.replace('#guildName#', this.config.guildName);
-		let localData;
-
 		if (this.config.DEV) {
-			try {
-				localData = JSON.parse(fs.readFileSync(jsonLocalPath));
-			} catch (err) {
-				try {
-					localData = JSON.parse(fs.readFileSync(jsonMongoPath));
-				} catch (err) {
-					localData = {};
-				}
-			}
+			const jsonLocalPath = __dirname + '/../../../..' + this.config.jsonLocalPath.replace('#guildName#', this.config.guildName);
+			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
 
 			fs.writeFileSync(jsonLocalPath, JSON.stringify({
 				...localData,

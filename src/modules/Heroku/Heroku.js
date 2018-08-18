@@ -14,8 +14,9 @@ process.on('unhandledRejection', function(reason, p){
 });
 
 export default class Heroku {
-	constructor() {
-		this.scheduleRestart(appName, dynoName);
+	constructor(DEV) {
+		if (!DEV)
+			this.scheduleRestart(appName, dynoName);
 	}
 
 	scheduleRestart(appName, dynoName) {

@@ -77,7 +77,7 @@ export default class DailyActivities {
 		if (manualReminder) {
 			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${helpers.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
 		} else {
-			console.log(`${this.config.guildName}: ${helpers.getReadableTime(diff)} to reset`);
+			console.log(`== ${this.config.guildName}: ${helpers.getReadableTime(diff)} to reset`);
 
 			let reminderDiff = diff - (remindMinutesBefore * 60 * 1000);
 

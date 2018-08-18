@@ -102,6 +102,6 @@ import Heroku from './modules/Heroku/Heroku';
 import BB8 from './modules/BB8/BB8';
 import Guild from './modules/Guild/Guild';
 
-new Heroku();
+new Heroku(CONFIG.DEV);
 new BB8();
 GUILDS.forEach(guild => new Guild({ ...CONFIG, ...guild}));
