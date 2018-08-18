@@ -1,9 +1,6 @@
-/src/secret.js
 /.idea/
 /lib/
 /node_modules/
 /package-lock.json
-/~$SWGoH_Shard.xlsx
-data/raids.json
-data/raidsstable.json
-src/secret.js
+/data/Guild/
+/src/secret.js

@@ -7,9 +7,9 @@ import helpers from '../../../helpers/helpers';
 const MongoClient = mongodb.MongoClient;
 
 export default class Raids {
-	constructor(Client, config, mongo) {
+	constructor(Client, config, data) {
 		this.config = config;
-		this.json = mongo;
+		this.json = data;
 
 		// console.log(`=== ${config.guildName}.Raids ready${config.DEV ? ' (DEV mode)' : ''}`);
 
@@ -18,13 +18,6 @@ export default class Raids {
 
 		this.initChannels(config.channels);
 		this.listenToMessages();
-
-		if (config.DEV) {
-			// this.clearChannel(this.channels.bot_playground, true);
-			this.restoreJSON();
-		} else {
-			// this.channels.bot_playground.send(`${config.guildName}.Raids on duty!`);
-		}
 
 		this.main();
 	}
@@ -45,6 +38,11 @@ export default class Raids {
 		this.Client.on('message', msg => {
 			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
 			const command = args.shift();
+
+			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) {
+				msg.reply(`wrong channel, I'm not in DEV mode!`);
+				return;
+			}
 
 			switch (command) {
 				case 'raids':
@@ -192,11 +190,10 @@ ${raid.active ? `
 
 	async main(raidKey = '') {
 		try {
-			// console.log(`${this.config.guildName}.Raids.main(${raid})`);
-			this.readJSON(raidKey);
+			this.pushJSON(raidKey);
 		} catch (err) {
 			console.log(`${this.config.guildName}: main`, err.message);
-			this.readJSON(raidKey);
+			this.pushJSON(raidKey);
 		}
 	}
 
@@ -222,21 +219,32 @@ ${raid.active ? `
 		}
 	}
 
-	readJSON(raidKey) {
-		if (this.config.DEV) {
-			this.json = this.json || JSON.parse(fs.readFileSync(path.resolve(__dirname, this.config.jsonPath))).raids;
-			this.processRaids(raidKey);
-		} else {
-			this.undoJsonArray = this.undoJsonArray || [];
-			this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
-			this.processRaids(raidKey);
-		}
-
+	pushJSON(raidKey) {
+		this.undoJsonArray = this.undoJsonArray || [];
+		this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
+		this.processRaids(raidKey);
 	}
 
 	updateJSON() {
+		const jsonLocalPath = __dirname + '/../../../..' + this.config.jsonLocalPath.replace('#guildName#', this.config.guildName);
+		const jsonMongoPath = __dirname + '/../../../..' + this.config.jsonMongoPath.replace('#guildName#', this.config.guildName);
+		let localData;
+
 		if (this.config.DEV) {
-			fs.writeFileSync(path.resolve(__dirname, this.config.jsonPath), JSON.stringify({'raids': this.json}));
+			try {
+				localData = JSON.parse(fs.readFileSync(jsonLocalPath));
+			} catch (err) {
+				try {
+					localData = JSON.parse(fs.readFileSync(jsonMongoPath));
+				} catch (err) {
+					localData = {};
+				}
+			}
+
+			fs.writeFileSync(jsonLocalPath, JSON.stringify({
+				...localData,
+				raids: this.json
+			}));
 		} else {
 			try {
 				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
@@ -252,16 +260,6 @@ ${raid.active ? `
 				console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
 				this.updateJSON();
 			}
-		}
-	}
-
-	restoreJSON() {
-		if (this.config.DEV) {
-			// console.log(`${this.config.guildName}.Raids.restoreJSON()`);
-
-			let jsonStable = fs.readFileSync(path.resolve(__dirname, this.config.jsonStablePath));
-
-			fs.writeFileSync(path.resolve(__dirname, this.config.jsonPath), jsonStable);
 		}
 	}
 

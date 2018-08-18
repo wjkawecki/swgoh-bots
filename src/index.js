@@ -6,8 +6,8 @@ const CONFIG = {
 	DEV,
 	commandPrefix: '-',
 	mongoUrl: process.env.MONGODB_URI,
-	jsonPath: '../../../../data/raids.json',
-	jsonStablePath: '../../../../data/raidsstable.json',
+	jsonLocalPath: `/data/Guild/#guildName#_local.json`,
+	jsonMongoPath: `/data/Guild/#guildName#_mongo.json`,
 	thumbnails: {
 		rancor: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_rancor.jpg',
 		aat: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_aat.jpg',
@@ -28,8 +28,8 @@ const GUILDS = [
 			bot_playground: '371742456653414410'
 		},
 		roles: {
-			officer: DEV ? 'DST officer' : '440635030658613269',
-			member: DEV ? 'DST member' : '440634741826256896'
+			officer: '440635030658613269',
+			member: '440634741826256896'
 		},
 		resetTimeUTC: {
 			hour: 23,
@@ -48,8 +48,8 @@ const GUILDS = [
 			bot_playground: '371742456653414410'
 		},
 		roles: {
-			officer: DEV ? 'TiNT officer' : '423875440806199305',
-			member: DEV ? 'TiNT member' : '423827855420686336'
+			officer: '423875440806199305',
+			member: '423827855420686336'
 		},
 		resetTimeUTC: {
 			hour: 23,
@@ -68,8 +68,8 @@ const GUILDS = [
 			bot_playground: '371742456653414410'
 		},
 		roles: {
-			officer: DEV ? 'fOuR officer' : '451637963881840640',
-			member: DEV ? 'fOuR member' : '451637316931289093'
+			officer: '451637963881840640',
+			member: '451637316931289093'
 		},
 		resetTimeUTC: {
 			hour: 22,
@@ -88,8 +88,8 @@ const GUILDS = [
 			bot_playground: '401432399180857345'
 		},
 		roles: {
-			officer: DEV ? 'RoF officer' : '401426523447361537',
-			member: DEV ? 'RoF member' : '403959166244356116'
+			officer: '401426523447361537',
+			member: '403959166244356116'
 		},
 		resetTimeUTC: {
 			hour: 23,
