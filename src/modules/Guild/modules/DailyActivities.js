@@ -2,77 +2,60 @@ import Discord from 'discord.js';
 import helpers from '../../../helpers/helpers';
 
 export default class DailyActivities {
-	constructor(Client, config) {
-		this.config = config;
+	constructor(Client, config, channels) {
 		this.Client = Client;
+		this.config = config;
+		this.channels = channels;
 
-		this.initChannels(config.channels);
 		this.listenToMessages();
-
-		if (config.DEV) {
-			// this.channels.bot_playground.send('DEV reporting for duty!');
-		} else {
-			this.channels.bot_playground.send('Reporting for duty!');
-		}
-
 		this.main();
 	}
 
-	async main() {
+	main() {
 		try {
 			this.scheduleReminder();
 		} catch (err) {
-			console.log(`${this.config.guildName}: main`, err);
-		}
-	}
-
-	initChannels(channels) {
-		this.channels = {};
-
-		for (let key in channels) {
-			if (this.config.DEV) {
-				this.channels[key] = this.Client.channels.get(channels.bot_playground);
-			} else {
-				this.channels[key] = this.Client.channels.get(channels[key]);
-			}
+			console.log(`${this.config.guildName}: DailyActivities main`, err);
+			setTimeout(() => this.scheduleReminder(), this.config.retryTimeout);
 		}
 	}
 
 	listenToMessages() {
 		this.Client.on('message', msg => {
-			switch (msg.content.toLowerCase()) {
+			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
+			const command = args.shift();
 
-				case '-tickets':
-				case '- tickets':
-				case '!tickets':
+			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) return;
+			if (msg.content.indexOf(this.config.commandPrefix) !== 0) return;
+			if (msg.author.bot) return;
+
+			switch (command) {
+				case 'tickets':
 					if (msg.member.roles.has(this.config.roles.officer))
 						this.scheduleReminder(true);
 					break;
 
-				case '-help':
-				case '- help':
-				case '!help':
+				case 'help':
 					if (msg.member.roles.has(this.config.roles.member))
 						this.helpReply(msg);
 					break;
 			}
-
-			if (helpers.isBotMentioned(msg, this.Client))
-				if (msg.member.roles.has(this.config.roles.member))
-					this.helpReply(msg);
 		});
+	}
+
+	helpReply(msg) {
+		msg.reply(`__DailyActivities__ commands:
+\`-tickets\` - sends a global motivating message with remaining time to guild reset.`);
 	}
 
 	scheduleReminder(manualReminder = false) {
 		let remindMinutesBefore = 30,
-			now = new Date(),
-			reset = new Date(now),
+			hour = this.config.resetTimeUTC.hour,
+			minute = this.config.resetTimeUTC.minute,
 			diff;
 
-		reset.setUTCHours(this.config.resetTimeUTC.hour, this.config.resetTimeUTC.minute, 0, 0);
-		if (reset < now) reset.setDate(reset.getDate() + 1);
-		this.resetDay = reset.getUTCDay();
-		diff = reset.getTime() - now.getTime();
+		this.resetDay = helpers.getEventDay(hour, minute);
+		diff = helpers.getMilisecondsToEvent(hour, minute);
 
 		if (manualReminder) {
 			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${helpers.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);
@@ -157,11 +140,5 @@ Thank you for your raid tickets contribution!`;
 				this.main();
 			}, diff);
 		}
-	}
-
-	helpReply(msg) {
-		msg.reply(`here is the list of my __DailyActivities__ commands:
-\`-tickets\` - sends a global motivating message with remaining time to guild reset.
-\`-help\` - this is what you are reading right now.`);
 	}
 }

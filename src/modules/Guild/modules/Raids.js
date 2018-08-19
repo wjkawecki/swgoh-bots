@@ -6,27 +6,23 @@ import helpers from '../../../helpers/helpers';
 const MongoClient = mongodb.MongoClient;
 
 export default class Raids {
-	constructor(Client, config, data) {
-		this.config = config;
-		this.json = data;
+	constructor(Client, config, channels, data) {
 		this.Client = Client;
+		this.config = config;
+		this.channels = channels;
+		this.json = data;
 		this.timeouts = {};
 
-		this.initChannels(config.channels);
 		this.listenToMessages();
-
 		this.main();
 	}
 
-	initChannels(channels) {
-		this.channels = {};
-
-		for (let key in channels) {
-			if (this.config.DEV) {
-				this.channels[key] = this.Client.channels.get(channels.bot_playground);
-			} else {
-				this.channels[key] = this.Client.channels.get(channels[key]);
-			}
+	main(raidKey = '') {
+		try {
+			this.pushJSON(raidKey);
+		} catch (err) {
+			console.log(`${this.config.guildName}: Raids main`, err.message);
+			setTimeout(() => this.pushJSON(raidKey), this.config.retryTimeout);
 		}
 	}
 
@@ -35,11 +31,9 @@ export default class Raids {
 			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
 			const command = args.shift();
 
+			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) return;
+			if (msg.content.indexOf(this.config.commandPrefix) !== 0) return;
 			if (msg.author.bot) return;
-
-			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) {
-				return;
-			}
 
 			switch (command) {
 				case 'raids':
@@ -78,11 +72,16 @@ export default class Raids {
 						this.helpReply(msg);
 					break;
 			}
-
-			if (helpers.isBotMentioned(msg, this.Client))
-				if (msg.member.roles.has(this.config.roles.member))
-					this.helpReply(msg);
 		});
+	}
+
+	helpReply(msg) {
+		msg.reply(`__Raids__ commands:
+\`-raid [${Object.keys(this.json).join(', ')}]\` *- officer only*. Display current raid settings.
+\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next raid according to schedule.
+\`-stop [${Object.keys(this.json).join(', ')}]\` *- officer only*. Stop active raid.
+\`-next [${Object.keys(this.json).join(', ')}]\` *- officer only*. Change raid setting to next rotation.
+\`-undo\` *- officer only*. Undo your last action!`);
 	}
 
 	printRaid(msg, raidKey = null) {
@@ -153,16 +152,6 @@ ${raid.active ? `
 		return embed;
 	}
 
-	helpReply(msg) {
-		msg.reply(`here is the list of my __Raids__ commands:]
-\`-raid [${Object.keys(this.json).join(', ')}]\` *- officer only*. Display current raid settings.
-\`-start [${Object.keys(this.json).join(', ')}]\` *- officer only*. Starts next raid according to schedule.
-\`-stop [${Object.keys(this.json).join(', ')}]\` *- officer only*. Stop active raid.
-\`-next [${Object.keys(this.json).join(', ')}]\` *- officer only*. Change raid setting to next rotation.
-\`-undo\` *- officer only*. Undo your last action!
-\`-help\` - this is what you are reading right now.`);
-	}
-
 	undo(msg) {
 		if (this.undoJsonArray && this.undoJsonArray.length > 1) {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
@@ -182,15 +171,6 @@ ${raid.active ? `
 		} else {
 			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
 			console.log(`== ${this.config.guildName}: failed undo`);
-		}
-	}
-
-	async main(raidKey = '') {
-		try {
-			this.pushJSON(raidKey);
-		} catch (err) {
-			console.log(`${this.config.guildName}: main`, err.message);
-			this.pushJSON(raidKey);
 		}
 	}
 
@@ -321,8 +301,6 @@ ${raid.active ? `
 
 		for (let raid in this.json) {
 			let nextEvent = {},
-				now = new Date(),
-				nextEventTime = new Date(),
 				diff;
 
 			nextEvent.raidKey = raid;
@@ -342,9 +320,7 @@ ${raid.active ? `
 				nextEvent.phase = 0;
 			}
 
-			nextEventTime.setUTCHours(nextEvent.hour, 0, 0, 0);
-			if (nextEventTime < now) nextEventTime.setDate(nextEventTime.getDate() + 1);
-			diff = nextEventTime.getTime() - now.getTime();
+			diff = helpers.getMilisecondsToEvent(nextEvent.hour);
 
 			nextEvent.diff = diff;
 			nextEvent.config = raid.config;

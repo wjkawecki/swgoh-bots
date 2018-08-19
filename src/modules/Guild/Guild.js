@@ -4,6 +4,7 @@ import * as fs from 'fs';
 
 import Raids from './modules/Raids';
 import DailyActivities from './modules/DailyActivities';
+import TerritoryBattles from './modules/TerritoryBattles';
 
 export default class Guild {
 	constructor(config) {
@@ -63,17 +64,47 @@ export default class Guild {
 
 	initGuild(config, data) {
 		try {
+			const channels = this.initChannels(config);
+
 			this.Client.user.setActivity(config.guildName);
 
+			if (config.DEV) {
+				// channels.bot_playground.send('DEV reporting for duty!');
+			} else {
+				channels.bot_playground.send('Reporting for duty!');
+			}
+
+			// GUILD MODULES
+
 			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length)
-				new DailyActivities(this.Client, config);
+				new DailyActivities(this.Client, config, channels);
 
 			if (data.raids && Object.keys(data.raids).length)
-				new Raids(this.Client, config, data.raids);
+				new Raids(this.Client, config, channels, data.raids);
+
+			if (data.lstb && Object.keys(data.lstb).length)
+				new TerritoryBattles(this.Client, config, channels, data.lstb);
+
+			if (data.dstb && Object.keys(data.dstb).length)
+				new TerritoryBattles(this.Client, config, channels, data.dstb);
 
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);
-			setTimeout(() => this.initGuild(config, data), 30);
+			setTimeout(() => this.initGuild(config, data), config.retryTimeout);
 		}
+	}
+
+	initChannels(config) {
+		const channels = {};
+
+		for (let key in config.channels) {
+			if (config.DEV) {
+				channels[key] = this.Client.channels.get(config.channels.bot_playground);
+			} else {
+				channels[key] = this.Client.channels.get(config.channels[key]);
+			}
+		}
+
+		return channels;
 	}
 }

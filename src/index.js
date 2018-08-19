@@ -4,10 +4,11 @@ const DEV = process.env.DEV_MODE || false;
 
 const CONFIG = {
 	DEV,
+	retryTimeout: 30,
 	commandPrefix: '-',
 	mongoUrl: process.env.MONGODB_URI,
-	jsonLocalPath: `/data/Guild/#guildName#_local.json`,
-	jsonMongoPath: `/data/Guild/#guildName#_mongo.json`,
+	jsonMongoPath: `/data/Guild/mongo/#guildName#_mongo.json`,
+	jsonLocalPath: `/data/Guild/local/#guildName#_local.json`,
 	thumbnails: {
 		rancor: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_rancor.jpg',
 		aat: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_aat.jpg',
@@ -25,6 +26,7 @@ const GUILDS = [
 			sergeants_office: '440640683624103936',
 			raids_log: '440795802777157642',
 			raids_comm: '440641211066482707',
+			territory_battles: '440640976684449792',
 			bot_playground: '371742456653414410'
 		},
 		roles: {
@@ -45,6 +47,7 @@ const GUILDS = [
 			sergeants_office: '426510072584077316',
 			raids_log: '425797428642316288',
 			raids_comm: '424322828167413770',
+			territory_battles: '424322614169960448',
 			bot_playground: '371742456653414410'
 		},
 		roles: {
@@ -65,6 +68,7 @@ const GUILDS = [
 			sergeants_office: '452542377320513538',
 			raids_log: '452542450410586123',
 			raids_comm: '451656996429627393',
+			territory_battles: '451656936602075148',
 			bot_playground: '371742456653414410'
 		},
 		roles: {
@@ -85,6 +89,7 @@ const GUILDS = [
 			sergeants_office: '471294810993721344',
 			raids_log: '445592372206764043',
 			raids_comm: '401427486531125248',
+			territory_battles: '401427882490200073',
 			bot_playground: '401432399180857345'
 		},
 		roles: {
