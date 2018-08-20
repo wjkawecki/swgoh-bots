@@ -28,8 +28,8 @@ export default class TerritoryBattles {
 
 	listenToMessages() {
 		this.Client.on('message', msg => {
-			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
-			const command = args.shift();
+			const args = msg.content.slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
+			const command = args.shift().toLowerCase();
 
 			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) return;
 			if (msg.content.indexOf(this.config.commandPrefix) !== 0) return;
@@ -40,7 +40,7 @@ export default class TerritoryBattles {
 
 			if (command !== this.json.config.key) return;
 
-			switch (args[0]) {
+			switch (args[0].toLowerCase()) {
 				case undefined:
 					this.helpReply(msg);
 					break;
@@ -62,7 +62,12 @@ export default class TerritoryBattles {
 
 				case 'config':
 					if (msg.member.roles.has(this.config.roles.officer))
-						this.configTB(msg, args);
+						this.printConfig(msg);
+					break;
+
+				case 'edit':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.editConfig(msg, args);
 					break;
 			}
 		});
@@ -70,9 +75,11 @@ export default class TerritoryBattles {
 
 	helpReply(msg) {
 		msg.reply(`__${this.json.config.name}__ commands:
-\`-${this.json.config.key} start\` *- officer only*. Start Phase 1 of ${this.json.config.name}.
-\`-${this.json.config.key} end\` *- officer only*. End active ${this.json.config.name}.
-\`-${this.json.config.key} phase [1-6]\` *- officer only*. Change current phase of ${this.json.config.name}.`);
+\`-${this.json.config.key} start\` *- officer only*. Start ${this.json.phases[0].name} of ${this.json.config.key.toUpperCase()}.
+\`-${this.json.config.key} end\` *- officer only*. End active ${this.json.config.key.toUpperCase()}.
+\`-${this.json.config.key} phase [1-6]\` *- officer only*. Change current phase of ${this.json.config.key.toUpperCase()}.
+\`-${this.json.config.key} config\` *- officer only*. Display current configuration of ${this.json.config.key.toUpperCase()}.
+\`-${this.json.config.key} edit\` *- officer only*. Edit config of ${this.json.config.key.toUpperCase()}. Type \`-${this.json.config.key} config\` for more info.`);
 	}
 
 	scheduleReminders() {
@@ -82,13 +89,17 @@ export default class TerritoryBattles {
 
 		if (!this.json.activePhase) return;
 
-		if (this.json.generalReminders && this.json.generalReminders.length) {
-			this.json.generalReminders.forEach((reminder) => {
-				this.timeouts.push(setTimeout(() => {
-					this.channels.territory_battles.send(
-						`<@&${this.config.roles[reminder.mention]}>\n${reminder.text}`
-					);
-				}, milisecondsToPhaseEnd - (reminder.hoursToPhaseEnd * 60 * 60 * 1000)));
+		if (this.json.reminders && this.json.reminders.length) {
+			this.json.reminders.forEach((reminder) => {
+				const milisecondsToReminder = milisecondsToPhaseEnd - (reminder.hoursToPhaseEnd * 60 * 60 * 1000);
+
+				if (milisecondsToReminder > 0) {
+					this.timeouts.push(setTimeout(() => {
+						this.channels.territory_battles.send(
+							`<@&${this.config.roles[reminder.mention]}>\n${reminder.text}`
+						);
+					}, milisecondsToReminder));
+				}
 			});
 		}
 
@@ -124,7 +135,7 @@ export default class TerritoryBattles {
 		const nextPhase = Number(phaseIndex + 1);
 
 		this.channels.territory_battles.send(
-			`<@&${this.config.roles.member}>\n__${this.json.config.name}: ${this.json.phases[phaseIndex].name}__\n\n${this.json.phases[phaseIndex].startMessage}`
+			`<@&${this.config.roles.member}>\n__${this.json.config.name}: ${this.json.phases[phaseIndex].name}__\n\n${this.json.phases[phaseIndex].text}`
 		);
 
 		if (nextPhase > this.json.phases.length) {
@@ -137,7 +148,7 @@ export default class TerritoryBattles {
 
 		this.timeouts.push(setTimeout(() => {
 			this.main();
-		}, 2 * 60 * 1000));
+		}, 30 * 1000));
 	}
 
 	changeTBPhase(msg, phaseNumber = null) {
@@ -162,29 +173,80 @@ export default class TerritoryBattles {
 		}
 	}
 
-	configTB(msg, args = []) {
-		console.log(args);
+	printConfig(msg) {
+		this.channels.sergeants_office.send(`<@${msg.author.id}>, this is current ${this.json.config.name} configuration.
+You can edit any of the values below.
+Examples:
+\`-${this.json.config.key} edit phases 2 text New text of Phase 2 start message\`
+\`-${this.json.config.key} edit reminders 1 mention officer\`
+\`-${this.json.config.key} edit reminders 3 hoursToPhaseEnd 2.5\``);
 
-		this.channels.sergeants_office.send(`<@${msg.author.id}>, ${this.json.config.name} messages:`);
+		this.channels.sergeants_office.send(`_ _\n----- ${this.json.config.key.toUpperCase()} CONFIG START -----`);
 
 		if (this.json.phases && this.json.phases.length) {
-			this.channels.sergeants_office.send(`**__Phase start messages:__**`);
+			this.channels.sergeants_office.send(
+				`_ _
+**__Phase start messages:__** \`phases\``
+			);
 
-			this.json.phases.forEach((reminder, index) => {
+			this.json.phases.forEach((phase, index) => {
 				this.channels.sergeants_office.send(
-					`**${index + 1}**:\n"${reminder.startMessage}"`
+					`_ _
+\`${index + 1}\`
+- \`name\`: ${phase.name}
+- \`text\`: ${phase.text}`
 				);
 			});
 		}
 
-		if (this.json.generalReminders && this.json.generalReminders.length) {
-			this.channels.sergeants_office.send(`**__General messages:__**`);
+		if (this.json.reminders && this.json.reminders.length) {
+			this.channels.sergeants_office.send(
+				`_ _
+				
+**__Reminders sent each phase:__** \`reminders\``
+			);
 
-			this.json.generalReminders.forEach((reminder, index) => {
+			this.json.reminders.forEach((reminder, index) => {
 				this.channels.sergeants_office.send(
-					`**${index + 1}:**\n- Hours before phase end: ${reminder.hoursToPhaseEnd}\n- Mention role: ${reminder.mention}\n- Text: "${reminder.text}"`
+					`_ _
+\`${index + 1}\`
+- \`hoursToPhaseEnd\`: ${reminder.hoursToPhaseEnd}
+- \`mention\`: ${reminder.mention}
+- \`text\`: ${reminder.text}`
 				);
 			});
+		}
+
+		this.channels.sergeants_office.send(`_ _\n----- ${this.json.config.key.toUpperCase()} CONFIG END -----`);
+	}
+
+	editConfig(msg, args) {
+		try {
+			const oldValue = this.json[args[1]][args[2] - 1][args[3]],
+				newValue = msg.content.split(`${args[1]} ${args[2]} ${args[3]} `).pop();
+
+			if (!oldValue) throw 'wrong path';
+
+			this.json[args[1]][args[2] - 1][args[3]] = newValue;
+
+			msg.reply(
+				`succesfully edited \`${args[1]} ${args[2]} ${args[3]}\`.
+
+__Old value__:
+${oldValue}
+
+__New value__:
+${newValue}`
+			);
+
+			this.updateJSON();
+
+			this.timeouts.push(setTimeout(() => {
+				this.main();
+			}, 30 * 1000));
+
+		} catch (err) {
+			msg.reply(`there is nothing tu edit under \`${args[1]} ${args[2]} ${args[3]}\`. Try again with different parameters. Type \`-${this.json.config.key} config\` for more info.`);
 		}
 	}
 
