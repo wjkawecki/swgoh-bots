@@ -55,7 +55,7 @@ export default class DailyActivities {
 			diff;
 
 		this.resetDay = helpers.getEventDay(hour, minute);
-		diff = helpers.getMilisecondsToEvent(hour, minute);
+		diff = helpers.getMillisecondsToEvent(hour, minute);
 
 		if (manualReminder) {
 			this.channels.guild_lounge.send(`<@&${this.config.roles.member}> we have ${helpers.getReadableTime(diff)} left to get as many raid tickets as possible. Go grab them now!`);

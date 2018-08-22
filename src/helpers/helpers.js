@@ -28,7 +28,7 @@ const helpers = {
 		return `${(hour % 12) || 12}${returnString ? string : ''}`;
 	},
 
-	getMilisecondsToEvent: (hour = 0, minute = 0) => {
+	getMillisecondsToEvent: (hour = 0, minute = 0) => {
 		const dates = getDates(hour, minute);
 
 		return dates.event.getTime() - dates.now.getTime();

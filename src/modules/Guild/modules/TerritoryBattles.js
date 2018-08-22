@@ -78,7 +78,7 @@ export default class TerritoryBattles {
 	}
 
 	scheduleReminders() {
-		const milisecondsToPhaseEnd = helpers.getMilisecondsToEvent(this.json.config.startTimeUTC);
+		const millisecondsToPhaseEnd = helpers.getMillisecondsToEvent(this.json.config.startTimeUTC);
 
 		this.clearTimeouts();
 
@@ -86,23 +86,23 @@ export default class TerritoryBattles {
 
 		if (this.json.reminders && this.json.reminders.length) {
 			this.json.reminders.forEach((reminder) => {
-				const milisecondsToReminder = milisecondsToPhaseEnd - (reminder.hoursToPhaseEnd * 60 * 60 * 1000);
+				const millisecondsToReminder = millisecondsToPhaseEnd - (reminder.hoursToPhaseEnd * 60 * 60 * 1000);
 
-				if (milisecondsToReminder > 0) {
+				if (millisecondsToReminder > 0) {
 					this.timeouts.push(setTimeout(() => {
 						this.channels.territory_battles.send(
 							`<@&${this.config.roles[reminder.mention]}>\n${reminder.text}`
 						);
-					}, milisecondsToReminder));
+					}, millisecondsToReminder));
 				}
 			});
 		}
 
-		console.log(`${this.config.guildName}: ${this.json.config.name}: ${this.json.phases[this.json.activePhase - 1].name} ends in ${helpers.getReadableTime(milisecondsToPhaseEnd)}`);
+		console.log(`${this.config.guildName}: ${this.json.config.name}: ${this.json.phases[this.json.activePhase - 1].name} ends in ${helpers.getReadableTime(millisecondsToPhaseEnd)}`);
 
 		this.timeouts.push(setTimeout(() => {
 			this.startPhase(this.json.activePhase);
-		}, milisecondsToPhaseEnd));
+		}, millisecondsToPhaseEnd));
 	}
 
 	startTB(msg) {

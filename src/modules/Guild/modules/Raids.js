@@ -291,7 +291,7 @@ ${raid.active ? `
 				nextEvent.phase = 0;
 			}
 
-			diff = helpers.getMilisecondsToEvent(nextEvent.hour);
+			diff = helpers.getMillisecondsToEvent(nextEvent.hour);
 
 			nextEvent.diff = diff;
 			nextEvent.config = raid.config;
