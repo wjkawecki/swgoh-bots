@@ -11,35 +11,36 @@ export default class Guild {
 		this.readMongo(config);
 	}
 
-	readMongo(config) {
+	async readMongo(config) {
 		try {
-			mongodb.MongoClient.connect(config.mongoUrl, {useNewUrlParser: true}, (err, client) => {
-				if (err) throw err;
-
-				client.db().collection(config.mongoCollection).findOne({}, (err, mongo) => {
+			mongodb.MongoClient.connect(config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
 					if (err) throw err;
-
-					if (config.DEV) {
-						const jsonMongoPath = __dirname + '/../../..' + config.jsonMongoPath.replace('#guildName#', config.guildName);
-						const jsonLocalPath = __dirname + '/../../..' + config.jsonLocalPath.replace('#guildName#', config.guildName);
-
-						fs.writeFileSync(jsonMongoPath, JSON.stringify(mongo));
-
-						try {
-							JSON.parse(fs.readFileSync(jsonLocalPath));
-						} catch (err) {
-							fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
-						}
-					}
-
-					this.initClient(config, mongo);
-					client.close();
+					client.db().collection(config.mongoCollection).findOne()
+						.then(mongo => this.createLocalJSON(config, mongo))
+						.then(mongo => this.initClient(config, mongo))
+						.then(() => client.close());
 				});
-			});
 		} catch (err) {
 			console.log(`${config.guildName}: readMongo error`, err.message);
-			setTimeout(() => this.readMongo(config), 30);
+			setTimeout(() => this.readMongo(config), config.retryTimeout);
 		}
+	}
+
+	createLocalJSON(config, mongo) {
+		if (config.DEV) {
+			const jsonMongoPath = __dirname + '/../../..' + config.jsonMongoPath.replace('#guildName#', config.guildName);
+			const jsonLocalPath = __dirname + '/../../..' + config.jsonLocalPath.replace('#guildName#', config.guildName);
+
+			fs.writeFileSync(jsonMongoPath, JSON.stringify(mongo));
+
+			try {
+				JSON.parse(fs.readFileSync(jsonLocalPath));
+			} catch (err) {
+				fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
+			}
+		}
+
+		return mongo;
 	}
 
 	initClient(config, mongo) {

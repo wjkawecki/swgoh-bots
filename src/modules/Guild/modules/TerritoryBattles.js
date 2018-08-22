@@ -1,9 +1,6 @@
-import Discord from 'discord.js';
 import * as mongodb from 'mongodb';
 import * as fs from 'fs';
 import helpers from '../../../helpers/helpers';
-
-const MongoClient = mongodb.MongoClient;
 
 export default class TerritoryBattles {
 	constructor(Client, config, channels, data) {
@@ -125,7 +122,7 @@ export default class TerritoryBattles {
 
 			this.json.activePhase = null;
 			this.clearTimeouts();
-			this.updateJSON();
+			this.updateJSON(() => this.main());
 		} else {
 			msg.reply(`there is currently no active ${this.json.config.name}.`);
 		}
@@ -144,11 +141,7 @@ export default class TerritoryBattles {
 			this.json.activePhase = nextPhase;
 		}
 
-		this.updateJSON();
-
-		this.timeouts.push(setTimeout(() => {
-			this.main();
-		}, 30 * 1000));
+		this.updateJSON(() => this.main());
 	}
 
 	changeTBPhase(msg, phaseNumber = null) {
@@ -239,18 +232,13 @@ __New value__:
 ${newValue}`
 			);
 
-			this.updateJSON();
-
-			this.timeouts.push(setTimeout(() => {
-				this.main();
-			}, 30 * 1000));
-
+			this.updateJSON(() => this.main());
 		} catch (err) {
 			msg.reply(`there is nothing tu edit under \`${args[1]} ${args[2]} ${args[3]}\`. Try again with different parameters. Type \`-${this.json.config.key} config\` for more info.`);
 		}
 	}
 
-	updateJSON() {
+	updateJSON(cb) {
 		if (this.config.DEV) {
 			const jsonLocalPath = __dirname + '/../../../..' + this.config.jsonLocalPath.replace('#guildName#', this.config.guildName);
 			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
@@ -259,20 +247,20 @@ ${newValue}`
 				...localData,
 				[this.json.config.key]: this.json
 			}));
+
+			if (typeof cb === 'function') cb();
 		} else {
 			try {
-				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
+				mongodb.MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
 					if (err) throw err;
-
-					client.db().collection(this.config.mongoCollection).updateOne({}, { $set: { [this.json.config.key]: this.json } }, err => {
-						if (err) throw err;
-
-						client.close();
-					});
+					client.db().collection(this.config.mongoCollection)
+						.updateOne({}, { $set: { [this.json.config.key]: this.json } })
+						.then(() => { if (typeof cb === 'function') cb(); })
+						.then(() => client.close());
 				});
 			} catch (err) {
-				console.log(`${this.config.guildName}.TerritoryBattles.updateJSON(): ${this.json.config.key} MongoDB update error`, err.message);
-				this.updateJSON();
+				console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
+				setTimeout(() => this.updateJSON(cb), this.config.retryTimeout);
 			}
 		}
 	}

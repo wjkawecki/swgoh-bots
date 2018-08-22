@@ -4,7 +4,7 @@ const DEV = process.env.DEV_MODE || false;
 
 const CONFIG = {
 	DEV,
-	retryTimeout: 30,
+	retryTimeout: 30* 1000,
 	commandPrefix: '-',
 	mongoUrl: process.env.MONGODB_URI,
 	jsonMongoPath: `/data/Guild/mongo/#guildName#_mongo.json`,

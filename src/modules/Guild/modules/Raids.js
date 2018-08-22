@@ -3,8 +3,6 @@ import * as mongodb from 'mongodb';
 import * as fs from 'fs';
 import helpers from '../../../helpers/helpers';
 
-const MongoClient = mongodb.MongoClient;
-
 export default class Raids {
 	constructor(Client, config, channels, data) {
 		this.Client = Client;
@@ -100,9 +98,10 @@ export default class Raids {
 
 			raid.active = null;
 
-			this.updateJSON();
-			this.printRaid(msg, raidKey);
-			this.main(raidKey);
+			this.updateJSON(() => {
+				this.printRaid(msg, raidKey);
+				this.main(raidKey);
+			});
 		} else {
 			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to stop. Example: \`-stop rancor\``);
 		}
@@ -119,9 +118,10 @@ export default class Raids {
 				rotationTimeUTC: nextRotationTimeUTC
 			};
 
-			this.updateJSON();
-			this.printRaid(msg, raidKey);
-			this.main(raidKey);
+			this.updateJSON(() => {
+				this.printRaid(msg, raidKey);
+				this.main(raidKey);
+			});
 		} else {
 			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to change. Example: \`-next rancor\``);
 		}
@@ -165,9 +165,10 @@ ${raid.active ? `
 				this.clearChannel(this.channels.raids_log);
 			}
 
-			this.updateJSON();
-			this.printRaid(msg);
-			this.main();
+			this.updateJSON(() => {
+				this.printRaid(msg);
+				this.main();
+			});
 		} else {
 			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
 			console.log(`== ${this.config.guildName}: failed undo`);
@@ -202,7 +203,7 @@ ${raid.active ? `
 		this.processRaids(raidKey);
 	}
 
-	updateJSON() {
+	updateJSON(cb) {
 		if (this.config.DEV) {
 			const jsonLocalPath = __dirname + '/../../../..' + this.config.jsonLocalPath.replace('#guildName#', this.config.guildName);
 			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
@@ -211,20 +212,20 @@ ${raid.active ? `
 				...localData,
 				raids: this.json
 			}));
+
+			if (typeof cb === 'function') cb();
 		} else {
 			try {
-				MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
+				mongodb.MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
 					if (err) throw err;
-
-					client.db().collection(this.config.mongoCollection).updateOne({}, { $set: { raids: this.json } }, err => {
-						if (err) throw err;
-
-						client.close();
-					});
+					client.db().collection(this.config.mongoCollection)
+						.updateOne({}, { $set: { raids: this.json } })
+						.then(() => { if (typeof cb === 'function') cb(); })
+						.then(() => client.close());
 				});
 			} catch (err) {
 				console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
-				this.updateJSON();
+				setTimeout(() => this.updateJSON(cb), this.config.retryTimeout);
 			}
 		}
 	}
@@ -282,8 +283,7 @@ ${raid.active ? `
 					rotationTimeUTC: nextRotationTimeUTC
 				};
 
-				this.updateJSON();
-				this.main(raidKey);
+				this.updateJSON(() => this.main(raidKey));
 			}
 		} else {
 			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to start. Example: \`-start rancor\``);
@@ -362,12 +362,12 @@ ${raid.active ? `
 			// 	}
 			// }
 
-			this.timeouts[raid.raidKey].push(setTimeout(() => {
-				this.channels.sergeants_office.send(
-					`<@&${this.config.roles.officer}> Prepare to start ${raid.name} in ${remindMinutesBefore} minutes.`,
-					{'tts': true}
-				);
-			}, diffMinutes));
+			// this.timeouts[raid.raidKey].push(setTimeout(() => {
+			// 	this.channels.sergeants_office.send(
+			// 		`<@&${this.config.roles.officer}> Prepare to start ${raid.name} in ${remindMinutesBefore} minutes.`,
+			// 		{'tts': true}
+			// 	);
+			// }, diffMinutes));
 
 			this.timeouts[raid.raidKey].push(setTimeout(() => {
 				this.channels.sergeants_office.send(
@@ -413,12 +413,8 @@ ${raid.active ? `
 					`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`
 				);
 
-				this.updateJSON();
+				this.updateJSON(() => this.main(raid.raidKey));
 			}, raid.diff));
-
-			this.timeouts[raid.raidKey].push(setTimeout(() => {
-				this.main(raid.raidKey);
-			}, raid.diff + 120000));
 
 			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)}`);
 		}
