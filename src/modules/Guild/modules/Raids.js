@@ -1,6 +1,4 @@
 import Discord from 'discord.js';
-import * as mongodb from 'mongodb';
-import * as fs from 'fs';
 import helpers from '../../../helpers/helpers';
 
 export default class Raids {
@@ -98,7 +96,7 @@ export default class Raids {
 
 			raid.active = null;
 
-			this.updateJSON(() => {
+			helpers.updateJSON(this.config, 'raids', this.json, () => {
 				this.printRaid(msg, raidKey);
 				this.main(raidKey);
 			});
@@ -118,7 +116,7 @@ export default class Raids {
 				rotationTimeUTC: nextRotationTimeUTC
 			};
 
-			this.updateJSON(() => {
+			helpers.updateJSON(this.config, 'raids', this.json, () => {
 				this.printRaid(msg, raidKey);
 				this.main(raidKey);
 			});
@@ -165,7 +163,7 @@ ${raid.active ? `
 				this.clearChannel(this.channels.raids_log);
 			}
 
-			this.updateJSON(() => {
+			helpers.updateJSON(this.config, 'raids', this.json, () => {
 				this.printRaid(msg);
 				this.main();
 			});
@@ -201,33 +199,6 @@ ${raid.active ? `
 		this.undoJsonArray = this.undoJsonArray || [];
 		this.undoJsonArray.push(JSON.parse(JSON.stringify(this.json)));
 		this.processRaids(raidKey);
-	}
-
-	updateJSON(cb) {
-		if (this.config.DEV) {
-			const jsonLocalPath = __dirname + '/../../../..' + this.config.jsonLocalPath.replace('#guildName#', this.config.guildName);
-			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
-
-			fs.writeFileSync(jsonLocalPath, JSON.stringify({
-				...localData,
-				raids: this.json
-			}));
-
-			if (typeof cb === 'function') cb();
-		} else {
-			try {
-				mongodb.MongoClient.connect(this.config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
-					if (err) throw err;
-					client.db().collection(this.config.mongoCollection)
-						.updateOne({}, { $set: { raids: this.json } })
-						.then(() => { if (typeof cb === 'function') cb(); })
-						.then(() => client.close());
-				});
-			} catch (err) {
-				console.log(`${this.config.guildName}.Raids.updateJSON(): MongoDB update error`, err.message);
-				setTimeout(() => this.updateJSON(cb), this.config.retryTimeout);
-			}
-		}
 	}
 
 	processRaids(raidKey) {
@@ -283,7 +254,7 @@ ${raid.active ? `
 					rotationTimeUTC: nextRotationTimeUTC
 				};
 
-				this.updateJSON(() => this.main(raidKey));
+				helpers.updateJSON(this.config, 'raids', this.json, () => this.main(raidKey));
 			}
 		} else {
 			msg.reply(`please specify which raid (\`${Object.keys(this.json).join('`, `')}\`) you want to start. Example: \`-start rancor\``);
@@ -413,7 +384,7 @@ ${raid.active ? `
 					`<@&${this.config.roles.member}> __${raid.name}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`
 				);
 
-				this.updateJSON(() => this.main(raid.raidKey));
+				helpers.updateJSON(this.config, 'raids', this.json, () => this.main(raid.raidKey));
 			}, raid.diff));
 
 			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)}`);

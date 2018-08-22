@@ -1,3 +1,6 @@
+import * as mongodb from "mongodb";
+import * as fs from 'fs';
+
 const getDates = (hour = 0, minute = 0) => {
 	const now = new Date(),
 		event = new Date(now);
@@ -35,6 +38,33 @@ const helpers = {
 		const dates = getDates(hour, minute);
 
 		return dates.event.getUTCDay();
+	},
+
+	updateJSON: (config, key, value, cb) => {
+		if (config.DEV) {
+			const jsonLocalPath = __dirname + '/../..' + config.jsonLocalPath.replace('#guildName#', config.guildName);
+			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
+
+			fs.writeFileSync(jsonLocalPath, JSON.stringify({
+				...localData,
+				[key]: value
+			}));
+
+			if (typeof cb === 'function') cb();
+		} else {
+			try {
+				mongodb.MongoClient.connect(config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
+					if (err) throw err;
+					client.db().collection(config.mongoCollection)
+						.updateOne({}, { $set: { [key]: value } })
+						.then(() => { if (typeof cb === 'function') cb(); })
+						.then(() => client.close());
+				});
+			} catch (err) {
+				console.log(`${config.guildName}.updateJSON(${key}): MongoDB update error`, err.message);
+				setTimeout(() => helpers.updateJSON(config, cb), config.retryTimeout);
+			}
+		}
 	}
 };
 
