@@ -108,5 +108,5 @@ import BB8 from './modules/BB8/BB8';
 import Guild from './modules/Guild/Guild';
 
 new Heroku(CONFIG.DEV);
-new BB8();
+new BB8(CONFIG.retryTimeout);
 GUILDS.forEach(guild => new Guild({ ...CONFIG, ...guild}));
