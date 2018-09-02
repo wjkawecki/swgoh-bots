@@ -58,11 +58,19 @@ export default class Guild {
 		}
 
 		this.Client = new Discord.Client();
-		this.Client.login(config.botToken)
-			.catch(() => setTimeout(() => this.Client.login(config.botToken), config.retryTimeout));
-
 		this.Client.on('ready', () => this.initGuild(config, data));
 		this.Client.on('error', err => console.log(`${config.guildName}: Client error`, err.message));
+		this.loginClient(config, data);
+	}
+
+	loginClient(config, data) {
+		this.Client.login(config.botToken)
+			.catch(err => {
+				console.log(`${config.guildName}: Client.login error`, err.message);
+				setTimeout(() => this.loginClient(config, data), config.retryTimeout);
+			});
+
+
 	}
 
 	initGuild(config, data) {

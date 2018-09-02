@@ -8,16 +8,23 @@ const clientGame = 'Arena';
 export default class BB8 {
 	constructor(retryTimeout) {
 		this.main = this.main.bind(this);
-		this.Client = new Discord.Client();
-		this.Client.login(process.env.TOKEN_BB8)
-			.catch(() => setTimeout(() => this.Client.login(process.env.TOKEN_BB8), retryTimeout));
-		this.Client.on('ready',  () => this.initBot());
-		this.Client.on('error', error => console.log(`BB8: Client error`, error.message));
 
 		this.sheet = XLSX.utils.sheet_to_json(XLSX.readFile(path.resolve(__dirname, '../../../data/BB8.xlsx')).Sheets.shard);
-
 		this.parseXlsx();
-		this.main();
+
+		this.Client = new Discord.Client();
+		this.Client.on('ready',  () => this.initBot());
+		this.Client.on('error', error => console.log(`BB8: Client error`, error.message));
+		this.loginClient(retryTimeout);
+	}
+
+	loginClient(retryTimeout) {
+		this.Client.login(process.env.TOKEN_BB8)
+			.then(this.main)
+			.catch(err => {
+				console.log(`BB8: Client.login error`, err.message);
+				setTimeout(() => this.loginClient(retryTimeout), retryTimeout);
+			});
 	}
 
 	async main() {
