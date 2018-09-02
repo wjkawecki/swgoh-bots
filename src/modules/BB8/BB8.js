@@ -124,7 +124,7 @@ export default class BB8 {
 			} else {
 				dif.setTime(dif.getTime() + 60000 - round);
 			}
-			mate.time = `${String(dif.getUTCHours()).padStart(2, '00')}:${String(dif.getUTCMinutes()).padStart(2, '00')}`;
+			mate.time = `${String(dif.getUTCHours()).padStart(2, '00')}h ${String(dif.getUTCMinutes()).padStart(2, '00')}m`;
 		}
 		this.mates.sort((a, b) => {
 			return a.timeUntilPayout - b.timeUntilPayout;
@@ -138,21 +138,36 @@ export default class BB8 {
 
 			for (let i in this.mates) {
 				if (i > '1') {
-					desc += '\n`-`';
+					desc += '\n_ _';
 				}
 
 				desc += `\n\`${this.mates[i].time}\`    `;
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
-					if (mate.swgohgg) {
-						desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/u/${mate.swgohgg.trim()})    `;
-					} else {
-						desc += `${mate.flag.trim()} ${mate.name.trim()}    `;
+
+					if (mate.flag.trim() !== ':skull_crossbones:') {
+						if (mate.swgohgg) {
+							desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/u/${mate.swgohgg.trim()}) · `;
+						} else {
+							desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
+						}
 					}
 				}
 
 				if (i === '0') {
+					for (let j in this.mates[i].mates) {
+						const mate = this.mates[i].mates[j];
+
+						if (mate.flag.trim() === ':skull_crossbones:') {
+							desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
+						}
+					}
+
+					desc = desc.substring(0, desc.length - 3);
+
 					desc += '\n\n\nFollowing payouts:';
+				} else {
+					desc = desc.substring(0, desc.length - 3);
 				}
 			}
 
