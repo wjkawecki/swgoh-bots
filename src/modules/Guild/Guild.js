@@ -67,7 +67,7 @@ export default class Guild {
 		this.Client.login(config.botToken)
 			.catch(err => {
 				console.log(`${config.guildName}: Client.login error`, err.message);
-				setTimeout(() => this.initClient(config, data), config.retryTimeout);
+				setTimeout(() => this.readMongo(config), config.retryTimeout);
 			});
 
 
