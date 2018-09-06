@@ -73,6 +73,7 @@ export default class TerritoryBattles {
 \`-${this.json.config.key} start\` *- officer only*. Start ${this.json.phases[0].name} of ${this.json.config.key.toUpperCase()}.
 \`-${this.json.config.key} end\` *- officer only*. End active ${this.json.config.key.toUpperCase()}.
 \`-${this.json.config.key} phase [1-6]\` *- officer only*. Change current phase of ${this.json.config.key.toUpperCase()}.
+\`-${this.json.config.key} phase done\` *- officer only*. Mark current phase as done and cancel all scheduled phase reminders.
 \`-${this.json.config.key} config\` *- officer only*. Display current configuration of ${this.json.config.key.toUpperCase()}.
 \`-${this.json.config.key} edit\` *- officer only*. Edit config of ${this.json.config.key.toUpperCase()}. Type \`-${this.json.config.key} config\` for more info.`);
 	}
@@ -84,7 +85,7 @@ export default class TerritoryBattles {
 
 		if (!this.json.activePhase) return;
 
-		if (this.json.reminders && this.json.reminders.length) {
+		if (!this.json.isPhaseDone && this.json.reminders && this.json.reminders.length) {
 			this.json.reminders.forEach((reminder) => {
 				const millisecondsToReminder = millisecondsToPhaseEnd - (reminder.hoursToPhaseEnd * 60 * 60 * 1000);
 
@@ -98,7 +99,7 @@ export default class TerritoryBattles {
 			});
 		}
 
-		console.log(`${this.config.guildName}: ${this.json.config.name}: ${this.json.phases[this.json.activePhase - 1].name} ends in ${helpers.getReadableTime(millisecondsToPhaseEnd)}`);
+		console.log(`${this.config.guildName}: ${this.json.config.name}: ${this.json.phases[this.json.activePhase - 1].name} ends in ${helpers.getReadableTime(millisecondsToPhaseEnd)}${this.json.isPhaseDone ? ' - DONE' : ''}`);
 
 		this.timeouts.push(setTimeout(() => {
 			this.startPhase(this.json.activePhase);
@@ -133,6 +134,8 @@ export default class TerritoryBattles {
 			`<@&${this.config.roles.member}>\n__${this.json.config.name}: ${this.json.phases[phaseIndex].name}__\n\n${this.json.phases[phaseIndex].text}`
 		);
 
+		this.json.isPhaseDone = false;
+
 		if (nextPhase > this.json.phases.length) {
 			this.json.activePhase = null;
 		} else {
@@ -143,24 +146,28 @@ export default class TerritoryBattles {
 	}
 
 	changeTBPhase(msg, phaseNumber = null) {
-		if (!phaseNumber) {
+		if (phaseNumber === 'done') {
+			msg.reply(`well done! Removing all scheduled reminders for ${this.json.config.name} Phase ${this.json.activePhase}.`);
+
+			this.json.isPhaseDone = true;
+
+			helpers.updateJSON(this.config, this.json.config.key, this.json, () => this.main());
+		} else if (!phaseNumber) {
 			if (this.json.activePhase) {
 				msg.reply(`${this.json.config.name} is currently in Phase ${this.json.activePhase}.`);
 			} else {
 				msg.reply(`there is currently no active ${this.json.config.name}.`);
 			}
+		} else if (!isNaN(phaseNumber)) {
+			const number = Math.floor(parseInt(phaseNumber));
 
-			return;
-		}
+			if (number > 0 && number <= this.json.phases.length) {
+				msg.reply(`changing ${this.json.config.name} phase to ${number}!`);
 
-		const number = Math.floor(parseInt(phaseNumber));
-
-		if (number > 0 && number <= this.json.phases.length) {
-			msg.reply(`changing ${this.json.config.name} phase to ${number}!`);
-
-			this.startPhase(number - 1);
-		} else {
-			msg.reply(`please use proper phase number: \`[1,2,3,4,5,6]\`.`);
+				this.startPhase(number - 1);
+			} else {
+				msg.reply(`please use proper phase number: \`[1,2,3,4,5,6]\`.`);
+			}
 		}
 	}
 
