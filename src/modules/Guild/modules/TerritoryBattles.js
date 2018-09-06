@@ -88,7 +88,7 @@ export default class TerritoryBattles {
 			this.json.reminders.forEach((reminder) => {
 				const millisecondsToReminder = millisecondsToPhaseEnd - (reminder.hoursToPhaseEnd * 60 * 60 * 1000);
 
-				if (millisecondsToReminder > 0) {
+				if (millisecondsToReminder > 0 && this.json.activePhase >= reminder.minPhase) {
 					this.timeouts.push(setTimeout(() => {
 						this.channels.territory_battles.send(
 							`<@&${this.config.roles[reminder.mention]}>\n${reminder.text}`
