@@ -90,17 +90,17 @@ export default class Guild {
 
 			// GUILD MODULES
 
-			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length)
-				new DailyActivities(this.Client, config, channels);
+			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length && !this.DailyActivities)
+				this.DailyActivities = new DailyActivities(this.Client, config, channels);
 
-			if (data.raids && Object.keys(data.raids).length)
-				new Raids(this.Client, config, channels, data.raids);
+			if (data.raids && Object.keys(data.raids).length && !this.Raids)
+				this.Raids = new Raids(this.Client, config, channels, data.raids);
 
-			if (data.lstb && Object.keys(data.lstb).length)
-				new TerritoryBattles(this.Client, config, channels, data.lstb);
+			if (data.lstb && Object.keys(data.lstb).length && !this.LSTB)
+				this.LSTB = new TerritoryBattles(this.Client, config, channels, data.lstb);
 
-			if (data.dstb && Object.keys(data.dstb).length)
-				new TerritoryBattles(this.Client, config, channels, data.dstb);
+			if (data.dstb && Object.keys(data.dstb).length && !this.DSTB)
+				this.DSTB = new TerritoryBattles(this.Client, config, channels, data.dstb);
 
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);
