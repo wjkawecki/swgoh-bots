@@ -146,7 +146,7 @@ export default class TerritoryBattles {
 	}
 
 	changeTBPhase(msg, phaseNumber = null) {
-		if (phaseNumber === 'done') {
+		if (phaseNumber === 'done' && !this.json.isPhaseDone) {
 			msg.reply(`well done! Removing all scheduled reminders for ${this.json.config.name} Phase ${this.json.activePhase}.`);
 
 			this.json.isPhaseDone = true;
