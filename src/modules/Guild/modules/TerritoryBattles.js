@@ -130,16 +130,16 @@ export default class TerritoryBattles {
 	startPhase(phaseIndex) {
 		const nextPhase = Number(phaseIndex + 1);
 
-		this.channels.territory_battles.send(
-			`<@&${this.config.roles.member}>\n__${this.json.config.name}: ${this.json.phases[phaseIndex].name}__\n\n${this.json.phases[phaseIndex].text}`
-		);
-
 		this.json.isPhaseDone = false;
 
 		if (nextPhase > this.json.phases.length) {
 			this.json.activePhase = null;
 		} else {
 			this.json.activePhase = nextPhase;
+
+			this.channels.territory_battles.send(
+				`<@&${this.config.roles[this.json.phases[phaseIndex].mention]}>\n__${this.json.config.name}: ${this.json.phases[phaseIndex].name}__\n\n${this.json.phases[phaseIndex].text}`
+			);
 		}
 
 		helpers.updateJSON(this.config, this.json.config.key, this.json, () => this.main());
@@ -192,6 +192,7 @@ Examples:
 					`_ _
 \`${index + 1}\`
 - \`name\`: ${phase.name}
+- \`mention\`: ${phase.mention}
 - \`text\`: ${phase.text}`
 				);
 			});
