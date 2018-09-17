@@ -59,9 +59,9 @@ export default class Guild {
 
 		this.Client = new Discord.Client();
 		this.Client.on('ready', () => this.initGuild(config, data));
-		this.Client.on('error', error => console.log(`${config.guildName}: Client error: `, error.message));
+		this.Client.on('error', error => console.log(`${config.guildName}: Client error:`, error.message));
 		this.Client.on('reconnecting',() => console.log(`${config.guildName}: Client reconnecting`));
-		this.Client.on('resume', replayed => console.log(`${config.guildName}: Client resume: `, replayed));
+		this.Client.on('resume', replayed => console.log(`${config.guildName}: Client resume:`, replayed));
 		this.Client.on('disconnect',() => console.log(`${config.guildName}: Client disconnect`));
 		this.loginClient(config);
 	}

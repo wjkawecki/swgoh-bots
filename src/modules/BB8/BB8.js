@@ -14,9 +14,9 @@ export default class BB8 {
 
 		this.Client = new Discord.Client();
 		this.Client.on('ready',  () => this.initBot());
-		this.Client.on('error', error => console.log(`BB8: Client error`, error.message));
+		this.Client.on('error', error => console.log(`BB8: Client error:`, error.message));
 		this.Client.on('reconnecting', () => console.log(`BB8: Client reconnecting`));
-		this.Client.on('resume', replayed => console.log(`BB8: Client resume`, replayed));
+		this.Client.on('resume', replayed => console.log(`BB8: Client resume:`, replayed));
 		this.Client.on('disconnect', () => console.log(`BB8: Client disconnect`));
 		this.loginClient(retryTimeout);
 	}
