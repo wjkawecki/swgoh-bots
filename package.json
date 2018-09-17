@@ -20,10 +20,7 @@
     "url": "https://github.com/wjkawecki/swgoh-bots/issues"
   },
   "homepage": "https://github.com/wjkawecki/swgoh-bots#readme",
-  "devDependencies": {
-    "babel-plugin-transform-es2015-spread": "6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0"
-  },
+  "devDependencies": {},
   "dependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",

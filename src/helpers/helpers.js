@@ -45,10 +45,11 @@ const helpers = {
 			const jsonLocalPath = __dirname + '/../..' + config.jsonLocalPath.replace('#guildName#', config.guildName);
 			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
 
-			fs.writeFileSync(jsonLocalPath, JSON.stringify({
-				...localData,
-				[key]: value
-			}));
+			fs.writeFileSync(jsonLocalPath, JSON.stringify(Object.assign(
+				{},
+				localData,
+				{ [key]: value }
+			)));
 
 			if (typeof cb === 'function') cb();
 		} else {

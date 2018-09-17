@@ -109,4 +109,4 @@ import Guild from './modules/Guild/Guild';
 
 new Heroku(CONFIG.DEV);
 new BB8(CONFIG.retryTimeout);
-GUILDS.forEach(guild => new Guild({ ...CONFIG, ...guild}));
+GUILDS.forEach(guild => new Guild(Object.assign({}, CONFIG, guild)));
