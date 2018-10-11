@@ -152,6 +152,8 @@ export default class TerritoryBattles {
 			this.json.isPhaseDone = true;
 
 			helpers.updateJSON(this.config, this.json.config.key, this.json, () => this.main());
+		} else if (phaseNumber === 'done' && this.json.isPhaseDone) {
+			msg.reply(`take it easy! ${this.json.config.name} Phase ${this.json.activePhase} has been already flagged as \`done\`.`);
 		} else if (!phaseNumber) {
 			if (this.json.activePhase) {
 				msg.reply(`${this.json.config.name} is currently in Phase ${this.json.activePhase}.`);
