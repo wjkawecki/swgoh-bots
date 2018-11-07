@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import Raids from './modules/Raids';
 import DailyActivities from './modules/DailyActivities';
 import TerritoryBattles from './modules/TerritoryBattles';
+import ReadCheck from './modules/ReadCheck';
 
 export default class Guild {
 	constructor(config) {
@@ -92,6 +93,9 @@ export default class Guild {
 
 			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length && !this.DailyActivities)
 				this.DailyActivities = new DailyActivities(this.Client, config, channels);
+
+			if (data.readCheck && Object.keys(data.readCheck).length && !this.ReadCheck)
+				this.ReadCheck = new ReadCheck(this.Client, config, channels, data.readCheck);
 
 			if (data.raids && Object.keys(data.raids).length && !this.Raids)
 				this.Raids = new Raids(this.Client, config, channels, data.raids);

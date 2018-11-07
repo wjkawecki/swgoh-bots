@@ -35,8 +35,9 @@ export default class TerritoryBattles {
 
 			if (command !== this.json.config.key) return;
 
-			switch (args[0].toLowerCase()) {
-				case undefined:
+			switch ((args[0] || '').toLowerCase()) {
+				case '':
+				case 'help':
 					this.helpReply(msg);
 					break;
 
