@@ -79,12 +79,19 @@ export default class ReadCheck {
 	registerCheck(messageReaction, timeout = this.config.DEV ? (60 * 60 * 1000) : (24 * 60 * 60 * 1000)) {
 		const message = {};
 
+		if (!this.config.DEV && messageReaction.message.channel.id === this.config.channels.bot_playground) return;
+
 		if (!this.data.messages.find(message => message.id === messageReaction.message.id)) {
+			const now = new Date().getTime();
+
 			// register new message
 			message.channelId = messageReaction.message.channel.id;
 			message.id = messageReaction.message.id;
-			message.time = new Date(new Date().getTime() + timeout).getTime();
+			message.authorId = messageReaction.message.author.id;
+			message.timeRunCheck = new Date(now + timeout).getTime();
+			message.timeAdded = now;
 			message.timeout = timeout;
+			message.reaction = messageReaction.emoji.name;
 
 			this.data.messages.push(message);
 
