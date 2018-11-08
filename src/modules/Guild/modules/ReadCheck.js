@@ -141,7 +141,7 @@ ${messageReaction.message.url}`);
 		msg.reply(`__ReadCheck__ commands:
 \`emoji reaction\` *- officer only*. React on a new message with one of the \`:readCheck_?h:\` emojis. You can choose from a set of different time spans: from 1 to 48 hours.
  
- Once scheduled, ReadCheck will run through all people @mentioned in that message after certain time and list those who didn't react to that message with an emoji (emoji type doesn't matter).`
+Once scheduled, ReadCheck will run through all people @mentioned in that message after certain time and list those who didn't react to that message with an emoji (emoji type doesn't matter).`
 		);
 	}
 
