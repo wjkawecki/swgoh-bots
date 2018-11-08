@@ -8,7 +8,7 @@ export default class ReadCheck {
 		this.data = data;
 		this.timeouts = [];
 
-		// this.listenToMessages();
+		this.listenToMessages();
 		this.listenToReactions();
 		this.main();
 	}
@@ -41,10 +41,6 @@ export default class ReadCheck {
 				case 'help':
 					this.helpReply(msg);
 					break;
-
-				default:
-					if (msg.member.roles.has(this.config.roles.officer))
-						this.initCheck(msg, args);
 			}
 		});
 	}
@@ -53,22 +49,24 @@ export default class ReadCheck {
 		this.Client.on('messageReactionAdd', (messageReaction, user) => {
 			if (user.lastMessage && user.lastMessage.member.roles.has(this.config.roles.officer)) {
 				if (this.hasReaction(messageReaction, 'readCheck_1h'))
-					this.registerCheck(messageReaction, 60 * 60 * 1000);
+					this.addCheck(messageReaction, user, 60 * 60 * 1000);
 
 				if (this.hasReaction(messageReaction, 'readCheck_6h'))
-					this.registerCheck(messageReaction, 6 * 60 * 60 * 1000);
+					this.addCheck(messageReaction, user, 6 * 60 * 60 * 1000);
 
 				if (this.hasReaction(messageReaction, 'readCheck_12h'))
-					this.registerCheck(messageReaction, 12 * 60 * 60 * 1000);
+					this.addCheck(messageReaction, user, 12 * 60 * 60 * 1000);
 
 				if (this.hasReaction(messageReaction, 'readCheck_24h'))
-					this.registerCheck(messageReaction, 24 * 60 * 60 * 1000);
+					this.addCheck(messageReaction, user, 24 * 60 * 60 * 1000);
 
 				if (this.hasReaction(messageReaction, 'readCheck_48h'))
-					this.registerCheck(messageReaction, 48 * 60 * 60 * 1000);
-
-
+					this.addCheck(messageReaction, user, 48 * 60 * 60 * 1000);
 			}
+		});
+
+		this.Client.on('messageReactionRemove', (messageReaction, user) => {
+			this.deleteCheck(messageReaction, user);
 		});
 	}
 
@@ -76,40 +74,74 @@ export default class ReadCheck {
 		return messageReaction.emoji.name === emojiName;
 	}
 
-	registerCheck(messageReaction, timeout = this.config.DEV ? (60 * 60 * 1000) : (24 * 60 * 60 * 1000)) {
-		const message = {};
+	addCheck(messageReaction, user, timeout = this.config.DEV ? (60 * 60 * 1000) : (24 * 60 * 60 * 1000)) {
+		let message = {};
 
 		if (!this.config.DEV && messageReaction.message.channel.id === this.config.channels.bot_playground) return;
 
-		if (!this.data.messages.find(message => message.id === messageReaction.message.id)) {
-			const now = new Date().getTime();
+		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
+		const now = new Date().getTime();
 
+		if (messageIndex === -1) {
 			// register new message
 			message.channelId = messageReaction.message.channel.id;
 			message.id = messageReaction.message.id;
 			message.authorId = messageReaction.message.author.id;
+			message.userId = user.id;
 			message.timeRunCheck = new Date(now + timeout).getTime();
 			message.timeAdded = now;
 			message.timeout = timeout;
-			message.reaction = messageReaction.emoji.name;
+			message.emojiName = messageReaction.emoji.name;
+			message.emojiId = messageReaction.emoji.id;
 
 			this.data.messages.push(message);
 
 			helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-				messageReaction.message.reply(`registered message for read check in ${helpers.getReadableTime(timeout)}.
+				messageReaction.message.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''}scheduling this message for ReadCheck after ${helpers.getReadableTime(timeout)}.
 				
 ${messageReaction.message.url}`);
 				this.main();
 			});
 		} else {
-			messageReaction.message.reply(`this message has already been scheduled for read check!`);
+			message = this.data.messages[messageIndex];
+
+			if (message.userId === user.id) {
+
+			}
+				messageReaction.message.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''}this message has already been scheduled for ReadCheck after ${helpers.getReadableTime(message.timeout)}!
+				
+Time left to ReadCheck: ${helpers.getReadableTime(new Date(message.timeRunCheck - now).getTime())}
+
+If you want to remove ReadCheck for this message, ${message.authorId !== message.userId ? `<@${message.userId}> has to ` : ''}remove <:${message.emojiName}:${message.emojiId}> reaction.
+						
+${messageReaction.message.url}`);
+		}
+	}
+
+	deleteCheck(messageReaction, user) {
+		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
+
+		if (messageIndex > -1) {
+			const message = this.data.messages[messageIndex];
+
+			if (message.userId === user.id && message.emojiName === messageReaction.emoji.name) {
+				this.data.messages.splice(messageIndex, 1);
+
+				helpers.updateJSON(this.config, 'readCheck', this.data, () => {
+					messageReaction.message.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''}scheduled ReadCheck of this message has been removed.
+
+${messageReaction.message.url}`);
+					this.main();
+				});
+			}
 		}
 	}
 
 	helpReply(msg) {
 		msg.reply(`__ReadCheck__ commands:
-\`-readCheck start\` *- officer only*. Start ReadCheck.
-\`-readCheck edit\` *- officer only*. Edit config of ReadCheck`
+\`emoji reaction\` *- officer only*. React on a new message with one of the \`:readCheck_?h:\` emojis. You can choose from a set of different time spans: from 1 to 48 hours.
+ 
+ Once scheduled, ReadCheck will run through all people @mentioned in that message after certain time and list those who didn't react to that message with an emoji (emoji type doesn't matter).`
 		);
 	}
 
@@ -121,10 +153,9 @@ ${messageReaction.message.url}`);
 		const messagesToDelete = [];
 
 		this.data.messages.forEach((message, index) => {
-			const millisecondsToCheck = helpers.getMillisecondsToTime(message.time);
+			const millisecondsToCheck = helpers.getMillisecondsToTime(message.timeRunCheck);
 
-			if (millisecondsToCheck > 0) {
-				this.timeouts.push(setTimeout(() => {
+			this.timeouts.push(setTimeout(() => {
 				const channel = this.Client.channels.get(message.channelId);
 				const channelUsers = new Set();
 				const mentionedUsers = new Set();
@@ -135,7 +166,11 @@ ${messageReaction.message.url}`);
 				channel.fetchMessage(message.id)
 					.then(msg => {
 						channel.members.forEach(member => {
-							channelUsers.add(member.id);
+							if (!member.user.bot)
+								channelUsers.add({
+									id: member.id,
+									displayName: member.displayName
+								});
 						});
 
 						if (msg.mentions.everyone) {
@@ -151,7 +186,7 @@ ${messageReaction.message.url}`);
 								});
 							});
 
-							pingedUsers = new Set([...channelUsers].filter(channelUser => mentionedUsers.has(channelUser)));
+							pingedUsers = new Set([...channelUsers].filter(channelUser => mentionedUsers.has(channelUser.id)));
 						}
 
 						const reactionPromises = [];
@@ -166,30 +201,31 @@ ${messageReaction.message.url}`);
 						});
 
 						Promise.all(reactionPromises).then(() => {
-							slackers = new Set([...pingedUsers].filter(pingedUser => !reactingUsers.has(pingedUser)));
+							slackers = new Set([...pingedUsers].filter(pingedUser => !reactingUsers.has(pingedUser.id)));
 							slackers.delete(msg.author.id);
 
 							if (slackers.size) {
-								this.sendReport(msg, slackers, message.timeout);
+								slackers = new Set([...slackers].sort((a,b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
+								this.sendReport(msg, slackers, message);
 							}
 						});
 					});
-				}, millisecondsToCheck));
-			} else {
+			}, Math.max(millisecondsToCheck, 0)));
+
+			if (millisecondsToCheck <= 0)
 				messagesToDelete.unshift(index);
-			}
 		});
 
 		messagesToDelete.forEach(index => this.data.messages.splice(index, 1));
 		helpers.updateJSON(this.config, 'readCheck', this.data);
 	}
 
-	sendReport(msg, slackers, timeout) {
-		msg.reply(`here is a list of people who didn't react to your message in ${helpers.getReadableTime(timeout)}:
+	sendReport(msg, slackers, message) {
+		msg.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''}ReadCheck time! List of @mentioned people who didn't react to your message in ${helpers.getReadableTime(message.timeout)}:
 		
 ${msg.url}
 
-${[...slackers].map(slacker => `<@${slacker}>`).join('\n')}`
+${[...slackers].map(slacker => `<@${slacker.id}>`).join('\n')}`
 		);
 	}
 

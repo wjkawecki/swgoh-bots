@@ -14,9 +14,9 @@ const getDates = (hour = 0, minute = 0) => {
 const helpers = {
 	getReadableTime: (seconds, showSeconds = false) => {
 		const time = new Date(seconds),
-			secondsString = `${String(time.getUTCSeconds()).padStart(2, '00')}s`;
+			secondsString = ` ${String(time.getUTCSeconds()).padStart(2, '00')}s`;
 
-		return `${String(time.getUTCHours() + (Math.floor(seconds / 86400000) * 24)).padStart(2, '00')}h${String(time.getUTCMinutes()).padStart(2, '00')}m${showSeconds ? secondsString : ''}`;
+		return `${String(time.getUTCHours() + (Math.floor(seconds / 86400000) * 24)).padStart(2, '00')}h ${String(time.getUTCMinutes()).padStart(2, '00')}m${showSeconds ? secondsString : ''}`;
 	},
 
 	isBotMentioned: (msg, Client) => {
