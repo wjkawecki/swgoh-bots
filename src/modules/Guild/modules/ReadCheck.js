@@ -210,14 +210,20 @@ export default class ReadCheck {
 	deleteCheck(messageReaction, user) {
 		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
 
+		console.log(messageIndex);
+
 		if (messageIndex > -1) {
 			const message = this.data.messages[messageIndex];
+
+			console.log(message.userId, user.id, message.emojiName, messageReaction.emoji.name);
 
 			if (message.userId === user.id && message.emojiName === messageReaction.emoji.name) {
 				this.data.messages.splice(messageIndex, 1);
 
 				helpers.updateJSON(this.config, 'readCheck', this.data, () => {
 					const reactions = messageReaction.message.reactions;
+
+					console.log(reactions);
 
 					reactions.get('🔁') && reactions.get('🔁').remove();
 					reactions.get('👀') && reactions.get('👀').remove()
