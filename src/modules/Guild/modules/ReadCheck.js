@@ -161,7 +161,9 @@ export default class ReadCheck {
 			message.channelId = messageReaction.message.channel.id;
 			message.id = messageReaction.message.id;
 			message.authorId = messageReaction.message.author.id;
+			message.authorDisplayName = messageReaction.message.author.displayName;
 			message.userId = user.id;
+			message.userDisplayName = user.displayName;
 			message.timeCheck = new Date(now + timeout).getTime();
 			message.timeAdded = now;
 			message.timeout = timeout;
@@ -295,7 +297,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 					});
 			}, Math.max(millisecondsToCheck, 2 * 60 * 1000)));
 
-			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.url}`);
+			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.userDisplayName} | ${message.url}`);
 		});
 	}
 
