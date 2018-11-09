@@ -37,6 +37,18 @@ export default class ReadCheck {
 				})
 		);
 
+		this.data.messages.forEach((message) => {
+			promises.push(
+				this.Client.channels.get(message.channelId).fetchMessage(message.id)
+					.then(() => {
+						messagesCount += 1;
+
+						if (this.config.DEV)
+							console.log(`${this.Client.user.username} | ${message.username} | repeat: ${message.shouldRepeat}`);
+					})
+			);
+		});
+
 		this.channels.bot_playground.guild.channels.forEach((channel) => {
 			if (channel.members && channel.members.has(this.Client.user.id)) {
 				promises.push(
@@ -161,9 +173,9 @@ export default class ReadCheck {
 			message.channelId = messageReaction.message.channel.id;
 			message.id = messageReaction.message.id;
 			message.authorId = messageReaction.message.author.id;
-			message.authorDisplayName = messageReaction.message.author.displayName;
+			message.authorUsername = messageReaction.message.author.username;
 			message.userId = user.id;
-			message.userDisplayName = user.displayName;
+			message.userUsername = user.username;
 			message.timeCheck = new Date(now + timeout).getTime();
 			message.timeAdded = now;
 			message.timeout = timeout;
@@ -297,7 +309,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 					});
 			}, Math.max(millisecondsToCheck, 2 * 60 * 1000)));
 
-			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.userDisplayName} | ${message.url}`);
+			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.userUsername} | ${message.url}`);
 		});
 	}
 
