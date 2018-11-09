@@ -168,6 +168,7 @@ export default class ReadCheck {
 			message.emojiName = messageReaction.emoji.name;
 			message.emojiId = messageReaction.emoji.id;
 			message.shouldRepeat = false;
+			message.url = messageReaction.message.url;
 
 			this.data.messages.push(message);
 
