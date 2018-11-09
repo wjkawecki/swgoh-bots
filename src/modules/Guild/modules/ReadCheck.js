@@ -293,7 +293,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 							}
 						});
 					});
-			}, Math.max(millisecondsToCheck, 10000)));
+			}, Math.max(millisecondsToCheck, 2 * 60 * 1000)));
 
 			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.url}`);
 		});
