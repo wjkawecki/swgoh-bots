@@ -182,16 +182,8 @@ export default class ReadCheck {
 			this.data.messages.push(message);
 
 			helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-				messageReaction.message.react('⌛')
-					.then((messageReaction) => {
-						const reactions = messageReaction.message.reactions;
-
-						reactions.get('⌛') && reactions.get('⌛').remove()
-							.then(() => {
-								messageReaction.message.react('👀')
-									.then(() => this.main());
-							});
-					});
+				messageReaction.message.react('▶')
+					.then(() => this.main());
 			});
 		} else {
 			message = this.data.messages[messageIndex];
@@ -226,7 +218,7 @@ export default class ReadCheck {
 					const reactions = messageReaction.message.reactions;
 
 					reactions.get('🔁') && reactions.get('🔁').remove();
-					reactions.get('👀') && reactions.get('👀').remove()
+					reactions.get('▶') && reactions.get('▶').remove()
 						.then(() => this.main());
 				});
 			}
@@ -259,63 +251,64 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 				let pingedUsers;
 				let slackers;
 
-				channel.fetchMessage(message.id)
-					.then(msg => {
-						channel.members.forEach(member => {
-							if (!member.user.bot)
-								channelUsers.add({
-									id: member.id,
-									displayName: member.displayName
-								});
-						});
-
-						if (msg.mentions.everyone) {
-							pingedUsers = channelUsers;
-						} else {
-							msg.mentions.members.forEach(member => {
-								mentionedUsers.add(member.id);
+				if (channel.members && channel.members.has(this.Client.user.id)) {
+					channel.fetchMessage(message.id)
+						.then(msg => {
+							channel.members.forEach(member => {
+								if (!member.user.bot)
+									channelUsers.add({
+										id: member.id,
+										displayName: member.displayName
+									});
 							});
 
-							msg.mentions.roles.forEach(role => {
-								role.members.forEach(member => {
+							if (msg.mentions.everyone) {
+								pingedUsers = channelUsers;
+							} else {
+								msg.mentions.members.forEach(member => {
 									mentionedUsers.add(member.id);
 								});
+
+								msg.mentions.roles.forEach(role => {
+									role.members.forEach(member => {
+										mentionedUsers.add(member.id);
+									});
+								});
+
+								pingedUsers = new Set([...channelUsers].filter(channelUser => mentionedUsers.has(channelUser.id)));
+							}
+
+							const reactionPromises = [];
+
+							msg.reactions.forEach(reaction => {
+								reactionPromises.push(
+									reaction.fetchUsers()
+										.then(users => {
+											users.forEach(user => reactingUsers.add(user.id));
+										})
+								);
 							});
 
-							pingedUsers = new Set([...channelUsers].filter(channelUser => mentionedUsers.has(channelUser.id)));
-						}
+							Promise.all(reactionPromises).then(() => {
+								slackers = new Set([...pingedUsers].filter(pingedUser => !reactingUsers.has(pingedUser.id)));
+								slackers.delete(msg.author.id);
 
-						const reactionPromises = [];
+								if (slackers.size) {
+									slackers = new Set([...slackers].sort((a, b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
+									this.sendReport(msg, slackers, message, messageIndex);
+								} else {
+									this.data.messages.splice(messageIndex, 1);
 
-						msg.reactions.forEach(reaction => {
-							reactionPromises.push(
-								reaction.fetchUsers()
-									.then(users => {
-										users.forEach(user => reactingUsers.add(user.id));
-									})
-							);
+									helpers.updateJSON(this.config, 'readCheck', this.data, () => {
+										msg.reactions.get('🔁') && msg.reactions.get('🔁').remove();
+										msg.reactions.get('▶') && msg.reactions.get('▶').remove()
+											.then(() => this.main());
+									});
+								}
+							});
 						});
-
-						Promise.all(reactionPromises).then(() => {
-							slackers = new Set([...pingedUsers].filter(pingedUser => !reactingUsers.has(pingedUser.id)));
-							slackers.delete(msg.author.id);
-
-							if (slackers.size) {
-								slackers = new Set([...slackers].sort((a, b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
-								this.sendReport(msg, slackers, message, messageIndex);
-							} else {
-								this.data.messages.splice(messageIndex, 1);
-
-								helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-									msg.reactions.get('👀') && msg.reactions.get('👀').remove()
-										.then(() => this.main());
-								});
-							}
-						});
-					});
+				}
 			}, this.config.DEV ? millisecondsToCheck : Math.max(millisecondsToCheck, 2 * 60 * 1000)));
-
-			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.userUsername} | ${message.url}`);
 		});
 	}
 
@@ -329,8 +322,9 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 		}
 
 		helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-			if (!message.shouldRepeat)
-				msg.reactions.get('👀') && msg.reactions.get('👀').remove();
+			if (!message.shouldRepeat) {
+				msg.reactions.get('▶') && msg.reactions.get('▶').remove();
+			}
 
 			msg.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''} __**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
 
