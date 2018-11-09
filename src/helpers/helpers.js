@@ -19,7 +19,7 @@ const helpers = {
 			minutes = time.getUTCMinutes(),
 			seconds = time.getUTCSeconds();
 
-		return (`${days ? `${days} day${days > 1 ? 's' : ''} ` : ''}${hours ? `${hours} hour${hours > 1 ? 's' : ''} ` : ''}${minutes ? `${minutes} minute${minutes > 1 ? 's' : ''} ` : ''}${showSeconds && seconds ? `${seconds} second${seconds > 1 ? 's' : ''} ` : ''}`).trim();
+		return (`${days ? `${days} day${days > 1 ? 's' : ''} ` : ''}${hours ? `${hours} hour${hours > 1 ? 's' : ''} ` : ''}${minutes ? `${minutes} minute${minutes > 1 ? 's' : ''} ` : ''}${(showSeconds || milliseconds < 60000) && seconds ? `${seconds} second${seconds > 1 ? 's' : ''} ` : ''}`).trim();
 	},
 
 	isBotMentioned: (msg, Client) => {
