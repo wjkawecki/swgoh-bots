@@ -25,10 +25,13 @@ export default class ReadCheck {
 
 	cacheDiscord() {
 		const promises = [];
+		let membersCount = 0;
+		let messagesCount = 0;
 
 		promises.push(
 			this.channels.bot_playground.guild.fetchMembers()
 				.then((guild) => {
+					membersCount += guild.members.size;
 					if (this.config.DEV)
 						console.log(`${guild.name}: ${guild.members.size} members`);
 				})
@@ -39,6 +42,8 @@ export default class ReadCheck {
 				promises.push(
 					channel.fetchMessages({limit: 100})
 						.then((messages) => {
+							messagesCount += messages.size;
+
 							if (this.config.DEV)
 								console.log(`${this.Client.user.username} | ${channel.name}: ${messages.size} messages`);
 						})
@@ -47,6 +52,8 @@ export default class ReadCheck {
 				promises.push(
 					channel.fetchPinnedMessages()
 						.then((messages) => {
+							messagesCount += messages.size;
+
 							if (this.config.DEV)
 								console.log(`${this.Client.user.username} | ${channel.name}: ${messages.size} pinned messages`);
 						})
@@ -55,7 +62,7 @@ export default class ReadCheck {
 		});
 
 		Promise.all(promises)
-			.then(() => console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE`));
+			.then(() => console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE | ${membersCount} members | ${messagesCount} messages`));
 	}
 
 	listenToMessages() {
