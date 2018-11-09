@@ -311,7 +311,7 @@ ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
       - If you see yourself above, please go to the tracked message, read it and react to it with any emoji.
       
       - Short preview of the message, so it's easier to find:
-\`\`\`${msg.cleanContent.substring(0, 100)}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
+\`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
       - Jump to that message: ${msg.url}`
 			).then(() => this.main());
 		});
