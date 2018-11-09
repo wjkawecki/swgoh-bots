@@ -30,33 +30,19 @@ export default class ReadCheck {
 
 		promises.push(
 			this.channels.bot_playground.guild.fetchMembers()
-				.then((guild) => {
-					membersCount += guild.members.size;
-					if (this.config.DEV)
-						console.log(`${guild.name}: ${guild.members.size} members`);
-				})
+				.then(guild => membersCount += guild.members.size)
 		);
 
 		this.channels.bot_playground.guild.channels.forEach((channel) => {
 			if (channel.members && channel.members.has(this.Client.user.id)) {
 				promises.push(
 					channel.fetchMessages({limit: 100})
-						.then((messages) => {
-							messagesCount += messages.size;
-
-							if (this.config.DEV)
-								console.log(`${this.Client.user.username} | ${channel.name}: ${messages.size} messages`);
-						})
+						.then(messages => messagesCount += messages.size)
 				);
 
 				promises.push(
 					channel.fetchPinnedMessages()
-						.then((messages) => {
-							messagesCount += messages.size;
-
-							if (this.config.DEV)
-								console.log(`${this.Client.user.username} | ${channel.name}: ${messages.size} pinned messages`);
-						})
+						.then(messages => messagesCount += messages.size)
 				);
 			}
 		});
