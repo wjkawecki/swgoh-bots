@@ -37,18 +37,6 @@ export default class ReadCheck {
 				})
 		);
 
-		this.data.messages.forEach((message) => {
-			promises.push(
-				this.Client.channels.get(message.channelId).fetchMessage(message.id)
-					.then(() => {
-						messagesCount += 1;
-
-						if (this.config.DEV)
-							console.log(`${this.Client.user.username} | ${message.username} | repeat: ${message.shouldRepeat}`);
-					})
-			);
-		});
-
 		this.channels.bot_playground.guild.channels.forEach((channel) => {
 			if (channel.members && channel.members.has(this.Client.user.id)) {
 				promises.push(
@@ -127,10 +115,15 @@ export default class ReadCheck {
 		});
 
 		this.Client.on('messageReactionRemove', (messageReaction, user) => {
-			this.deleteCheck(messageReaction, user);
+			if (messageReaction.message.guild.members
+				.get(user.id).roles
+				.has(this.config.roles.officer)
+			) {
+				this.deleteCheck(messageReaction, user);
 
-			if (this.hasReaction(messageReaction, '🔁'))
-				this.toggleRepetition(messageReaction, user, false);
+				if (this.hasReaction(messageReaction, '🔁'))
+					this.toggleRepetition(messageReaction, user, false);
+			}
 		});
 	}
 
@@ -250,6 +243,11 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 			const millisecondsToCheck = helpers.getMillisecondsToTime(message.timeCheck);
 
 			if (!this.config.DEV && message.channelId === this.config.channels.bot_playground) return;
+
+			this.Client.channels.get(message.channelId).fetchMessage(message.id)
+				.then((message) => {
+					console.log(message.cleanContent);
+				});
 
 			this.timeouts.push(setTimeout(() => {
 				const channel = this.Client.channels.get(message.channelId);
