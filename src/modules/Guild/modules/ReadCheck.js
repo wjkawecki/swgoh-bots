@@ -11,6 +11,7 @@ export default class ReadCheck {
 		this.listenToMessages();
 		this.listenToReactions();
 		this.main();
+		this.cacheDiscord();
 	}
 
 	main() {
@@ -20,6 +21,41 @@ export default class ReadCheck {
 			console.log(`${this.config.guildName}: ReadCheck main`, err);
 			setTimeout(() => this.scheduleChecks(), this.config.retryTimeout);
 		}
+	}
+
+	cacheDiscord() {
+		const promises = [];
+
+		promises.push(
+			this.channels.bot_playground.guild.fetchMembers()
+				.then((guild) => {
+					if (this.config.DEV)
+						console.log(`${guild.name}: ${guild.members.size} members`);
+				})
+		);
+
+		this.channels.bot_playground.guild.channels.forEach((channel) => {
+			if (channel.members && channel.members.has(this.Client.user.id)) {
+				promises.push(
+					channel.fetchMessages({limit: 100})
+						.then((messages) => {
+							if (this.config.DEV)
+								console.log(`${this.Client.user.username} | ${channel.name}: ${messages.size} messages`);
+						})
+				);
+
+				promises.push(
+					channel.fetchPinnedMessages()
+						.then((messages) => {
+							if (this.config.DEV)
+								console.log(`${this.Client.user.username} | ${channel.name}: ${messages.size} pinned messages`);
+						})
+				);
+			}
+		});
+
+		Promise.all(promises)
+			.then(() => console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE`));
 	}
 
 	listenToMessages() {
@@ -47,7 +83,10 @@ export default class ReadCheck {
 
 	listenToReactions() {
 		this.Client.on('messageReactionAdd', (messageReaction, user) => {
-			if (user.lastMessage && user.lastMessage.member.roles.has(this.config.roles.officer)) {
+			if (messageReaction.message.guild.members
+				.get(user.id).roles
+				.has(this.config.roles.officer)
+			) {
 				if (this.hasReaction(messageReaction, 'readCheck_1h'))
 					this.addCheck(messageReaction, user, 60 * 60 * 1000);
 
@@ -156,8 +195,10 @@ export default class ReadCheck {
 				this.data.messages.splice(messageIndex, 1);
 
 				helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-					messageReaction.message.reactions.get('👀')
-					&& messageReaction.message.reactions.get('👀').remove()
+					const reactions = messageReaction.message.reactions;
+
+					reactions.get('🔁') && reactions.get('🔁').remove();
+					reactions.get('👀') && reactions.get('👀').remove()
 						.then(() => this.main());
 				});
 			}
@@ -179,6 +220,8 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 
 		this.data.messages.forEach((message, messageIndex) => {
 			const millisecondsToCheck = helpers.getMillisecondsToTime(message.timeCheck);
+
+			if (!this.config.DEV && message.channel.id === this.config.channels.bot_playground) return;
 
 			this.timeouts.push(setTimeout(() => {
 				const channel = this.Client.channels.get(message.channelId);
@@ -230,14 +273,13 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 							slackers.delete(msg.author.id);
 
 							if (slackers.size) {
-								slackers = new Set([...slackers].sort((a,b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
+								slackers = new Set([...slackers].sort((a, b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
 								this.sendReport(msg, slackers, message, messageIndex);
 							} else {
 								this.data.messages.splice(messageIndex, 1);
 
 								helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-									msg.reactions.get('👀')
-									&& msg.reactions.get('👀').remove()
+									msg.reactions.get('👀') && msg.reactions.get('👀').remove()
 										.then(() => this.main());
 								});
 							}
@@ -260,12 +302,17 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 			if (!message.shouldRepeat)
 				msg.reactions.get('👀') && msg.reactions.get('👀').remove();
 
-			msg.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''} __**ReadCheck Report${message.shouldRepeat ? ` (refreshing every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
+			msg.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''} __**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
 
-•    List of @mentioned people who didn't react to message for ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)}:
+•    ${slackers.size} ${slackers.size > 1 ? 'people' : 'person'} didn't react to message for ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)}:
 ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
 
-•    Jump to that message: ${msg.url}`
+•    What is this?
+      - If you see yourself above, please go to the tracked message, read it and react to it with any emoji.
+      
+      - Short preview of the message, so it's easier to find:
+\`\`\`${msg.cleanContent.substring(0, 100)}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
+      - Jump to that message: ${msg.url}`
 			).then(() => this.main());
 		});
 	}
