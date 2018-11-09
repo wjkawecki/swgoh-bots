@@ -279,6 +279,8 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 								this.data.messages.splice(messageIndex, 1);
 
 								helpers.updateJSON(this.config, 'readCheck', this.data, () => {
+									console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)}`);
+									
 									msg.reactions.get('👀') && msg.reactions.get('👀').remove()
 										.then(() => this.main());
 								});
