@@ -62,7 +62,9 @@ export default class ReadCheck {
 		});
 
 		Promise.all(promises)
-			.then(() => console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE | ${membersCount} members | ${messagesCount} messages`));
+			.then(() => {
+				console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE | ${membersCount} members | ${messagesCount} messages`);
+			});
 	}
 
 	listenToMessages() {
@@ -180,8 +182,16 @@ export default class ReadCheck {
 			this.data.messages.push(message);
 
 			helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-				messageReaction.message.react('👀')
-					.then(() => this.main());
+				messageReaction.message.react('⌛')
+					.then((messageReaction) => {
+						const reactions = messageReaction.message.reactions;
+
+						reactions.get('⌛') && reactions.get('⌛').remove()
+							.then(() => {
+								messageReaction.message.react('👀')
+									.then(() => this.main());
+							});
+					});
 			});
 		} else {
 			message = this.data.messages[messageIndex];
@@ -203,20 +213,17 @@ export default class ReadCheck {
 	deleteCheck(messageReaction, user) {
 		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
 
-		console.log(messageIndex);
-
 		if (messageIndex > -1) {
 			const message = this.data.messages[messageIndex];
 
-			console.log(message.userId, user.id, message.emojiName, messageReaction.emoji.name);
+			if (this.config.DEV)
+				console.log('deleteCheck', message.userId, user.id, message.emojiName, messageReaction.emoji.name);
 
 			if (message.userId === user.id && message.emojiName === messageReaction.emoji.name) {
 				this.data.messages.splice(messageIndex, 1);
 
 				helpers.updateJSON(this.config, 'readCheck', this.data, () => {
 					const reactions = messageReaction.message.reactions;
-
-					console.log(reactions);
 
 					reactions.get('🔁') && reactions.get('🔁').remove();
 					reactions.get('👀') && reactions.get('👀').remove()
@@ -243,11 +250,6 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 			const millisecondsToCheck = helpers.getMillisecondsToTime(message.timeCheck);
 
 			if (!this.config.DEV && message.channelId === this.config.channels.bot_playground) return;
-
-			this.Client.channels.get(message.channelId).fetchMessage(message.id)
-				.then((message) => {
-					console.log(message.cleanContent);
-				});
 
 			this.timeouts.push(setTimeout(() => {
 				const channel = this.Client.channels.get(message.channelId);
@@ -311,7 +313,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 							}
 						});
 					});
-			}, Math.max(millisecondsToCheck, 2 * 60 * 1000)));
+			}, this.config.DEV ? millisecondsToCheck : Math.max(millisecondsToCheck, 2 * 60 * 1000)));
 
 			console.log(`${this.config.guildName}: readCheck in ${helpers.getReadableTime(Math.max(millisecondsToCheck, 0), true)} | ${message.userUsername} | ${message.url}`);
 		});
