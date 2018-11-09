@@ -221,7 +221,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 		this.data.messages.forEach((message, messageIndex) => {
 			const millisecondsToCheck = helpers.getMillisecondsToTime(message.timeCheck);
 
-			if (!this.config.DEV && message.channel.id === this.config.channels.bot_playground) return;
+			if (!this.config.DEV && message.channelId === this.config.channels.bot_playground) return;
 
 			this.timeouts.push(setTimeout(() => {
 				const channel = this.Client.channels.get(message.channelId);
