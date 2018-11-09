@@ -12,11 +12,14 @@ const getDates = (hour = 0, minute = 0) => {
 };
 
 const helpers = {
-	getReadableTime: (seconds, showSeconds = false) => {
-		const time = new Date(seconds),
-			secondsString = ` ${String(time.getUTCSeconds()).padStart(2, '00')}s`;
+	getReadableTime: (milliseconds, showSeconds = false) => {
+		const time = new Date(milliseconds),
+			days = (Math.floor(milliseconds / 86400000)),
+			hours = time.getUTCHours(),
+			minutes = time.getUTCMinutes(),
+			seconds = time.getUTCSeconds();
 
-		return `${String(time.getUTCHours() + (Math.floor(seconds / 86400000) * 24)).padStart(2, '00')}h ${String(time.getUTCMinutes()).padStart(2, '00')}m${showSeconds ? secondsString : ''}`;
+		return (`${days ? `${days} day${days > 1 ? 's' : ''} ` : ''}${hours ? `${hours} hour${hours > 1 ? 's' : ''} ` : ''}${minutes ? `${minutes} minute${minutes > 1 ? 's' : ''} ` : ''}${showSeconds && seconds ? `${seconds} second${seconds > 1 ? 's' : ''} ` : ''}`).trim();
 	},
 
 	isBotMentioned: (msg, Client) => {
