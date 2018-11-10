@@ -151,7 +151,7 @@ export default class ReadCheck {
 			messageReaction.message.react('🚫')
 				.then(() => setTimeout(() => {
 					reactions.get('🚫') && reactions.get('🚫').remove();
-				}, 10000));
+				}, 5000));
 			return;
 		}
 
