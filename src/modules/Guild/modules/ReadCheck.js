@@ -311,7 +311,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 		message = JSON.parse(JSON.stringify(message));
 
 		const sendReply = () => {
-			msg.channel.sendMessage(`__**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
+			msg.channel.send(`__**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
 
 •    ${slackers.size} ${slackers.size > 1 ? 'people' : 'person'} didn't react to message for ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)}:
 ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
