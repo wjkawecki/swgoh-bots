@@ -141,7 +141,7 @@ export default class ReadCheck {
 	}
 
 	addCheck(messageReaction, user, timeout) {
-		timeout = this.config.DEV ? 60000 : timeout;
+		timeout = this.config.DEV ? 30000 : timeout;
 		const reactions = messageReaction.message.reactions;
 		let message = {};
 
@@ -153,7 +153,7 @@ export default class ReadCheck {
 					reactions.get('🚫') && reactions.get('🚫').remove();
 				}, 10000));
 			return;
-		};
+		}
 
 		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
 		const now = new Date().getTime();
@@ -323,7 +323,7 @@ ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
 \`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
       - Jump to that message: ${msg.url}
       
-      /CC ${message.authorId !== message.userId ? `<@${message.authorId}>, <@${message.userId}>` : `<@${message.authorId}>`}`, {split: true})
+/cc ${message.authorId !== message.userId ? `<@${message.authorId}>, <@${message.userId}>` : `<@${message.authorId}>`}`, {split: true})
 				.then(report => {
 					if (this.data.messages[messageIndex])
 						this.data.messages[messageIndex].reportMessageId = report.id;
