@@ -49,7 +49,7 @@ export default class ReadCheck {
 
 		Promise.all(promises)
 			.then(() => {
-				console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE | ${membersCount} members | ${messagesCount} messages`);
+				console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE | ${membersCount} members | ${this.channels.bot_playground.guild.channels.size} channels | ${messagesCount} messages`);
 			});
 	}
 
