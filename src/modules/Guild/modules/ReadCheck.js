@@ -311,7 +311,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 		message = JSON.parse(JSON.stringify(message));
 
 		const sendReply = () => {
-			msg.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''} __**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
+			msg.channel.sendMessage(`__**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
 
 •    ${slackers.size} ${slackers.size > 1 ? 'people' : 'person'} didn't react to message for ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)}:
 ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
@@ -321,13 +321,15 @@ ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
       
       - Short preview of the message, so it's easier to find:
 \`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
-      - Jump to that message: ${msg.url}`
-			).then(report => {
-				if (this.data.messages[messageIndex])
-					this.data.messages[messageIndex].reportMessageId = report.id;
+      - Jump to that message: ${msg.url}
+      
+      /CC ${message.authorId !== message.userId ? `<@${message.authorId}>, <@${message.userId}>` : `<@${message.authorId}>`}`, {split: true})
+				.then(report => {
+					if (this.data.messages[messageIndex])
+						this.data.messages[messageIndex].reportMessageId = report.id;
 
-				helpers.updateJSON(this.config, 'readCheck', this.data, () => this.main());
-			});
+					helpers.updateJSON(this.config, 'readCheck', this.data, () => this.main());
+				});
 		};
 
 		if (message.shouldRepeat) {
