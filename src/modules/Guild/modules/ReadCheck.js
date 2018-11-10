@@ -141,10 +141,19 @@ export default class ReadCheck {
 	}
 
 	addCheck(messageReaction, user, timeout) {
-		timeout = this.config.DEV ? 15000 : timeout;
+		timeout = this.config.DEV ? 60000 : timeout;
+		const reactions = messageReaction.message.reactions;
 		let message = {};
 
 		if (!this.config.DEV && messageReaction.message.channel.id === this.config.channels.bot_playground) return;
+
+		if (reactions.get('▶') && reactions.get('▶').users.find(user => user.bot)) {
+			messageReaction.message.react('🚫')
+				.then(() => setTimeout(() => {
+					reactions.get('🚫') && reactions.get('🚫').remove();
+				}, 10000));
+			return;
+		};
 
 		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
 		const now = new Date().getTime();
@@ -248,14 +257,14 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 									});
 							});
 
-							if (msg.mentions.everyone) {
+							if (msg && msg.mentions.everyone) {
 								pingedUsers = channelUsers;
 							} else {
-								msg.mentions.members.forEach(member => {
+								msg && msg.mentions.members.forEach(member => {
 									mentionedUsers.add(member.id);
 								});
 
-								msg.mentions.roles.forEach(role => {
+								msg && msg.mentions.roles.forEach(role => {
 									role.members.forEach(member => {
 										mentionedUsers.add(member.id);
 									});
@@ -266,7 +275,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 
 							const reactionPromises = [];
 
-							msg.reactions.forEach(reaction => {
+							msg && msg.reactions.forEach(reaction => {
 								reactionPromises.push(
 									reaction.fetchUsers()
 										.then(users => {
@@ -277,7 +286,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 
 							Promise.all(reactionPromises).then(() => {
 								slackers = new Set([...pingedUsers].filter(pingedUser => !reactingUsers.has(pingedUser.id)));
-								slackers.delete(msg.author.id);
+								slackers.delete(msg && msg.author.id);
 
 								if (slackers.size) {
 									slackers = new Set([...slackers].sort((a, b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
@@ -286,8 +295,8 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 									this.data.messages.splice(messageIndex, 1);
 
 									helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-										msg.reactions.get('🔁') && msg.reactions.get('🔁').remove();
-										msg.reactions.get('▶') && msg.reactions.get('▶').remove()
+										msg && msg.reactions.get('🔁') && msg.reactions.get('🔁').remove();
+										msg && msg.reactions.get('▶') && msg.reactions.get('▶').remove()
 											.then(() => this.main());
 									});
 								}
@@ -301,17 +310,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 	sendReport(msg, slackers, message, messageIndex) {
 		message = JSON.parse(JSON.stringify(message));
 
-		if (message.shouldRepeat) {
-			this.data.messages[messageIndex].timeCheck = new Date(message.timeCheck + message.timeout).getTime();
-		} else {
-			this.data.messages.splice(messageIndex, 1);
-		}
-
-		helpers.updateJSON(this.config, 'readCheck', this.data, () => {
-			if (!message.shouldRepeat) {
-				msg.reactions.get('▶') && msg.reactions.get('▶').remove();
-			}
-
+		const sendReply = () => {
 			msg.reply(`${message.authorId !== message.userId ? `<@${message.userId}>, ` : ''} __**ReadCheck Report${message.shouldRepeat ? ` (repeats every ${helpers.getReadableTime(message.timeout, this.config.DEV)})` : ''}**__
 
 •    ${slackers.size} ${slackers.size > 1 ? 'people' : 'person'} didn't react to message for ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)}:
@@ -323,7 +322,34 @@ ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
       - Short preview of the message, so it's easier to find:
 \`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
       - Jump to that message: ${msg.url}`
-			).then(() => this.main());
+			).then(report => {
+				if (this.data.messages[messageIndex])
+					this.data.messages[messageIndex].reportMessageId = report.id;
+
+				helpers.updateJSON(this.config, 'readCheck', this.data, () => this.main());
+			});
+		};
+
+		if (message.shouldRepeat) {
+			while (this.data.messages[messageIndex].timeCheck < new Date().getTime()) {
+				this.data.messages[messageIndex].timeCheck = new Date(this.data.messages[messageIndex].timeCheck + message.timeout).getTime();
+			}
+		} else {
+			this.data.messages.splice(messageIndex, 1);
+		}
+
+		helpers.updateJSON(this.config, 'readCheck', this.data, () => {
+			if (!message.shouldRepeat) {
+				msg.reactions.get('▶') && msg.reactions.get('▶').remove();
+			}
+
+			if (message.reportMessageId) {
+				this.Client.channels.get(message.channelId).fetchMessage(message.reportMessageId)
+					.then(report => report && report.delete())
+					.then(() => sendReply());
+			} else {
+				sendReply();
+			}
 		});
 	}
 
