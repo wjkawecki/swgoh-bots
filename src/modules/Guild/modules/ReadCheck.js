@@ -90,17 +90,14 @@ export default class ReadCheck {
 		});
 
 		this.Client.on('messageReactionRemove', (messageReaction, user) => {
-			if (this.guild.members
-				.get(user.id).roles
-				.has(this.config.roles.officer)
-			) {
+			if (this.guild.members.get(user.id).roles.has(this.config.roles.officer)) {
 				this.deleteCheck(messageReaction, user);
 
 				if (this.hasReaction(messageReaction, '🔁'))
 					this.toggleRepetition(messageReaction, user, false);
 
 				if (this.hasReaction(messageReaction, '💬'))
-					this.toggleRepetition(messageReaction, user, false);
+					this.toggleDM(messageReaction, user, false);
 			}
 		});
 	}
