@@ -25,6 +25,7 @@ export default class DailyActivities {
 			const args = msg.content.toLowerCase().slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
 			const command = args.shift();
 
+			if (msg.channel.type !== 'text') return;
 			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) return;
 			if (msg.content.indexOf(this.config.commandPrefix) !== 0) return;
 			if (msg.author.bot) return;

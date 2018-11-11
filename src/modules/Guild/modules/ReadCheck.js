@@ -28,6 +28,7 @@ export default class ReadCheck {
 			const args = msg.content.slice(this.config.commandPrefix.length).trim().split(/ +/g) || [];
 			const command = args.shift().toLowerCase();
 
+			if (msg.channel.type !== 'text') return;
 			if (!this.config.DEV && msg.channel.id === this.config.channels.bot_playground) return;
 			if (msg.content.indexOf(this.config.commandPrefix) !== 0) return;
 			if (msg.author.bot) return;
@@ -38,8 +39,11 @@ export default class ReadCheck {
 			if (command === 'fetchmessage' && msg.member.roles.has(this.config.roles.member))
 				this.fetchMessage(msg, args[0], args[1]);
 
-			if (command ==='echo' && msg.member.roles.has(this.config.roles.member))
+			if (command === 'echo' && msg.member.roles.has(this.config.roles.member))
 				this.sendEcho(msg, command);
+
+			if (command === 'dm' && msg.member.roles.has(this.config.roles.member))
+				this.sendDM(msg, command);
 
 			if (command !== 'readcheck') return;
 
@@ -54,10 +58,8 @@ export default class ReadCheck {
 
 	listenToReactions() {
 		this.Client.on('messageReactionAdd', (messageReaction, user) => {
-			if (this.guild.members
-				.get(user.id).roles
-				.has(this.config.roles.officer)
-			) {
+			if (this.guild.members.get(user.id).roles.has(this.config.roles.officer)
+				|| (this.config.DEV && this.guild.members.get(user.id).user.bot)) {
 				if (this.hasReaction(messageReaction, 'readCheck_1h'))
 					this.addCheck(messageReaction, user, 60 * 60 * 1000);
 
@@ -73,11 +75,17 @@ export default class ReadCheck {
 				if (this.hasReaction(messageReaction, 'readCheck_48h'))
 					this.addCheck(messageReaction, user, 48 * 60 * 60 * 1000);
 
-				if (this.hasReaction(messageReaction, '🔍'))
+				if (this.hasReaction(messageReaction, 'readCheck_1h'))
+					this.addCheck(messageReaction, user, 60 * 60 * 1000);
+
+				if (this.hasReaction(messageReaction, '🔍') && this.config.DEV)
 					this.addCheck(messageReaction, user, 30 * 1000);
 
 				if (this.hasReaction(messageReaction, '🔁'))
 					this.toggleRepetition(messageReaction, user, true);
+
+				if (this.hasReaction(messageReaction, '💬'))
+					this.toggleDM(messageReaction, user, true);
 			}
 		});
 
@@ -89,6 +97,9 @@ export default class ReadCheck {
 				this.deleteCheck(messageReaction, user);
 
 				if (this.hasReaction(messageReaction, '🔁'))
+					this.toggleRepetition(messageReaction, user, false);
+
+				if (this.hasReaction(messageReaction, '💬'))
 					this.toggleRepetition(messageReaction, user, false);
 			}
 		});
@@ -110,7 +121,20 @@ export default class ReadCheck {
 	}
 
 	sendEcho(msg, command) {
-		msg.channel.send(msg.content.split(`${command} `).pop());
+		msg.channel.send(msg.content.split(`${command} `).pop())
+			.then(message => {
+				this.config.DEV && message.react('🔍');
+				setTimeout(() => {
+					this.config.DEV && message.react('💬');
+				}, 15000);
+			});
+	}
+
+	sendDM(msg, command) {
+		const user = msg.author;
+
+		user.createDM()
+			.then(channel => channel.send(msg.content.split(`${command} `).pop()));
 	}
 
 	toggleRepetition(messageReaction, user, shouldRepeat) {
@@ -127,6 +151,27 @@ export default class ReadCheck {
 				} else {
 					messageReaction.message.reactions.get('🔁')
 					&& messageReaction.message.reactions.get('🔁').remove()
+						.then(() => this.main());
+				}
+			});
+		}
+
+	}
+
+	toggleDM(messageReaction, user, sendDM) {
+		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
+		const message = this.data.messages[messageIndex];
+
+		if (message && message.userId === user.id) {
+			message.sendDM = sendDM;
+
+			helpers.updateJSON(this.config, 'readCheck', this.data, () => {
+				if (sendDM) {
+					messageReaction.message.react('💬')
+						.then(() => this.main());
+				} else {
+					messageReaction.message.reactions.get('💬')
+					&& messageReaction.message.reactions.get('💬').remove()
 						.then(() => this.main());
 				}
 			});
@@ -169,6 +214,7 @@ export default class ReadCheck {
 			message.emojiName = messageReaction.emoji.name;
 			message.emojiId = messageReaction.emoji.id;
 			message.shouldRepeat = false;
+			message.sendDM = false;
 			message.url = messageReaction.message.url;
 
 			while (message.timeCheck < new Date().getTime()) {
@@ -187,8 +233,6 @@ export default class ReadCheck {
 	deleteCheck(messageReaction, user) {
 		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
 
-		if (this.config.DEV && messageReaction.emoji.name === '🔍') return;
-
 		if (messageIndex > -1) {
 			const message = this.data.messages[messageIndex];
 
@@ -202,6 +246,7 @@ export default class ReadCheck {
 					const reactions = messageReaction.message.reactions;
 
 					reactions.get('🔁') && reactions.get('🔁').remove();
+					reactions.get('💬') && reactions.get('💬').remove();
 					reactions.get('▶') && reactions.get('▶').remove()
 						.then(() => this.main());
 				});
@@ -287,6 +332,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 
 									helpers.updateJSON(this.config, 'readCheck', this.data, () => {
 										msg && msg.reactions.get('🔁') && msg.reactions.get('🔁').remove();
+										msg && msg.reactions.get('💬') && msg.reactions.get('💬').remove();
 										msg && msg.reactions.get('▶') && msg.reactions.get('▶').remove()
 											.then(() => this.main());
 									});
@@ -315,9 +361,28 @@ ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
       - Short preview of the message, so it's easier to find:
 \`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
       - Jump to that message: ${msg.url}
-      
+${message.sendDM ? `
+•    I'm sending additional DM to each person on the list.
+` : ''}      
 /cc ${message.authorId !== message.userId ? `<@${message.authorId}>, <@${message.userId}>` : `<@${message.authorId}>`}`, {split: true})
 				.then(() => helpers.updateJSON(this.config, 'readCheck', this.data, () => this.main()));
+		};
+
+		const sendDM = () => {
+			if (!message.sendDM) return;
+
+			slackers.forEach(slacker => {
+				this.guild.members.get(slacker.id).createDM()
+					.then(channel => {
+						channel.send(`Hello ${slacker.displayName}.
+
+•    You haven't reacted to a tracked message in ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)}. Please make sure you read it and react to it with any emoji.
+
+•    Short preview of the message, so it's easier to find:
+\`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
+•    Jump to that message: ${msg.url}`, {split: true});
+					});
+			});
 		};
 
 		if (message.shouldRepeat) {
@@ -334,6 +399,7 @@ ${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
 			}
 
 			sendReply();
+			sendDM();
 		});
 	}
 
