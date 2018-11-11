@@ -35,22 +35,18 @@ export default class ReadCheck {
 			if (command === 'help' && msg.member.roles.has(this.config.roles.member))
 				this.helpReply(msg);
 
+			if (command === 'fetchmessage' && msg.member.roles.has(this.config.roles.member))
+				this.fetchMessage(msg, args[0], args[1]);
+
+			if (command ==='echo' && msg.member.roles.has(this.config.roles.member))
+				this.sendEcho(msg, command);
+
 			if (command !== 'readcheck') return;
 
 			switch ((args[0] || '').toLowerCase()) {
 				case '':
 				case 'help':
 					this.helpReply(msg);
-					break;
-
-				case 'fetchmessage':
-					if (msg.member.roles.has(this.config.roles.officer))
-						this.fetchMessage(msg, args[1], args[2]);
-					break;
-
-				case 'echo':
-					if (msg.member.roles.has(this.config.roles.officer))
-						this.sendEcho(msg, args);
 					break;
 			}
 		});
@@ -76,6 +72,9 @@ export default class ReadCheck {
 
 				if (this.hasReaction(messageReaction, 'readCheck_48h'))
 					this.addCheck(messageReaction, user, 48 * 60 * 60 * 1000);
+
+				if (this.hasReaction(messageReaction, '🔍'))
+					this.addCheck(messageReaction, user, 30 * 1000);
 
 				if (this.hasReaction(messageReaction, '🔁'))
 					this.toggleRepetition(messageReaction, user, true);
@@ -110,9 +109,8 @@ export default class ReadCheck {
 			});
 	}
 
-	sendEcho(msg, args) {
-		msg.channel.send(msg.content.split(`${args[0]} `).pop())
-			.then(message => this.addCheck({ message, emoji: {} }, message.author, 15000));
+	sendEcho(msg, command) {
+		msg.channel.send(msg.content.split(`${command} `).pop());
 	}
 
 	toggleRepetition(messageReaction, user, shouldRepeat) {
@@ -188,6 +186,8 @@ export default class ReadCheck {
 
 	deleteCheck(messageReaction, user) {
 		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
+
+		if (this.config.DEV && messageReaction.emoji.name === '🔍') return;
 
 		if (messageIndex > -1) {
 			const message = this.data.messages[messageIndex];
