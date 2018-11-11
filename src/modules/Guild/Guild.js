@@ -58,7 +58,11 @@ export default class Guild {
 			data = mongo;
 		}
 
-		this.Client = new Discord.Client();
+		this.Client = new Discord.Client({
+			messageCacheMaxSize: -1,
+			fetchAllMembers: true,
+			sync: true
+		});
 		this.Client.on('ready', () => this.initGuild(config, data));
 		this.Client.on('error', error => console.log(`${config.guildName}: Client error:`, error.message));
 		this.Client.on('reconnecting',() => console.log(`${config.guildName}: Client reconnecting`));
@@ -80,8 +84,11 @@ export default class Guild {
 	initGuild(config, data) {
 		try {
 			const channels = this.initChannels(config);
+			const guild = this.Client.guilds.first();
 
 			this.Client.user.setActivity(config.guildName);
+
+			console.log(`=== ${config.guildName}: ${guild.memberCount} members | ${guild.channels.size} channels ===`);
 
 			if (config.DEV) {
 				// channels.bot_playground.send('DEV reporting for duty!');

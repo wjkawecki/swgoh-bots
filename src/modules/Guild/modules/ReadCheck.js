@@ -5,12 +5,13 @@ export default class ReadCheck {
 		this.Client = Client;
 		this.config = config;
 		this.channels = channels;
+		this.guild = Client.guilds.first();
 		this.data = data;
 		this.timeouts = [];
 
 		this.listenToMessages();
 		this.listenToReactions();
-		this.cacheMembers();
+		this.main();
 	}
 
 	main() {
@@ -20,19 +21,6 @@ export default class ReadCheck {
 			console.log(`${this.config.guildName}: ReadCheck main`, err);
 			setTimeout(() => this.scheduleChecks(), this.config.retryTimeout);
 		}
-	}
-
-	cacheMembers() {
-		let membersCount = 0;
-
-		this.channels.bot_playground.guild.fetchMembers()
-			.then(guild => {
-				membersCount += guild.members.size;
-
-				console.log(`${this.config.guildName}: ReadCheck cacheDiscord is DONE | ${membersCount} members | ${this.channels.bot_playground.guild.channels.size} channels`);
-
-				this.main();
-			})
 	}
 
 	listenToMessages() {
@@ -54,13 +42,23 @@ export default class ReadCheck {
 				case 'help':
 					this.helpReply(msg);
 					break;
+
+				case 'fetchmessage':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.fetchMessage(msg, args[1], args[2]);
+					break;
+
+				case 'echo':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.sendEcho(msg, args);
+					break;
 			}
 		});
 	}
 
 	listenToReactions() {
 		this.Client.on('messageReactionAdd', (messageReaction, user) => {
-			if (messageReaction.message.guild.members
+			if (this.guild.members
 				.get(user.id).roles
 				.has(this.config.roles.officer)
 			) {
@@ -85,7 +83,7 @@ export default class ReadCheck {
 		});
 
 		this.Client.on('messageReactionRemove', (messageReaction, user) => {
-			if (messageReaction.message.guild.members
+			if (this.guild.members
 				.get(user.id).roles
 				.has(this.config.roles.officer)
 			) {
@@ -95,6 +93,26 @@ export default class ReadCheck {
 					this.toggleRepetition(messageReaction, user, false);
 			}
 		});
+	}
+
+	fetchMessage(msg, messageId, channelId) {
+		const channel = this.Client.channels.get(channelId || msg.channel.id);
+
+		channel.fetchMessage(messageId)
+			.then(() => msg.delete())
+			.catch(err => {
+				console.log(err);
+
+				msg.react('🚫')
+					.then(() => setTimeout(() => {
+						msg.reactions.get('🚫') && msg.reactions.get('🚫').remove();
+					}, 2000));
+			});
+	}
+
+	sendEcho(msg, args) {
+		msg.channel.send(msg.content.split(`${args[0]} `).pop())
+			.then(message => this.addCheck({ message, emoji: {} }, message.author, 15000));
 	}
 
 	toggleRepetition(messageReaction, user, shouldRepeat) {
@@ -218,6 +236,8 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 				let slackers;
 
 				if (channel.members && channel.members.has(this.Client.user.id)) {
+					console.log(`${this.config.guildName}: ReadCheck sweepMessages() - ${this.Client.sweepMessages(1)}`);
+
 					channel.fetchMessage(message.id)
 						.then(msg => {
 							channel.members.forEach(member => {
@@ -247,7 +267,6 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 							const reactionPromises = [];
 
 							msg && msg.reactions.forEach(reaction => {
-								console.log(reaction.emoji.name);
 								reactionPromises.push(
 									reaction.fetchUsers()
 										.then(users => {
