@@ -27,7 +27,8 @@ const GUILDS = [
 			raids_log: '440795802777157642',
 			raids_comm: '440641211066482707',
 			territory_battles: '440640976684449792',
-			bot_playground: '371742456653414410'
+			bot_playground: '371742456653414410',
+			court_of_law: '456166218878025738'
 		},
 		roles: {
 			officer: '440635030658613269',
@@ -48,7 +49,8 @@ const GUILDS = [
 			raids_log: '425797428642316288',
 			raids_comm: '424322828167413770',
 			territory_battles: '424322614169960448',
-			bot_playground: '371742456653414410'
+			bot_playground: '371742456653414410',
+			court_of_law: '456166218878025738'
 		},
 		roles: {
 			officer: '423875440806199305',
@@ -56,27 +58,6 @@ const GUILDS = [
 		},
 		resetTimeUTC: {
 			hour: 23,
-			minute: 30
-		}
-	},
-	{
-		guildName: 'fOuR',
-		mongoCollection: 'TeN_fOuR',
-		botToken: process.env.TOKEN_TeN_fOuR,
-		channels: {
-			guild_lounge: '451656613552455682',
-			sergeants_office: '452542377320513538',
-			raids_log: '452542450410586123',
-			raids_comm: '451656996429627393',
-			territory_battles: '451656936602075148',
-			bot_playground: '371742456653414410'
-		},
-		roles: {
-			officer: '451637963881840640',
-			member: '451637316931289093'
-		},
-		resetTimeUTC: {
-			hour: 22,
 			minute: 30
 		}
 	},
