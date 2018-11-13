@@ -6,6 +6,7 @@ import Raids from './modules/Raids';
 import DailyActivities from './modules/DailyActivities';
 import TerritoryBattles from './modules/TerritoryBattles';
 import ReadCheck from './modules/ReadCheck';
+import CourtOfLaw from "./modules/CourtOfLaw";
 
 export default class Guild {
 	constructor(config) {
@@ -112,6 +113,9 @@ export default class Guild {
 
 			if (data.dstb && Object.keys(data.dstb).length && !this.DSTB)
 				this.DSTB = new TerritoryBattles(this.Client, config, channels, data.dstb);
+
+			if (config.channels.court_of_law && !this.CourtOfLaw)
+				this.CourtOfLaw = new CourtOfLaw(this.Client, config, channels);
 
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);
