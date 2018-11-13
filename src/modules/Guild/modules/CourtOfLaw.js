@@ -73,7 +73,7 @@ Examples:
 			dateTo = new Date(new Date(now.getFullYear(), now.getMonth(),  0).getTime());
 		} else {
 			dateFrom = new Date(fromString);
-			dateTo = toString && new Date(toString);
+			dateTo = (toString && new Date(toString)) || now;
 
 			if (!dateFrom instanceof Date || isNaN(dateFrom)) {
 				msg.reply(`\`${fromString}\` is not a valid date. Try \`currentMonth\` or \`10/25/2018\`.`);
@@ -175,7 +175,7 @@ Examples:
       - From: ${new Date(dateFrom)}
       - To: ${new Date(dateTo) || 'now'}
 
-•    People mentioned during that time:
+•    ${slackers.size} people were mentioned during that time:
 ${[...slackers].map(slacker => `      - <@${slacker[1].id}> ${slacker[1].mentionCount}x`).join('\n')}`);
 	}
 
