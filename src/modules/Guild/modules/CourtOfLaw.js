@@ -179,7 +179,7 @@ Examples:
 	}
 
 	printSlackers(msg, dateFrom, dateTo, slackers) {
-		const channel = msg ? msg.channel : this.channels.court_of_law;
+		const channel = msg ? msg.channel : this.channels.officer_chat;
 
 		channel.send(`__**Court of Law ${msg ? '' : 'Monthly '}Report**__
 

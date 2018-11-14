@@ -23,6 +23,7 @@ const GUILDS = [
 		botToken: process.env.TOKEN_TeN_DST,
 		channels: {
 			guild_lounge: '440636860100902915',
+			officer_chat: '440637450616963072',
 			sergeants_office: '440640683624103936',
 			raids_log: '440795802777157642',
 			raids_comm: '440641211066482707',
@@ -45,6 +46,7 @@ const GUILDS = [
 		botToken: process.env.TOKEN_TeN_TiNT,
 		channels: {
 			guild_lounge: '423829996461621248',
+			officer_chat: '423838294766256137',
 			sergeants_office: '426510072584077316',
 			raids_log: '425797428642316288',
 			raids_comm: '424322828167413770',
