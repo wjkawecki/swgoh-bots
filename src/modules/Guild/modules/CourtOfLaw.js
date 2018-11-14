@@ -54,8 +54,9 @@ export default class CourtOfLaw {
 \`-court [dateFrom or keyword] [dateTo (optional)]\` *- officer only*.
 
 Examples:
-\`-court currentMonth\`
-\`-court lastMonth\`
+\`-court this\` or \`-court current\` or \`-court currentMonth\`
+\`-court last\` or \`-court previous\` or \`-court lastMonth\`
+\`-court 10/1/2018\`
 \`-court 10/1/2018 10/20/2018\``
 		);
 	}
@@ -65,15 +66,25 @@ Examples:
 		let dateFrom;
 		let dateTo;
 
-		if (fromString === 'currentmonth') {
-			dateFrom = new Date(new Date(now.getFullYear(), now.getMonth(),  1).getTime());
-			dateTo = now;
-		} else if (fromString === 'lastmonth') {
-			dateFrom = new Date(new Date(now.getFullYear(), now.getMonth() - 1,  1).getTime());
-			dateTo = new Date(new Date(now.getFullYear(), now.getMonth(),  0).getTime());
+		msg.react('⌛');
+
+		this.slackers = new Map();
+
+		if (fromString === 'this'
+			|| fromString === 'current'
+			|| fromString === 'currentmonth'
+			|| fromString === 'thismonth') {
+			dateFrom = new Date(new Date(now.getFullYear(), now.getMonth(), 1).getTime());
+			dateTo = null;
+		} else if (fromString === 'last'
+			|| fromString === 'previous'
+			|| fromString === 'lastmonth'
+			|| fromString === 'previousmonth') {
+			dateFrom = new Date(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime());
+			dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 0).getTime());
 		} else {
 			dateFrom = new Date(fromString);
-			dateTo = (toString && new Date(toString)) || now;
+			dateTo = (toString && new Date(toString) || null);
 
 			if (!dateFrom instanceof Date || isNaN(dateFrom)) {
 				msg.reply(`\`${fromString}\` is not a valid date. Try \`currentMonth\` or \`10/25/2018\`.`);
@@ -86,7 +97,7 @@ Examples:
 			}
 
 			dateFrom = dateFrom.getTime();
-			dateTo = dateTo.getTime();
+			dateTo = dateTo && dateTo.getTime() || null;
 		}
 
 		this.fetchSlackers(dateFrom, dateTo)
@@ -94,20 +105,11 @@ Examples:
 	}
 
 	fetchSlackers(timestampFrom, timestampTo, messageId) {
-		const now = new Date();
-		const defaultTimestampFrom = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-		const defaultTimestampTo = now.getTime();
-
-		timestampFrom = timestampFrom || defaultTimestampFrom;
-		timestampTo = timestampTo || defaultTimestampTo;
-
 		return new Promise(resolve => {
 			const options = {limit: 100};
 			const channel = this.config.DEV
 				? this.Client.channels.get(this.config.channels.court_of_law)
 				: this.channels.court_of_law;
-
-			this.slackers = this.slackers || new Map();
 
 			if (messageId)
 				options.before = messageId;
@@ -169,13 +171,14 @@ Examples:
 	}
 
 	printSlackers(msg, dateFrom, dateTo, slackers) {
+		msg.reactions.get('⌛') && msg.reactions.get('⌛').remove();
 		msg.channel.send(`__**Court of Law Report**__
 
 •    ${helpers.getReadableTime((dateTo ? dateTo : new Date().getTime()) - dateFrom)}
       - From: ${new Date(dateFrom)}
-      - To: ${new Date(dateTo) || 'now'}
+      - To: ${dateTo && new Date(dateTo) || 'now'}
 
-•    ${slackers.size} people were mentioned during that time:
+•    ${slackers.size} members of ${this.guild.roles.get(this.config.roles.member).name} were mentioned during that time:
 ${[...slackers].map(slacker => `      - <@${slacker[1].id}> ${slacker[1].mentionCount}x`).join('\n')}`);
 	}
 
