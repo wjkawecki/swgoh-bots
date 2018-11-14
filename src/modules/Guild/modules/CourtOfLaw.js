@@ -68,8 +68,6 @@ Examples:
 
 		msg.react('⌛');
 
-		this.slackers = new Map();
-
 		if (fromString === 'this'
 			|| fromString === 'current'
 			|| fromString === 'currentmonth'
@@ -105,6 +103,8 @@ Examples:
 	}
 
 	fetchSlackers(timestampFrom, timestampTo, messageId) {
+		this.slackers = messageId ? this.slackers : new Map();
+
 		return new Promise(resolve => {
 			const options = {limit: 100};
 			const channel = this.config.DEV
@@ -162,17 +162,26 @@ Examples:
 
 	scheduleCourt() {
 		const now = new Date();
+		const nextMonthTimestamp = new Date(new Date(now.getFullYear(), now.getMonth() + 1, 1)).getTime();
 
-		// this.fetchSlackers()
-		// 	.then(slackers => this.printSlackers(slackers));
+		this.clearTimeouts();
 
-		// this.fetchSlackers(new Date(now.getFullYear(), now.getMonth() + 1,  now.getDate() - 7).getTime())
-		// 	.then(slackers => this.printSlackers(slackers));
+		this.timeouts.push(setTimeout(() => {
+			const now = new Date();
+			const dateFrom = new Date(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime());
+			const dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 0).getTime());
+
+			this.fetchSlackers(dateFrom, dateTo)
+				.then(slackers => this.printSlackers(null, dateFrom, dateTo, slackers));
+		}, nextMonthTimestamp - now.getTime()));
+
+		console.log(`${this.config.guildName}: CourtOfLaw scheduled in ${helpers.getReadableTime(nextMonthTimestamp - now.getTime())}`);
 	}
 
 	printSlackers(msg, dateFrom, dateTo, slackers) {
-		msg.reactions.get('⌛') && msg.reactions.get('⌛').remove();
-		msg.channel.send(`__**Court of Law Report**__
+		const channel = msg ? msg.channel : this.channels.court_of_law;
+
+		channel.send(`__**Court of Law Report**__
 
 •    ${helpers.getReadableTime((dateTo ? dateTo : new Date().getTime()) - dateFrom)}
       - From: ${new Date(dateFrom)}
@@ -180,6 +189,8 @@ Examples:
 
 •    ${slackers.size} members of ${this.guild.roles.get(this.config.roles.member).name} were mentioned during that time:
 ${[...slackers].map(slacker => `      - <@${slacker[1].id}> ${slacker[1].mentionCount}x`).join('\n')}`);
+
+		msg && msg.reactions.get('⌛') && msg.reactions.get('⌛').remove();
 	}
 
 	clearTimeouts() {
