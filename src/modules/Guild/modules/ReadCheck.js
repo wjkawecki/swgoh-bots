@@ -322,7 +322,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 								slackers.delete(msg && msg.author.id);
 
 								if (slackers.size) {
-									slackers = new Set([...slackers].sort((a, b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0)));
+									slackers = new Set([...slackers].sort((a, b) => a.displayName.localeCompare(b.displayName)));
 									this.sendReport(msg, slackers, message, messageIndex);
 								} else {
 									this.data.messages.splice(messageIndex, 1);

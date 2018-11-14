@@ -150,7 +150,8 @@ Examples:
 					});
 
 					if (reachedTimestampFrom || messages.size < options.limit) {
-						this.slackers = new Map([...this.slackers].sort((a, b) => (a[1].mentionCount < b[1].mentionCount) ? 1 : ((b[1].mentionCount < a[1].mentionCount) ? -1 : 0)));
+						// sort by mentionCount and displayName
+						this.slackers = new Map([...this.slackers].sort((a, b) => b[1].mentionCount - a[1].mentionCount || a[1].displayName.localeCompare(b[1].displayName)));
 
 						resolve(this.slackers);
 					} else {
