@@ -181,7 +181,7 @@ Examples:
 	printSlackers(msg, dateFrom, dateTo, slackers) {
 		const channel = msg ? msg.channel : this.channels.court_of_law;
 
-		channel.send(`__**Court of Law Report**__
+		channel.send(`__**Court of Law ${msg ? '' : 'Monthly '}Report**__
 
 •    ${helpers.getReadableTime((dateTo ? dateTo : new Date().getTime()) - dateFrom)}
       - From: ${new Date(dateFrom)}
