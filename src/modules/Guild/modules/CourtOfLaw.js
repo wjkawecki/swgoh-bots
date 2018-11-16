@@ -42,6 +42,11 @@ export default class CourtOfLaw {
 					this.helpReply(msg);
 					break;
 
+				case 'all':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.printCourt(msg, 'all');
+					break;
+
 				default:
 					if (msg.member.roles.has(this.config.roles.officer))
 						this.printCourt(msg, (args[0] || '').toLowerCase(), (args[1] || '').toLowerCase());
@@ -68,7 +73,10 @@ Examples:
 
 		msg.react('⌛');
 
-		if (fromString === 'this'
+		if (fromString === 'all') {
+			dateFrom = null;
+			dateTo = null;
+		} else if (fromString === 'this'
 			|| fromString === 'current'
 			|| fromString === 'currentmonth'
 			|| fromString === 'thismonth') {
@@ -99,7 +107,7 @@ Examples:
 		}
 
 		this.fetchSlackers(dateFrom, dateTo)
-			.then(slackers => this.printSlackers(msg, dateFrom, dateTo, slackers));
+			.then(({slackers, lastMessageTimestamp}) => this.printSlackers(msg, lastMessageTimestamp || dateFrom, dateTo, slackers));
 	}
 
 	fetchSlackers(timestampFrom, timestampTo, messageId) {
@@ -153,7 +161,12 @@ Examples:
 						// sort by mentionCount and displayName
 						this.slackers = new Map([...this.slackers].sort((a, b) => b[1].mentionCount - a[1].mentionCount || a[1].displayName.localeCompare(b[1].displayName)));
 
-						resolve(this.slackers);
+						resolve({
+							slackers: this.slackers,
+							lastMessageTimestamp: messages.size < options.limit
+								? messages.last().createdTimestamp
+								: null
+						});
 					} else {
 						resolve(this.fetchSlackers(timestampFrom, timestampTo, messageId));
 					}
@@ -173,7 +186,7 @@ Examples:
 			const dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 0).getTime());
 
 			this.fetchSlackers(dateFrom, dateTo)
-				.then(slackers => this.printSlackers(null, dateFrom, dateTo, slackers));
+				.then(({slackers}) => this.printSlackers(null, dateFrom, dateTo, slackers));
 		}, nextMonthTimestamp - now.getTime()));
 
 		console.log(`${this.config.guildName}: CourtOfLaw scheduled in ${helpers.getReadableTime(nextMonthTimestamp - now.getTime())}`);
