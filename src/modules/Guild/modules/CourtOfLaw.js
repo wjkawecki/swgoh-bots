@@ -189,7 +189,7 @@ Examples:
       - To: ${dateTo && new Date(dateTo) || 'now'}
 
 •    ${slackers.size} members of ${this.guild.roles.get(this.config.roles.member).name} were mentioned during that time:
-${[...slackers].map(slacker => `      - <@${slacker[1].id}> ${slacker[1].mentionCount}x`).join('\n')}`);
+${[...slackers].map(slacker => `      - <@${slacker[1].id}> ${slacker[1].mentionCount}x`).join('\n')}`, {split: true});
 
 		msg && msg.reactions.get('⌛') && msg.reactions.get('⌛').remove();
 	}
