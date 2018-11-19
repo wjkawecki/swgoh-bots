@@ -1,33 +1,50 @@
 {
-  "name": "swgoh-bots",
-  "version": "1.0.0",
-  "engines": {
-    "node": "^8.0.0"
-  },
-  "description": "",
-  "main": "./lib",
-  "scripts": {
-    "compile": "babel src --out-dir lib",
-    "start": "npm run compile && node ./lib"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wjkawecki/swgoh-arena-payout"
-  },
-  "author": "Wojciech Kawecki",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/wjkawecki/swgoh-bots/issues"
-  },
-  "homepage": "https://github.com/wjkawecki/swgoh-bots#readme",
-  "devDependencies": {},
-  "dependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
-    "babel-preset-env": "^1.6.0",
-    "discord.js": "^11.4.2",
-    "mongodb": "^3.1.1",
-    "npm": "^6.4.0",
-    "xlsx": "^0.11.1"
-  }
+	"name": "swgoh-sergeant",
+	"version": "1.0.0",
+	"engines": {
+		"node": "^8.0.0"
+	},
+	"description": "",
+	"main": "./lib",
+	"scripts": {
+		"compile": "babel src --out-dir lib",
+		"start": "npm run compile && node ./lib"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wjkawecki/swgoh-sergeant"
+	},
+	"author": "Wojciech Kawecki",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/wjkawecki/swgoh-sergeant/issues"
+	},
+	"homepage": "https://github.com/wjkawecki/swgoh-sergeant#readme",
+	"devDependencies": {},
+	"dependencies": {
+		"@babel/cli": "^7.1.5",
+		"@babel/core": "^7.1.6",
+		"@babel/node": "^7.0.0",
+		"@babel/preset-env": "^7.1.6",
+		"babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
+		"discord.js": "^11.4.2",
+		"mongodb": "^3.1.1",
+		"npm": "^6.4.0",
+		"xlsx": "^0.11.1"
+	},
+	"babel": {
+		"presets": [
+			[
+				"@babel/preset-env",
+				{
+					"targets": {
+						"node": "current"
+					}
+				}
+			]
+		],
+		"plugins": [
+			"babel-plugin-dynamic-import-node-babel-7"
+		]
+	}
 }
