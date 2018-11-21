@@ -102,9 +102,6 @@ export default class Guild {
 			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length && !this.DailyActivities)
 				this.DailyActivities = new DailyActivities(this.Client, config, channels);
 
-			if (data.readCheck && Object.keys(data.readCheck).length && !this.ReadCheck)
-				this.ReadCheck = new ReadCheck(this.Client, config, channels, data.readCheck);
-
 			if (data.raids && Object.keys(data.raids).length && !this.Raids)
 				this.Raids = new Raids(this.Client, config, channels, data.raids);
 
@@ -116,6 +113,9 @@ export default class Guild {
 
 			if (config.channels.court_of_law && !this.CourtOfLaw)
 				this.CourtOfLaw = new CourtOfLaw(this.Client, config, channels);
+
+			// if (data.readCheck && Object.keys(data.readCheck).length && !this.ReadCheck)
+			// 	this.ReadCheck = new ReadCheck(this.Client, config, channels, data.readCheck);
 
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);
