@@ -66,14 +66,14 @@ Examples:
 		this.data.raids.forEach((raid, raidIndex) => {
 			this.data.config.hours.forEach(hour => {
 				const ms = hour * 60 * 60 * 1000;
-				const timeout = this.config.DEV ? hour * 1000 : raid.endTimestamp - ms;
+				const timeout = raid.endTimestamp - ms;
 
 				if (now > raid.endTimestamp) {
 
 					this.data.raids.splice(raidIndex, 1);
 					deletedCount++;
 
-				} else if (this.config.DEV || timeout > now) {
+				} else if (timeout > now) {
 
 					this.timeouts.push(setTimeout(() => {
 						const reminderText = this.data.config.reminder
@@ -82,7 +82,7 @@ Examples:
 							.replace('#HOURS_STRING#', hour > 1 ? 'hours' : 'hour');
 
 						this.channels.raids_comm.send(`<@&${this.config.roles.member}> ${reminderText}`);
-					}, timeout));
+					}, timeout - now));
 
 				}
 			});
@@ -122,8 +122,16 @@ Type \`-start [name] [duration - optional]\`.`);
 		this.data.raids.push(raid);
 
 		helpers.updateJSON(this.config, 'msfRaids', this.data, () => {
-			console.log(`${this.config.guildName}: `, raid);
+			const reminderText = this.data.config.reminder
+				.replace('#NAME#', raid.name)
+				.replace('#HOURS#', `${duration}`)
+				.replace('#HOURS_STRING#', duration > 1 ? 'hours' : 'hour');
+
+			console.log(`${this.config.guildName}: added new raid`, raid);
+
 			msg.reply(`added new ${args[0]} raid with ${duration}h duration!`);
+			this.channels.raids_comm.send(`<@&${this.config.roles.member}> ${reminderText}`);
+
 			this.main();
 		});
 	}
