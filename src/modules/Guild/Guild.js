@@ -5,8 +5,9 @@ import * as fs from 'fs';
 import Raids from './modules/Raids';
 import DailyActivities from './modules/DailyActivities';
 import TerritoryBattles from './modules/TerritoryBattles';
-import ReadCheck from './modules/ReadCheck';
 import CourtOfLaw from "./modules/CourtOfLaw";
+import ReadCheck from './modules/ReadCheck';
+import MSFRaids from './modules/MSFRaids';
 
 export default class Guild {
 	constructor(config) {
@@ -116,6 +117,9 @@ export default class Guild {
 
 			// if (data.readCheck && Object.keys(data.readCheck).length && !this.ReadCheck)
 			// 	this.ReadCheck = new ReadCheck(this.Client, config, channels, data.readCheck);
+
+			if (data.msfRaids && !this.MSFRaids)
+				this.MSFRaids = new MSFRaids(this.Client, config, channels, data.msfRaids);
 
 		} catch (err) {
 			console.log(`${config.guildName}: initGuild error`, err.message);

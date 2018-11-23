@@ -81,6 +81,48 @@ const initBot = () => {
 				minute: 30
 			}
 		},
+		{
+			guildName: 'PAW Purge',
+			mongoCollection: 'PAW_Purge',
+			botToken: process.env.TOKEN_PAW_Purge,
+			channels: {
+				command: '488471372130156545',
+				raids_comm: '515618195726401536',
+				bot_playground: '515618816219152386'
+			},
+			roles: {
+				officer: '488473061105074176',
+				member: '488472348975038465'
+			}
+		},
+		{
+			guildName: 'PAW Anarchy',
+			mongoCollection: 'PAW_Anarchy',
+			botToken: process.env.TOKEN_PAW_Anarchy,
+			channels: {
+				command: '481257004753616906',
+				raids_comm: '515618576296837200',
+				bot_playground: '515618816219152386'
+			},
+			roles: {
+				officer: '481306970427490304',
+				member: '481311931496398868'
+			}
+		},
+		{
+			guildName: 'PAW Wreckless',
+			mongoCollection: 'PAW_Wreckless',
+			botToken: process.env.TOKEN_PAW_Wreckless,
+			channels: {
+				command: '481533518153777153',
+				raids_comm: '515618665534849045',
+				bot_playground: '515618816219152386'
+			},
+			roles: {
+				officer: '481541628322906112',
+				member: '481541136389767208'
+			}
+		}
 	];
 
 	console.log('=== CONFIG.DEV ' + CONFIG.DEV);
