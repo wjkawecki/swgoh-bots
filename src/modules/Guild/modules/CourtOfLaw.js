@@ -177,7 +177,7 @@ Examples:
 	scheduleCourt() {
 		const now = new Date();
 		const nextMonthTimestamp = new Date(new Date(now.getFullYear(), now.getMonth() + 1, 1)).getTime();
-		const timeout = nextMonthTimestamp - now.getTime() + (60 * 60 * 1000);
+		const timeout = nextMonthTimestamp - now.getTime() + (30 * 1000);
 
 		this.clearTimeouts();
 
