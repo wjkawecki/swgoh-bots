@@ -205,7 +205,7 @@ Examples:
       - From: ${new Date(dateFrom)}
       - To: ${dateTo && new Date(dateTo) || 'now'}
 
-•    ${slackers.size} members of ${this.guild.roles.get(this.config.roles.member).name} were mentioned during that time:
+•    ${slackers.size} ${slackers.size === 1 ? 'member' : 'members'} of ${this.guild.roles.get(this.config.roles.member).name} ${slackers.size === 1 ? 'was' : 'were'} mentioned during that time${slackers.size > 0 ? ':' : '.'}
 ${[...slackers].map(slacker => `      - <@${slacker[1].id}> ${slacker[1].mentionCount}x`).join('\n')}`, {split: true});
 
 		msg && msg.reactions.get('⌛') && msg.reactions.get('⌛').remove();
