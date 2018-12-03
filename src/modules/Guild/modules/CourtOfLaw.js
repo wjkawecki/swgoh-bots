@@ -87,7 +87,7 @@ Examples:
 			|| fromString === 'lastmonth'
 			|| fromString === 'previousmonth') {
 			dateFrom = new Date(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime());
-			dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 0).getTime());
+			dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 1).getTime());
 		} else {
 			dateFrom = new Date(fromString);
 			dateTo = (toString && new Date(toString) || null);
@@ -177,19 +177,23 @@ Examples:
 	scheduleCourt() {
 		const now = new Date();
 		const nextMonthTimestamp = new Date(new Date(now.getFullYear(), now.getMonth() + 1, 1)).getTime();
+		const timeout = nextMonthTimestamp - now.getTime() + (60 * 60 * 1000);
 
 		this.clearTimeouts();
+
+		// if timeout is unreasonably big, return
+		if (timeout > (2 * 24 * 60 * 60 * 1000)) return;
 
 		this.timeouts.push(setTimeout(() => {
 			const now = new Date();
 			const dateFrom = new Date(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime());
-			const dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 0).getTime());
+			const dateTo = new Date(new Date(now.getFullYear(), now.getMonth(), 1).getTime());
 
 			this.fetchSlackers(dateFrom, dateTo)
 				.then(({slackers}) => this.printSlackers(null, dateFrom, dateTo, slackers));
-		}, nextMonthTimestamp - now.getTime()));
+		}, timeout));
 
-		console.log(`${this.config.guildName}: CourtOfLaw scheduled in ${helpers.getReadableTime(nextMonthTimestamp - now.getTime())}`);
+		console.log(`${this.config.guildName}: CourtOfLaw scheduled in ${helpers.getReadableTime(timeout)}`);
 	}
 
 	printSlackers(msg, dateFrom, dateTo, slackers) {
