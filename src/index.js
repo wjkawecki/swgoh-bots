@@ -14,29 +14,6 @@ const initBot = () => {
 	};
 
 	const GUILDS = [
-		// {
-		// 	guildName: 'DST',
-		// 	mongoCollection: 'TeN_DST',
-		// 	botToken: process.env.TOKEN_TeN_DST,
-		// 	channels: {
-		// 		guild_lounge: '440636860100902915',
-		// 		officer_chat: '440637450616963072',
-		// 		sergeants_office: '440640683624103936',
-		// 		raids_log: '440795802777157642',
-		// 		raids_comm: '440641211066482707',
-		// 		territory_battles: '440640976684449792',
-		// 		bot_playground: '371742456653414410',
-		// 		court_of_law: '456166218878025738'
-		// 	},
-		// 	roles: {
-		// 		officer: '440635030658613269',
-		// 		member: '440634741826256896'
-		// 	},
-		// 	resetTimeUTC: {
-		// 		hour: 23,
-		// 		minute: 30
-		// 	}
-		// },
 		{
 			guildName: 'TiNT',
 			mongoCollection: 'TeN_TiNT',
