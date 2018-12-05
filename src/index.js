@@ -64,7 +64,7 @@ const initBot = () => {
 			botToken: process.env.TOKEN_PAW_Purge,
 			channels: {
 				command: '488471372130156545',
-				raids_comm: '488471411426459648',
+				raids_comm: '519782490177536020',
 				bot_playground: '515618816219152386'
 			},
 			roles: {
@@ -78,7 +78,7 @@ const initBot = () => {
 			botToken: process.env.TOKEN_PAW_Anarchy,
 			channels: {
 				command: '481257004753616906',
-				raids_comm: '481259556865835008',
+				raids_comm: '519782670645854228',
 				bot_playground: '515618816219152386'
 			},
 			roles: {
@@ -92,7 +92,7 @@ const initBot = () => {
 			botToken: process.env.TOKEN_PAW_Wreckless,
 			channels: {
 				command: '481533518153777153',
-				raids_comm: '481533589926969344',
+				raids_comm: '519782777978355712',
 				bot_playground: '515618816219152386'
 			},
 			roles: {
