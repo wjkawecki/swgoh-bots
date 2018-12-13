@@ -150,7 +150,7 @@ export default class BB8 {
 
 					if (mate.flag.trim() !== ':skull_crossbones:') {
 						if (mate.swgohgg) {
-							desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/u/${mate.swgohgg.trim()}) · `;
+							desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
 						} else {
 							desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
 						}
