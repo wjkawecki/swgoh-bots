@@ -165,7 +165,7 @@ export default class BB8 {
 
 					desc = desc.substring(0, desc.length - 3);
 
-					desc += '\n_ _\n_ _\n_ _\nFollowing payouts:';
+					desc += '\n_ _\n_ _\nFollowing payouts:';
 				} else {
 					desc = desc.substring(0, desc.length - 3);
 				}
