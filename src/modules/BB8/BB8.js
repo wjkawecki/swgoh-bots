@@ -144,13 +144,13 @@ export default class BB8 {
 					desc += '\n_ _';
 				}
 
-				desc += `\n\`${this.mates[i].time}\`_   _`;
+				desc += `\n\`${this.mates[i].time}\`_ __ _`;
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
 
 					if (mate.flag.trim() !== ':skull:') {
 						// desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
-						desc += `${mate.flag.trim()} ${mate.name.trim()}_  _·_  _`;
+						desc += `${mate.flag.trim()} ${mate.name.trim()}_ __ _·_ __ _`;
 					}
 				}
 
@@ -159,15 +159,15 @@ export default class BB8 {
 						const mate = this.mates[i].mates[j];
 
 						if (mate.flag.trim() === ':skull:') {
-							desc += `${mate.flag.trim()} ${mate.name.trim()}_  _·_  _`;
+							desc += `${mate.flag.trim()} ${mate.name.trim()}_ __ _·_ __ _`;
 						}
 					}
 
-					desc = desc.substring(0, desc.length - 9);
+					desc = desc.substring(0, desc.length - 13);
 
 					desc += '\n\n\nFollowing payouts:';
 				} else {
-					desc = desc.substring(0, desc.length - 9);
+					desc = desc.substring(0, desc.length - 13);
 				}
 			}
 
@@ -175,7 +175,7 @@ export default class BB8 {
 				.setDescription(desc)
 				.setColor(0x00AE86)
 				.setThumbnail('https://swgoh.gg/static/img/swgohgg-nav.png')
-				.setAuthor('Next payout in:')
+				.setAuthor('Next payout:')
 				.setTimestamp();
 
 			await this.message.edit({embed});
