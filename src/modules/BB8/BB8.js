@@ -141,10 +141,10 @@ export default class BB8 {
 
 			for (let i in this.mates) {
 				if (i > '1') {
-					desc += '\n_ _\n_ _';
+					desc += '\n_ _';
 				}
 
-				desc += `\n\`${this.mates[i].time}\` · `;
+				desc += `\n\`${this.mates[i].time}\`_ _`;
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
 
@@ -165,7 +165,7 @@ export default class BB8 {
 
 					desc = desc.substring(0, desc.length - 3);
 
-					desc += '\n\n\nFollowing payouts:';
+					desc += '\n_ _\n_ _\nFollowing payouts:';
 				} else {
 					desc = desc.substring(0, desc.length - 3);
 				}
