@@ -148,12 +148,8 @@ export default class BB8 {
 				for (let j in this.mates[i].mates) {
 					const mate = this.mates[i].mates[j];
 
-					if (mate.flag.trim() !== ':skull_crossbones:') {
-						if (mate.swgohgg) {
-							desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
-						} else {
-							desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
-						}
+					if (mate.flag.trim() !== ':skull:') {
+						desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
 					}
 				}
 
@@ -161,7 +157,7 @@ export default class BB8 {
 					for (let j in this.mates[i].mates) {
 						const mate = this.mates[i].mates[j];
 
-						if (mate.flag.trim() === ':skull_crossbones:') {
+						if (mate.flag.trim() === ':skull:') {
 							desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
 						}
 					}
