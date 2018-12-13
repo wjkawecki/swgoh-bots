@@ -150,7 +150,7 @@ export default class BB8 {
 
 					if (mate.flag.trim() !== ':skull:') {
 						// desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
-						desc += `${mate.flag.trim()} ${mate.name.trim()}_ _ _ _·_ _ _ _`;
+						desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
 					}
 				}
 
@@ -159,15 +159,15 @@ export default class BB8 {
 						const mate = this.mates[i].mates[j];
 
 						if (mate.flag.trim() === ':skull:') {
-							desc += `${mate.flag.trim()} ${mate.name.trim()}_ _ _ _·_ _ _ _`;
+							desc += `${mate.flag.trim()} ${mate.name.trim()} · `;
 						}
 					}
 
-					desc = desc.substring(0, desc.length - 15);
+					desc = desc.substring(0, desc.length - 3);
 
 					desc += '\n\n\nFollowing payouts:';
 				} else {
-					desc = desc.substring(0, desc.length - 15);
+					desc = desc.substring(0, desc.length - 3);
 				}
 			}
 
