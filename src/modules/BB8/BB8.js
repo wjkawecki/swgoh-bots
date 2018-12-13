@@ -149,7 +149,8 @@ export default class BB8 {
 					const mate = this.mates[i].mates[j];
 
 					if (mate.flag.trim() !== ':skull:') {
-						desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
+						// desc += `${mate.flag.trim()} [${mate.name.trim()}](https://swgoh.gg/p/${mate.swgohgg.trim()}) · `;
+						desc += `${mate.flag.trim()} [${mate.name.trim()}](#) · `;
 					}
 				}
 
