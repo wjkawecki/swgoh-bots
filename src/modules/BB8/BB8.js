@@ -88,10 +88,10 @@ export default class BB8 {
 			const user = this.sheet[i];
 
 			this.mates.push({
-				name: user.Name,
-				payout: parseInt(user.UTC),
-				flag: user.Flag,
-				swgohgg: user.SWGOHGG
+				name: user.Name || '',
+				payout: parseInt(user.UTC) || '',
+				flag: user.Flag || '',
+				swgohgg: user.SWGOHGG || ''
 			});
 		}
 
