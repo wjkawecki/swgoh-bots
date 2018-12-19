@@ -18,7 +18,7 @@ export default class ReadCheck {
 		try {
 			this.scheduleChecks();
 		} catch (err) {
-			console.log(`${this.config.guildName}: ReadCheck main`, err);
+			console.log(`${this.config.name}: ReadCheck main`, err);
 			setTimeout(() => this.scheduleChecks(), this.config.retryTimeout);
 		}
 	}
@@ -278,7 +278,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
 				let slackers;
 
 				if (channel.members && channel.members.has(this.Client.user.id)) {
-					console.log(`${this.config.guildName}: ReadCheck sweepMessages() - ${this.Client.sweepMessages(1)}`);
+					console.log(`${this.config.name}: ReadCheck sweepMessages() - ${this.Client.sweepMessages(1)}`);
 
 					channel.fetchMessage(message.id)
 						.then(msg => {

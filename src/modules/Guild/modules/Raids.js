@@ -17,7 +17,7 @@ export default class Raids {
 		try {
 			this.pushJSON(raidKey);
 		} catch (err) {
-			console.log(`${this.config.guildName}: Raids main`, err.message);
+			console.log(`${this.config.name}: Raids main`, err.message);
 			setTimeout(() => this.pushJSON(raidKey), this.config.retryTimeout);
 		}
 	}
@@ -143,7 +143,7 @@ ${raid.active ? `
 \`-undo\` to revert your last action.`;
 
 		embed = new Discord.RichEmbed()
-			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.guildName} Raid Settings`)
+			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.name} Raid Settings`)
 			.setDescription(desc)
 			.setThumbnail(thumbnailSrc)
 			.setColor(0x7289da);
@@ -155,7 +155,7 @@ ${raid.active ? `
 		if (this.undoJsonArray && this.undoJsonArray.length > 1) {
 			msg.reply(`I have reverted your last action. Just like nothing happened!`);
 
-			console.log(`== ${this.config.guildName}: succesfull undo`);
+			console.log(`== ${this.config.name}: succesfull undo`);
 
 			this.undoJsonArray.pop();
 			this.json = JSON.parse(JSON.stringify(this.undoJsonArray.pop()));
@@ -170,12 +170,12 @@ ${raid.active ? `
 			});
 		} else {
 			msg.reply(`I am so sorry, but there is nothing I can do! Maybe <@209632024783355904> can help?`);
-			console.log(`== ${this.config.guildName}: failed undo`);
+			console.log(`== ${this.config.name}: failed undo`);
 		}
 	}
 
 	async clearChannel(channel, removeAll = false) {
-		// console.log(`${this.config.guildName}.Raids.clearChannel()`);
+		// console.log(`${this.config.name}.Raids.clearChannel()`);
 		try {
 			if (removeAll) {
 				const messages = await channel.fetchMessages().catch(console.error);
@@ -192,7 +192,7 @@ ${raid.active ? `
 					await message.delete().catch(console.error);
 			}
 		} catch (err) {
-			console.log(`${this.config.guildName}: clearChannel`, err.message);
+			console.log(`${this.config.name}: clearChannel`, err.message);
 		}
 	}
 
@@ -351,7 +351,7 @@ ${raid.active ? `
 				this.main(raid.raidKey);
 			}, raid.diff + 120000));
 
-			console.log(`${this.config.guildName}: ${raid.name} starts in ${helpers.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.name}: ${raid.name} starts in ${helpers.getReadableTime(raid.diff)}`);
 		} else if (raid.phase > 0 && raid.phase <= raid.config.phases.length) { // remind members about open phase
 			// let nextPhase = (raid.config.phases.length > 1) ? `P${raid.phase} ` : '';
 			let nextPhase = raid.config.phases[raid.phase - 1].text;
@@ -388,12 +388,12 @@ ${raid.active ? `
 				helpers.updateJSON(this.config, 'raids', this.json, () => this.main(raid.raidKey));
 			}, raid.diff));
 
-			console.log(`${this.config.guildName}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)}`);
+			console.log(`${this.config.name}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)}`);
 		}
 	}
 
 	clearTimeouts(raidKey) {
-		// console.log(`${this.config.guildName}.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
+		// console.log(`${this.config.name}.Raids.clearTimeouts(${raid}): ${this.timeouts[raid].length} timeouts`);
 
 		if (raidKey && this.timeouts[raidKey]) {
 			this.timeouts[raidKey].forEach((timeout) => {

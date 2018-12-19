@@ -2,14 +2,9 @@ import Discord from 'discord.js';
 import * as mongodb from 'mongodb';
 import * as fs from 'fs';
 
-import Raids from './modules/Raids';
-import DailyActivities from './modules/DailyActivities';
-import TerritoryBattles from './modules/TerritoryBattles';
-import CourtOfLaw from "./modules/CourtOfLaw";
-import ReadCheck from './modules/ReadCheck';
-import MSFRaids from './modules/MSFRaids';
+import Schedule from './modules/Schedule';
 
-export default class Guild {
+export default class Arena {
 	constructor(config) {
 		this.readMongo(config);
 	}
@@ -65,7 +60,7 @@ export default class Guild {
 			fetchAllMembers: true,
 			sync: true
 		});
-		this.Client.on('ready', () => this.initGuild(config, data));
+		this.Client.on('ready', () => this.initArena(config, data));
 		this.Client.on('error', error => console.log(`${config.name}: Client error:`, error.message));
 		this.Client.on('reconnecting',() => console.log(`${config.name}: Client reconnecting`));
 		this.Client.on('resume', replayed => console.log(`${config.name}: Client resume:`, replayed));
@@ -83,7 +78,7 @@ export default class Guild {
 
 	}
 
-	initGuild(config, data) {
+	initArena(config, data) {
 		try {
 			const channels = this.initChannels(config);
 			const guild = this.Client.guilds.first();
@@ -92,38 +87,17 @@ export default class Guild {
 
 			console.log(`=== ${config.name}: ${guild.memberCount} members | ${guild.channels.size} channels ===`);
 
-			if (config.DEV) {
-				// channels.bot_playground.send('DEV reporting for duty!');
-			} else {
-				channels.bot_playground.send('Reporting for duty!');
-			}
+			// ARENA MODULES
 
-			// GUILD MODULES
+			if (data.payouts && Object.keys(data.payouts).length && !this.Payouts)
+				this.Payouts = new Schedule(this.Client, config, channels.payout, data.payouts);
 
-			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length && !this.DailyActivities)
-				this.DailyActivities = new DailyActivities(this.Client, config, channels);
-
-			if (data.raids && Object.keys(data.raids).length && !this.Raids)
-				this.Raids = new Raids(this.Client, config, channels, data.raids);
-
-			if (data.lstb && Object.keys(data.lstb).length && !this.LSTB)
-				this.LSTB = new TerritoryBattles(this.Client, config, channels, data.lstb);
-
-			if (data.dstb && Object.keys(data.dstb).length && !this.DSTB)
-				this.DSTB = new TerritoryBattles(this.Client, config, channels, data.dstb);
-
-			if (config.channels.court_of_law && !this.CourtOfLaw)
-				this.CourtOfLaw = new CourtOfLaw(this.Client, config, channels);
-
-			// if (data.readCheck && Object.keys(data.readCheck).length && !this.ReadCheck)
-			// 	this.ReadCheck = new ReadCheck(this.Client, config, channels, data.readCheck);
-
-			if (data.msfRaids && !this.MSFRaids)
-				this.MSFRaids = new MSFRaids(this.Client, config, channels, data.msfRaids);
+			if (data.snipers && Object.keys(data.snipers).length && !this.Snipers)
+				this.Snipers = new Schedule(this.Client, config, channels.snipers, data.snipers);
 
 		} catch (err) {
-			console.log(`${config.name}: initGuild error`, err.message);
-			setTimeout(() => this.initGuild(config, data), config.retryTimeout);
+			console.log(`${config.name}: initArena error`, err.message);
+			setTimeout(() => this.initArena(config, data), config.retryTimeout);
 		}
 	}
 
@@ -131,11 +105,7 @@ export default class Guild {
 		const channels = {};
 
 		for (let key in config.channels) {
-			if (config.DEV) {
-				channels[key] = this.Client.channels.get(config.channels.bot_playground);
-			} else {
-				channels[key] = this.Client.channels.get(config.channels[key]);
-			}
+			channels[key] = this.Client.channels.get(config.channels[key]);
 		}
 
 		return channels;

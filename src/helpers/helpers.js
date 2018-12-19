@@ -49,7 +49,7 @@ const helpers = {
 
 	updateJSON: (config, key, value, cb) => {
 		if (config.DEV) {
-			const jsonLocalPath = __dirname + '/../..' + config.jsonLocalPath.replace('#guildName#', config.guildName);
+			const jsonLocalPath = __dirname + '/../..' + config.jsonLocalPath.replace('#name#', config.name);
 			let localData = JSON.parse(fs.readFileSync(jsonLocalPath));
 
 			fs.writeFileSync(jsonLocalPath, JSON.stringify(Object.assign(
@@ -69,7 +69,7 @@ const helpers = {
 						.then(() => client.close());
 				});
 			} catch (err) {
-				console.log(`${config.guildName}.updateJSON(${key}): MongoDB update error`, err.message);
+				console.log(`${config.name}.updateJSON(${key}): MongoDB update error`, err.message);
 				setTimeout(() => helpers.updateJSON(config, cb), config.retryTimeout);
 			}
 		}

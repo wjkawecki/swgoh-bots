@@ -1,11 +1,22 @@
 const initBot = () => {
 	const CONFIG = {
 		DEV: process.env.DEV_MODE === undefined ? false : process.env.DEV_MODE,
-		retryTimeout: 30* 1000,
+		retryTimeout: 30 * 1000,
 		commandPrefix: '-',
 		mongoUrl: process.env.MONGODB_URI,
-		jsonMongoPath: `/data/Guild/mongo/#guildName#_mongo.json`,
-		jsonLocalPath: `/data/Guild/local/#guildName#_local.json`,
+	};
+
+	const CONFIG_ARENA = {
+		...CONFIG,
+		jsonMongoPath: `/data/Arena/mongo/#name#_mongo.json`,
+		jsonLocalPath: `/data/Arena/local/#name#_local.json`,
+		sniperIcon: ':skull:'
+	};
+
+	const CONFIG_GUILD = {
+		...CONFIG,
+		jsonMongoPath: `/data/Guild/mongo/#name#_mongo.json`,
+		jsonLocalPath: `/data/Guild/local/#name#_local.json`,
 		thumbnails: {
 			rancor: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_rancor.jpg',
 			aat: 'https://swgoh.gg/static/img/assets/raids/tex.guild_events_aat.jpg',
@@ -13,9 +24,36 @@ const initBot = () => {
 		}
 	};
 
+	const ARENAS = [
+		{
+			name: 'Squad Arena',
+			mongoCollection: 'Squad_Arena',
+			botToken: process.env.TOKEN_SQUAD_ARENA,
+			channels: {
+				payout: '360337936203382796',
+				snipers: '524954639360327682'
+			},
+			roles: {
+				admin: '364111046111395840'
+			}
+		},
+		{
+			name: 'Fleet Arena',
+			mongoCollection: 'Fleet_Arena',
+			botToken: process.env.TOKEN_FLEET_ARENA,
+			channels: {
+				payout: '522792224744931328',
+				snipers: '524929501201825793'
+			},
+			roles: {
+				admin: '384026564792156160'
+			}
+		}
+	];
+
 	const GUILDS = [
 		{
-			guildName: 'TiNT',
+			name: 'TiNT',
 			mongoCollection: 'TeN_TiNT',
 			botToken: process.env.TOKEN_TeN_TiNT,
 			channels: {
@@ -38,7 +76,7 @@ const initBot = () => {
 			}
 		},
 		{
-			guildName: 'RoF',
+			name: 'RoF',
 			mongoCollection: 'TeN_RoF',
 			botToken: process.env.TOKEN_TeN_RoF,
 			channels: {
@@ -59,7 +97,7 @@ const initBot = () => {
 			}
 		},
 		{
-			guildName: 'PAW Purge',
+			name: 'PAW Purge',
 			mongoCollection: 'PAW_Purge',
 			botToken: process.env.TOKEN_PAW_Purge,
 			channels: {
@@ -73,7 +111,7 @@ const initBot = () => {
 			}
 		},
 		{
-			guildName: 'PAW Anarchy',
+			name: 'PAW Anarchy',
 			mongoCollection: 'PAW_Anarchy',
 			botToken: process.env.TOKEN_PAW_Anarchy,
 			channels: {
@@ -87,7 +125,7 @@ const initBot = () => {
 			}
 		},
 		{
-			guildName: 'PAW Wreckless',
+			name: 'PAW Wreckless',
 			mongoCollection: 'PAW_Wreckless',
 			botToken: process.env.TOKEN_PAW_Wreckless,
 			channels: {
@@ -105,14 +143,17 @@ const initBot = () => {
 	console.log('=== CONFIG.DEV ' + CONFIG.DEV);
 
 	new Heroku(CONFIG.DEV);
-	new BB8(CONFIG.retryTimeout);
+	// new BB8(CONFIG.retryTimeout);
 
-	GUILDS.forEach(guild => new Guild({...CONFIG, ...guild}));
+	ARENAS.forEach(arena => new Arena({...CONFIG_ARENA, ...arena}));
+	GUILDS.forEach(guild => new Guild({...CONFIG_GUILD, ...guild}));
 };
 
 import Heroku from './modules/Heroku/Heroku';
 import BB8 from './modules/BB8/BB8';
+import Arena from './modules/Arena/Arena';
 import Guild from './modules/Guild/Guild';
+
 import('./secret')
 	.then(initBot)
 	.catch(initBot);

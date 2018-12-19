@@ -15,7 +15,7 @@ export default class DailyActivities {
 		try {
 			this.scheduleReminder();
 		} catch (err) {
-			console.log(`${this.config.guildName}: DailyActivities main`, err);
+			console.log(`${this.config.name}: DailyActivities main`, err);
 			setTimeout(() => this.scheduleReminder(), this.config.retryTimeout);
 		}
 	}

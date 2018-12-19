@@ -16,7 +16,7 @@ export default class CourtOfLaw {
 		try {
 			this.scheduleCourt();
 		} catch (err) {
-			console.log(`${this.config.guildName}: CourtOfLaw main`, err);
+			console.log(`${this.config.name}: CourtOfLaw main`, err);
 			setTimeout(() => this.scheduleCourt(), this.config.retryTimeout);
 		}
 	}
@@ -193,7 +193,7 @@ Examples:
 				.then(({slackers}) => this.printSlackers(null, dateFrom, dateTo, slackers));
 		}, timeout));
 
-		console.log(`${this.config.guildName}: CourtOfLaw scheduled in ${helpers.getReadableTime(timeout)}`);
+		console.log(`${this.config.name}: CourtOfLaw scheduled in ${helpers.getReadableTime(timeout)}`);
 	}
 
 	printSlackers(msg, dateFrom, dateTo, slackers) {

@@ -16,7 +16,7 @@ export default class TerritoryBattles {
 		try {
 			this.scheduleReminders();
 		} catch (err) {
-			console.log(`${this.config.guildName}: ${this.json.config.name} main`, err);
+			console.log(`${this.config.name}: ${this.json.config.name} main`, err);
 			setTimeout(() => this.scheduleReminders(), this.config.retryTimeout);
 		}
 	}
@@ -101,7 +101,7 @@ export default class TerritoryBattles {
 			});
 		}
 
-		console.log(`${this.config.guildName}: ${this.json.config.name}: ${this.json.phases[this.json.activePhase - 1].name} ends in ${helpers.getReadableTime(millisecondsToPhaseEnd)}${this.json.isPhaseDone ? ' - DONE' : ''}`);
+		console.log(`${this.config.name}: ${this.json.config.name}: ${this.json.phases[this.json.activePhase - 1].name} ends in ${helpers.getReadableTime(millisecondsToPhaseEnd)}${this.json.isPhaseDone ? ' - DONE' : ''}`);
 
 		this.timeouts.push(setTimeout(() => {
 			this.startPhase(this.json.activePhase);

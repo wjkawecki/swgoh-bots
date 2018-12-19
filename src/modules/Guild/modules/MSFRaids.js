@@ -16,7 +16,7 @@ export default class MSFRaids {
 		try {
 			this.scheduleReminders();
 		} catch (err) {
-			console.log(`${this.config.guildName}: MSFRaids main`, err);
+			console.log(`${this.config.name}: MSFRaids main`, err);
 			setTimeout(() => this.scheduleReminders(), this.config.retryTimeout);
 		}
 	}
@@ -90,7 +90,7 @@ Examples:
 
 		if (deletedCount) {
 			helpers.updateJSON(this.config, 'msfRaids', this.data, () => {
-				console.log(`${this.config.guildName}: deleted ${deletedCount} old ${deletedCount > 1 ? 'raids' : 'raid'}`);
+				console.log(`${this.config.name}: deleted ${deletedCount} old ${deletedCount > 1 ? 'raids' : 'raid'}`);
 				this.main();
 			});
 		}
@@ -127,7 +127,7 @@ Type \`-start [name] [duration - optional]\`.`);
 				.replace('#HOURS#', `${duration}`)
 				.replace('#HOURS_STRING#', duration > 1 ? 'hours' : 'hour');
 
-			console.log(`${this.config.guildName}: added new raid`, raid);
+			console.log(`${this.config.name}: added new raid`, raid);
 
 			msg.reply(`added new ${args[0]} raid with ${duration}h duration!`);
 			this.channels.raids_comm.send(`<@&${this.config.roles.member}> ${reminderText}`);

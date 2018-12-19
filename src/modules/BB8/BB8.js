@@ -49,32 +49,6 @@ export default class BB8 {
 			// this.readChannel = this.Client.channels.get(readChannelId);
 			this.writeChannel = this.Client.channels.get(writeChannelId);
 
-			const messages = await this.writeChannel.fetchMessages();
-
-			if (messages) {
-				if (messages.array().length === 0) {
-					try {
-						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
-					} catch (err) {
-						console.log(err);
-					}
-				} else {
-					if (messages.last().embeds.length === 0) {
-						messages.forEach(async (message) => {
-							try {
-								await message.delete();
-							} catch (err) {
-								console.log(err);
-							}
-						});
-
-						this.message = await this.writeChannel.send({embed: new Discord.RichEmbed()});
-					} else {
-						this.message = messages.last();
-					}
-				}
-			}
-
 			console.log('=== BB8 ready');
 		} catch (err) {
 			console.log(err.message);
@@ -109,6 +83,8 @@ export default class BB8 {
 		}
 
 		this.mates = Object.values(matesByTime);
+
+		console.log(JSON.stringify(this.mates));
 	}
 
 	calculateSecondsUntilPayout() {
