@@ -39,8 +39,8 @@ const initBot = () => {
 		},
 		{
 			guildName: 'RoF',
-			mongoCollection: 'RoF',
-			botToken: process.env.TOKEN_RoF,
+			mongoCollection: 'TeN_RoF',
+			botToken: process.env.TOKEN_TeN_RoF,
 			channels: {
 				guild_lounge: '401427486531125248',
 				sergeants_office: '471294810993721344',
