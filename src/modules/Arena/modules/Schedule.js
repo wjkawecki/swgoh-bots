@@ -107,7 +107,7 @@ export default class Schedule {
 				for (let j in this.payouts[i].players) {
 					const player = this.payouts[i].players[j];
 
-					desc += `${player.flag || this.data.defaultFlag} ${player.name.trim()} · `;
+					desc += `${player.flag || this.data.defaultFlag} ${player.name.replace(/_/g, ' ').trim()} · `;
 				}
 
 				if (i === '0') {
