@@ -137,6 +137,20 @@ const initBot = () => {
 				officer: '481541628322906112',
 				member: '481541136389767208'
 			}
+		},
+		{
+			name: 'PAW Puny Gods',
+			mongoCollection: 'PAW_Puny_Gods',
+			botToken: process.env.TOKEN_PAW_Puny_Gods,
+			channels: {
+				command: '489263506068078603',
+				raids_comm: '528682160731979788',
+				bot_playground: '515618816219152386'
+			},
+			roles: {
+				officer: '489259760017735680',
+				member: '489260001680949248'
+			}
 		}
 	];
 
