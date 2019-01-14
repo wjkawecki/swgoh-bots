@@ -129,7 +129,7 @@ export default class CourtOfLaw {
 		const reactions = messageReaction.message.reactions;
 		let message = {};
 
-		console.log(messageReaction, user, timeout);
+		console.log(`${this.config.name}: CourtOfLaw addCheck - ${user.username} in ${helpers.getReadableTime(timeout)}`);
 
 		if (!this.config.DEV && messageReaction.message.channel.id === this.config.channels.bot_playground) return;
 
