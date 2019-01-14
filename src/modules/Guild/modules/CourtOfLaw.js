@@ -129,9 +129,9 @@ export default class CourtOfLaw {
 		const reactions = messageReaction.message.reactions;
 		let message = {};
 
-		console.log(`${this.config.name}: CourtOfLaw addCheck - ${user.username} in ${helpers.getReadableTime(timeout)}`);
-
 		if (!this.config.DEV && messageReaction.message.channel.id === this.config.channels.bot_playground) return;
+
+		console.log(`${this.config.name}: CourtOfLaw addCheck - by ${user.username} in ${helpers.getReadableTime(timeout)}`);
 
 		if (reactions.get('▶') && reactions.get('▶').users.find(user => user.bot)) {
 			messageReaction.message.react('🚫')
@@ -179,8 +179,7 @@ export default class CourtOfLaw {
 		if (messageIndex > -1) {
 			const message = this.data.messages[messageIndex];
 
-			if (this.config.DEV)
-				console.log('deleteCheck', message.userId, user.id, message.emojiName, messageReaction.emoji.name);
+			console.log(`${this.config.name}: CourtOfLaw deleteCheck - ${user.username} removed ${message.emojiName}`);
 
 			if (message.userId === user.id && message.emojiName === messageReaction.emoji.name) {
 				this.data.messages.splice(messageIndex, 1);
@@ -437,6 +436,9 @@ Examples:
 	}
 
 	sendDM(toAuthor, msg, slacker, message) {
+		const trimLimit = 300,
+			split = true;
+
 		this.guild.members.get(toAuthor ? message.authorId : slacker.id).createDM()
 			.then(channel => {
 				if (toAuthor) {
@@ -447,8 +449,8 @@ Examples:
 •    Please verify his/her donations count.
 
 •    Short preview of the message, so it's easier to find:
-\`\`\`${msg.cleanContent.substring(0, 100).trim()}${msg.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
-•    Jump to that message: ${msg.url}`, { split: true });
+\`\`\`${msg.cleanContent.substring(0, trimLimit).trim()}${msg.cleanContent.length > trimLimit ? ' (...)' : ''}\`\`\`
+•    Jump to that message: ${msg.url}`, { split });
 				} else {
 					channel.send(`Hello ${slacker.displayName}.
 
@@ -457,8 +459,8 @@ Examples:
 •    Please post a screenshot in \`#guild-lounge\` with confirmation of your donations (if you haven't done it already).
 
 •    Short preview of the message, so it's easier to find:
-\`\`\`${msg.cleanContent.substring(0, 200).trim()}${msg.cleanContent.length > 200 ? ' (...)' : ''}\`\`\`
-•    Jump to that message: ${msg.url}`, { split: true });
+\`\`\`${msg.cleanContent.substring(0, trimLimit).trim()}${msg.cleanContent.length > trimLimit ? ' (...)' : ''}\`\`\`
+•    Jump to that message: ${msg.url}`, { split });
 				}
 			});
 	};
