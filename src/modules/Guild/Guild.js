@@ -112,8 +112,8 @@ export default class Guild {
 			if (data.dstb && Object.keys(data.dstb).length && !this.DSTB)
 				this.DSTB = new TerritoryBattles(this.Client, config, channels, data.dstb);
 
-			if (config.channels.court_of_law && !this.CourtOfLaw)
-				this.CourtOfLaw = new CourtOfLaw(this.Client, config, channels);
+			if (data.courtOfLaw && Object.keys(data.courtOfLaw).length && !this.CourtOfLaw)
+				this.CourtOfLaw = new CourtOfLaw(this.Client, config, channels, data.courtOfLaw);
 
 			// if (data.readCheck && Object.keys(data.readCheck).length && !this.ReadCheck)
 			// 	this.ReadCheck = new ReadCheck(this.Client, config, channels, data.readCheck);
