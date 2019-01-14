@@ -5,7 +5,7 @@ const appName = 'swgoh-bots';
 const dynoName = 'worker';
 const resetTimeUTC = {
 	hour: 23,
-	minute: 53
+	minute: 31
 };
 
 process.on('unhandledRejection', function(reason, p){
