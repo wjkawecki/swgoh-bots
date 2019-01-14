@@ -43,6 +43,9 @@ export default class CourtOfLaw {
 			if (command === 'help' && msg.member.roles.has(this.config.roles.member))
 				this.helpReply(msg);
 
+			if (command === 'fetchmessage' && msg.member.roles.has(this.config.roles.member))
+				this.fetchMessage(msg, args[0], args[1]);
+
 			if (command === 'echo' && msg.member.roles.has(this.config.roles.member))
 				this.sendEcho(msg, command);
 
@@ -99,6 +102,21 @@ export default class CourtOfLaw {
 
 	hasReaction(messageReaction, emojiName) {
 		return messageReaction.emoji.name === emojiName;
+	}
+
+	fetchMessage(msg, messageId, channelId) {
+		const channel = this.Client.channels.get(channelId || msg.channel.id);
+
+		channel.fetchMessage(messageId)
+			.then(() => msg.delete())
+			.catch(err => {
+				console.log(err);
+
+				msg.react('🚫')
+					.then(() => setTimeout(() => {
+						msg.reactions.get('🚫') && msg.reactions.get('🚫').remove();
+					}, 2000));
+			});
 	}
 
 	sendEcho(msg, command) {
