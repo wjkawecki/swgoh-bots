@@ -213,7 +213,8 @@ Examples:
 \`-court this\` or \`-court current\` or \`-court currentMonth\`
 \`-court last\` or \`-court previous\` or \`-court lastMonth\`
 \`-court 10/1/2018\`
-\`-court 10/1/2018 10/20/2018\``);
+\`-court 10/1/2018 10/20/2018\`
+\`-court remove messageID\` - remove obsolete courtCheck from a message`);
 	}
 
 	printCourt(msg, fromString, toString) {
