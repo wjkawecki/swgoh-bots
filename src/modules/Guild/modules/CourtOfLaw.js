@@ -94,6 +94,18 @@ export default class CourtOfLaw {
 				if (this.hasReaction(messageReaction, 'courtOfLaw_5d'))
 					this.addCheck(messageReaction, user, 5 * 24 * 60 * 60 * 1000);
 
+				if (this.hasReaction(messageReaction, 'courtOfLaw_6d'))
+					this.addCheck(messageReaction, user, 6 * 24 * 60 * 60 * 1000);
+
+				if (this.hasReaction(messageReaction, 'courtOfLaw_7d'))
+					this.addCheck(messageReaction, user, 7 * 24 * 60 * 60 * 1000);
+
+				if (this.hasReaction(messageReaction, 'courtOfLaw_8d'))
+					this.addCheck(messageReaction, user, 8 * 24 * 60 * 60 * 1000);
+
+				if (this.hasReaction(messageReaction, 'courtOfLaw_9d'))
+					this.addCheck(messageReaction, user, 9 * 24 * 60 * 60 * 1000);
+
 				if (this.hasReaction(messageReaction, '🔍') && this.config.DEV)
 					this.addCheck(messageReaction, user, 30 * 1000);
 			}
@@ -107,7 +119,7 @@ export default class CourtOfLaw {
 	}
 
 	deleteCheckById(msg, messageId) {
-			this.fetchMessage(msg, messageId, null, this.deleteCheck);
+		this.fetchMessage(msg, messageId, null, this.deleteCheck);
 	}
 
 	hasReaction(messageReaction, emojiName) {
@@ -462,7 +474,9 @@ Examples:
 
 •    Short preview of the message, so it's easier to find:
 \`\`\`${msg.cleanContent.substring(0, trimLimit).trim()}${msg.cleanContent.length > trimLimit ? ' (...)' : ''}\`\`\`
-•    Jump to that message: ${msg.url}`, { split });
+•    Jump to that message: ${msg.url}`, {
+						split
+					});
 				} else {
 					channel.send(`Hello ${slacker.displayName}.
 
@@ -472,7 +486,9 @@ Examples:
 
 •    Short preview of the message, so it's easier to find:
 \`\`\`${msg.cleanContent.substring(0, trimLimit).trim()}${msg.cleanContent.length > trimLimit ? ' (...)' : ''}\`\`\`
-•    Jump to that message: ${msg.url}`, { split });
+•    Jump to that message: ${msg.url}`, {
+						split
+					});
 				}
 			});
 	};
