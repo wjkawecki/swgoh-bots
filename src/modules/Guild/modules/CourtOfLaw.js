@@ -57,6 +57,12 @@ export default class CourtOfLaw {
 					this.helpReply(msg);
 					break;
 
+				case 'remove':
+				case 'delete':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.deleteCheckById(msg, (args[1] || '').toLowerCase());
+					break;
+
 				case 'all':
 					if (msg.member.roles.has(this.config.roles.officer))
 						this.printCourt(msg, 'all');
@@ -100,14 +106,19 @@ export default class CourtOfLaw {
 		});
 	}
 
+	deleteCheckById(msg, messageId) {
+			this.fetchMessage(msg, messageId, null, this.deleteCheck);
+	}
+
 	hasReaction(messageReaction, emojiName) {
 		return messageReaction.emoji.name === emojiName;
 	}
 
-	fetchMessage(msg, messageId, channelId) {
+	fetchMessage(msg, messageId, channelId, cb) {
 		const channel = this.Client.channels.get(channelId || msg.channel.id);
 
 		channel.fetchMessage(messageId)
+			.then((message) => cb ? cb.bind(this, message, message.author)() : {})
 			.then(() => msg.delete())
 			.catch(err => {
 				console.log(err);
@@ -173,19 +184,19 @@ export default class CourtOfLaw {
 		}
 	}
 
-	deleteCheck(messageReaction, user) {
-		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageReaction.message.id);
+	deleteCheck(messageOrMessageReaction, user) {
+		const messageIndex = this.data.messages.map(message => message.id).indexOf(messageOrMessageReaction.id || messageOrMessageReaction.message.id);
 
 		if (messageIndex > -1) {
 			const message = this.data.messages[messageIndex];
 
-			console.log(`${this.config.name}: CourtOfLaw deleteCheck - ${user.username} removed ${message.emojiName}`);
+			console.log(`${this.config.name}: CourtOfLaw deleteCheck - ${user.username} removed ${messageOrMessageReaction.id || message.emojiName}`);
 
-			if (message.userId === user.id && message.emojiName === messageReaction.emoji.name) {
+			if (messageOrMessageReaction.id || (message.userId === user.id && message.emojiName === messageOrMessageReaction.emoji.name)) {
 				this.data.messages.splice(messageIndex, 1);
 
 				helpers.updateJSON(this.config, 'courtOfLaw', this.data, () => {
-					const reactions = messageReaction.message.reactions;
+					const reactions = messageOrMessageReaction.reactions || messageOrMessageReaction.message.reactions;
 
 					reactions.get('▶') && reactions.get('▶').remove()
 						.then(() => this.main());
