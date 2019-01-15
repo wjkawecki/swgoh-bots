@@ -208,13 +208,13 @@ export default class CourtOfLaw {
 	helpReply(msg) {
 		msg.reply(`__CourtOfLaw__ commands:
 \`-court [dateFrom or keyword] [dateTo (optional)]\` *- officer only*.
+\`-court remove messageID\` *- officer only*. Remove obsolete courtCheck from a message.
 
 Examples:
 \`-court this\` or \`-court current\` or \`-court currentMonth\`
 \`-court last\` or \`-court previous\` or \`-court lastMonth\`
 \`-court 10/1/2018\`
-\`-court 10/1/2018 10/20/2018\`
-\`-court remove messageID\` - remove obsolete courtCheck from a message`);
+\`-court 10/1/2018 10/20/2018\``);
 	}
 
 	printCourt(msg, fromString, toString) {
