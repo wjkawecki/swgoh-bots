@@ -468,7 +468,7 @@ Examples:
 				if (toAuthor) {
 					channel.send(`Hello ${message.authorUsername}.
 
-•    You have mentioned ${slacker.values().next().value.displayName} in \`#court-of-law\` ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)} ago.
+•    You have mentioned **${slacker.values().next().value.displayName}** in \`#court-of-law\` ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)} ago.
 
 •    Please verify his/her donations count.
 
