@@ -455,7 +455,7 @@ Examples:
 		helpers.updateJSON(this.config, 'courtOfLaw', this.data, () => {
 			msg.reactions.get('▶') && msg.reactions.get('▶').remove();
 			slackers.forEach(slacker => this.sendDM(false, msg, slacker, message));
-			this.sendDM(true, msg, slackers, message)
+			this.sendDM(true, msg, slackers, message);
 		});
 	}
 

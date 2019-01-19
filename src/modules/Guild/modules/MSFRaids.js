@@ -127,7 +127,7 @@ Type \`-start [name] [duration - optional]\`.`);
 				.replace('#HOURS#', `${duration}`)
 				.replace('#HOURS_STRING#', duration > 1 ? 'hours' : 'hour');
 
-			console.log(`${this.config.name}: added new raid`, raid);
+			console.log(`${this.config.name}: added new raid ${raid.name} / ${raid.duration}`);
 
 			msg.reply(`added new ${args[0]} raid with ${duration}h duration!`);
 			this.channels.raids_comm.send(`<@&${this.config.roles.member}> ${reminderText}`);
