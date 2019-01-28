@@ -16,7 +16,9 @@ export default class Guild {
 
 	async readMongo(config) {
 		try {
-			mongodb.MongoClient.connect(config.mongoUrl, { useNewUrlParser: true }, (err, client) => {
+			mongodb.MongoClient.connect(config.mongoUrl, {
+				useNewUrlParser: true
+			}, (err, client) => {
 				if (err) throw err;
 				client.db().collection(config.mongoCollection).findOne()
 					.then(mongo => this.createLocalJSON(config, mongo))
@@ -37,7 +39,16 @@ export default class Guild {
 			fs.writeFileSync(jsonMongoPath, JSON.stringify(mongo));
 
 			try {
-				JSON.parse(fs.readFileSync(jsonLocalPath));
+				let hours = 0;
+
+				fs.stat(jsonLocalPath, (err, stats) => hours = stats ? Math.floor((new Date().getTime() - stats.mtime) / 1000 / 60 / 60) : null);
+
+				if (hours < 1) {
+					JSON.parse(fs.readFileSync(jsonLocalPath));
+				} else {
+					console.log(`Cleared ${config.name} local JSON - it had ${hours}!`);
+					fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
+				}
 			} catch (err) {
 				fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
 			}
@@ -67,9 +78,9 @@ export default class Guild {
 		});
 		this.Client.on('ready', () => this.initGuild(config, data));
 		this.Client.on('error', error => console.log(`${config.name}: Client error:`, error.message));
-		this.Client.on('reconnecting',() => console.log(`${config.name}: Client reconnecting`));
+		this.Client.on('reconnecting', () => console.log(`${config.name}: Client reconnecting`));
 		this.Client.on('resume', replayed => console.log(`${config.name}: Client resume:`, replayed));
-		this.Client.on('disconnect',() => console.log(`${config.name}: Client disconnect`));
+		this.Client.on('disconnect', () => console.log(`${config.name}: Client disconnect`));
 		this.loginClient(config);
 	}
 

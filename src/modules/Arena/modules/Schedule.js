@@ -27,7 +27,7 @@ export default class Schedule {
 			const timeout = 60000 - Date.now() % 60000;
 
 			if (this.config.DEV) {
-				console.log(`${this.config.name}: refresh in ${helpers.getReadableTime(timeout)}`);
+				// console.log(`${this.config.name}: refresh in ${helpers.getReadableTime(timeout)}`);
 			}
 			setTimeout(() => this.main(), 60000 - Date.now() % 60000);
 		}

@@ -46,7 +46,7 @@ export default class CourtOfLaw {
 			if (command === 'fetchmessage' && msg.member.roles.has(this.config.roles.member))
 				this.fetchMessage(msg, args[0], args[1]);
 
-			if (command === 'echo' && msg.member.roles.has(this.config.roles.member))
+			if (this.config.DEV && command === 'echo' && msg.member.roles.has(this.config.roles.member))
 				this.sendEcho(msg, command);
 
 			if (command !== 'court') return;
@@ -55,6 +55,11 @@ export default class CourtOfLaw {
 				case '':
 				case 'help':
 					this.helpReply(msg);
+					break;
+
+				case 'echo':
+					if (msg.member.roles.has(this.config.roles.officer))
+						this.sendEcho(msg, (args[1] || '').toLowerCase());
 					break;
 
 				case 'remove':
@@ -142,9 +147,19 @@ export default class CourtOfLaw {
 			});
 	}
 
-	sendEcho(msg, command) {
-		msg.channel.send(msg.content.split(`${command} `).pop())
-			.then(message => this.config.DEV && message.react('🔍'));
+	sendEcho(msg, slackerId) {
+		const attachmentsArray = [];
+		let {
+			attachments,
+			content
+		} = msg;
+
+		content = `<@${slackerId}> ${content.split(`${slackerId} `).pop()}`;
+		attachments.forEach((attachment => attachmentsArray.push(attachment.url)))
+
+		msg.channel.send(content, {
+			files: attachmentsArray
+		}).then(() => msg.delete());
 	}
 
 	addCheck(messageReaction, user, timeout) {
@@ -172,8 +187,10 @@ export default class CourtOfLaw {
 			message.id = messageReaction.message.id;
 			message.authorId = messageReaction.message.author.id;
 			message.authorUsername = messageReaction.message.author.username;
+			message.authorIsBot = messageReaction.message.author.bot;
 			message.userId = user.id;
 			message.userUsername = user.username;
+			message.userIsBot = user.bot;
 			message.timeAdded = messageReaction.message.createdTimestamp;
 			message.timeCheck = new Date(message.timeAdded + timeout).getTime();
 			message.timeout = timeout;
@@ -221,6 +238,7 @@ export default class CourtOfLaw {
 		msg.reply(`__CourtOfLaw__ commands:
 \`-court [dateFrom or keyword] [dateTo (optional)]\` *- officer only*.
 \`-court remove messageID\` *- officer only*. Remove obsolete courtCheck from a message.
+\`-court echo userID message\` *- officer only*. Bot will send the message tagging user with given ID on your behalf. All attachments will be copied as well. Allows tagging only one user at once.
 
 Examples:
 \`-court this\` or \`-court current\` or \`-court currentMonth\`
@@ -454,21 +472,42 @@ Examples:
 
 		helpers.updateJSON(this.config, 'courtOfLaw', this.data, () => {
 			msg.reactions.get('▶') && msg.reactions.get('▶').remove();
-			slackers.forEach(slacker => this.sendDM(false, msg, slacker, message));
-			this.sendDM(true, msg, slackers, message);
+			slackers.forEach(slacker => this.sendDM('slacker', msg, slacker, message));
+			!message.authorIsBot && this.sendDM('author', msg, slackers, message);
+			message.authorId !== message.userId ? !message.userIsBot && this.sendDM('user', msg, slackers, message) : null;
 		});
 	}
 
-	sendDM(toAuthor, msg, slacker, message) {
+	sendDM(sendTo = 'slacker', msg, slacker, message) {
 		const trimLimit = 300,
 			split = true;
 
-		this.guild.members.get(toAuthor ? message.authorId : slacker.id).createDM()
+		let sendToId = slacker.id;
+
+		if (sendTo === 'author') {
+			sendToId = message.authorId;
+		} else if (sendTo === 'user') {
+			sendToId = message.userId;
+		}
+
+		this.guild.members.get(sendToId).createDM()
 			.then(channel => {
-				if (toAuthor) {
+				if (sendTo === 'author') {
 					channel.send(`Hello ${message.authorUsername}.
 
 •    You have mentioned **${slacker.values().next().value.displayName}** in \`#court-of-law\` ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)} ago.
+
+•    Please verify his/her donations count.
+
+•    Short preview of the message, so it's easier to find:
+\`\`\`${msg.cleanContent.substring(0, trimLimit).trim()}${msg.cleanContent.length > trimLimit ? ' (...)' : ''}\`\`\`
+•    Jump to that message: ${msg.url}`, {
+						split
+					});
+				} else if (sendTo === 'user') {
+					channel.send(`Hello ${message.userUsername}.
+
+•    ${message.authorUsername} has mentioned **${slacker.values().next().value.displayName}** in \`#court-of-law\` ${helpers.getReadableTime(message.timeCheck - message.timeAdded, this.config.DEV)} ago.
 
 •    Please verify his/her donations count.
 
