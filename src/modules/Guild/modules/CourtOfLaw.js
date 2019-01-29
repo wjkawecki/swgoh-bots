@@ -43,12 +43,6 @@ export default class CourtOfLaw {
 			if (command === 'help' && msg.member.roles.has(this.config.roles.member))
 				this.helpReply(msg);
 
-			if (command === 'fetchmessage' && msg.member.roles.has(this.config.roles.member))
-				this.fetchMessage(msg, args[0], args[1]);
-
-			if (this.config.DEV && command === 'echo' && msg.member.roles.has(this.config.roles.member))
-				this.sendEcho(msg, command);
-
 			if (command !== 'court') return;
 
 			switch ((args[0] || '').toLowerCase()) {

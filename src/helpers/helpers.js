@@ -73,6 +73,14 @@ const helpers = {
 				setTimeout(() => helpers.updateJSON(config, cb), config.retryTimeout);
 			}
 		}
+	},
+
+	isSnowflake(string) {
+		return /^\d{18}$/.test(string);
+	},
+
+	isMention(string) {
+		return /^<[@#]\d{18}>$/.test(string)
 	}
 };
 

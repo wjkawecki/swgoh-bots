@@ -36,12 +36,6 @@ export default class ReadCheck {
 			if (command === 'help' && msg.member.roles.has(this.config.roles.member))
 				this.helpReply(msg);
 
-			if (command === 'fetchmessage' && msg.member.roles.has(this.config.roles.member))
-				this.fetchMessage(msg, args[0], args[1]);
-
-			if (command === 'echo' && msg.member.roles.has(this.config.roles.member))
-				this.sendEcho(msg, command);
-
 			if (command === 'dm' && msg.member.roles.has(this.config.roles.member))
 				this.sendDM(msg, command);
 

@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import * as mongodb from 'mongodb';
 import * as fs from 'fs';
 
+import Utility from './modules/Utility';
 import Raids from './modules/Raids';
 import DailyActivities from './modules/DailyActivities';
 import TerritoryBattles from './modules/TerritoryBattles';
@@ -39,16 +40,7 @@ export default class Guild {
 			fs.writeFileSync(jsonMongoPath, JSON.stringify(mongo));
 
 			try {
-				let hours = 0;
-
-				fs.stat(jsonLocalPath, (err, stats) => hours = stats ? Math.floor((new Date().getTime() - stats.mtime) / 1000 / 60 / 60) : null);
-
-				if (hours < 1) {
-					JSON.parse(fs.readFileSync(jsonLocalPath));
-				} else {
-					console.log(`Cleared ${config.name} local JSON - it had ${hours}!`);
-					fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
-				}
+				JSON.parse(fs.readFileSync(jsonLocalPath));
 			} catch (err) {
 				fs.writeFileSync(jsonLocalPath, JSON.stringify(mongo));
 			}
@@ -110,6 +102,9 @@ export default class Guild {
 			}
 
 			// GUILD MODULES
+
+			if (!this.Utility)
+				this.Utility = new Utility(this.Client, config, channels);
 
 			if (config.resetTimeUTC && Object.keys(config.resetTimeUTC).length && !this.DailyActivities)
 				this.DailyActivities = new DailyActivities(this.Client, config, channels);
