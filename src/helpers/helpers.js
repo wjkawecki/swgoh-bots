@@ -80,7 +80,11 @@ const helpers = {
 	},
 
 	isMention(string) {
-		return /^<[@#]\d{18}>$/.test(string)
+		return /^<[@#]\d{18}>$/.test(string);
+	},
+
+	isRoleMention(string) {
+		return /^<@&\d{18}>$/.test(string);
 	}
 };
 

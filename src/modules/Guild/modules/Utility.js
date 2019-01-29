@@ -40,7 +40,7 @@ export default class Utulity {
 
 				case 'dm':
 					if (msg.member.roles.has(this.config.roles.member))
-						this.sendDM(msg, command);
+						this.sendDM(msg, command, args[0]);
 					break;
 			}
 		});
@@ -91,7 +91,7 @@ export default class Utulity {
 
 		msg.react('⌛');
 
-		mention = helpers.isMention(mentionString) ? `${mentionString} ` : helpers.isSnowflake(mentionString) ? `<@${mentionString}> ` : '';
+		mention = helpers.isMention(mentionString) || helpers.isRoleMention(mentionString) ? `${mentionString} ` : helpers.isSnowflake(mentionString) ? `<@${mentionString}> ` : '';
 
 		if (channelString) {
 			channel = helpers.isMention(channelString) ? channelString.substring(2, channelString.length - 1) : helpers.isSnowflake(channelString) ? channelString : msg.channel.id;
@@ -111,8 +111,10 @@ export default class Utulity {
 		attachments.forEach((attachment => attachmentsArray.push(attachment.url)));
 
 		this.Client.channels.get(channel).send(content, {
-			files: attachmentsArray
-		}).then(message => msg.delete());
+				files: attachmentsArray
+			})
+			.then(() => msg.delete())
+			.catch(() => msg.react('🚫'));
 	}
 
 	helpReply(msg) {
@@ -121,7 +123,21 @@ export default class Utulity {
 \`-fetch messageId [channelId]\` *- officer only*. Bot fetches specific message for further use.`);
 	}
 
-	sendDM(msg, command) {
-		msg.author.createDM().then(channel => channel.send(msg.content.split(`${command} `).pop())).then(() => msg.delete());
+	sendDM(msg, command, mentionString) {
+		const mention = helpers.isMention(mentionString) ? mentionString.substring(2, mentionString.length - 1) : helpers.isSnowflake(mentionString) ? mentionString : '';
+
+		if (mention) {
+			this.Client.fetchUser(mention)
+				.then((user) => user.createDM()
+					.then(channel => channel.send(msg.content.split(`${mentionString} `).pop()))
+					.then(() => msg.delete())
+					.catch(() => msg.react('🚫'))
+				).catch(() => msg.react('🚫'));
+		} else {
+			msg.author.createDM()
+				.then(channel => channel.send(msg.content.split(`${command} `).pop()))
+				.then(() => msg.delete())
+				.catch(() => msg.react('🚫'));
+		}
 	}
 }
