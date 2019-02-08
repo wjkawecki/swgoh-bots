@@ -133,7 +133,7 @@ export default class Raids {
 		thumbnailSrc = this.config.thumbnails[raidKey] || null;
 
 		desc = `:repeat: UTC Rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.map(hour => helpers.convert24to12(hour)).join(', ')}
-		
+
 :arrow_forward: Active: ${raid.active ? helpers.convert24to12(raid.active.rotationTimeUTC) : '-'}
 :fast_forward: Next: ${raid.next ? helpers.convert24to12(raid.next.rotationTimeUTC) : '-'}
 ${raid.active ? `
@@ -220,7 +220,7 @@ ${raid.active ? `
 			if (raid.active) {
 				msg.reply(`don't fool me! __${raidName}__ is already active!`);
 			} else {
-				msg.reply(`added ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${helpers.convert24to12(nextRotationTimeUTC)} UTC**`);
+				msg.reply(`added ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC __${raidName}__ to the <#${this.config.channels.raids_log}>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${nextRotationTimeUTC} / ${helpers.convert24to12(nextRotationTimeUTC)} UTC**`);
 
 				if (raid.config.registrationHours > 0) {
 					this.json[raidKey].active = {
@@ -247,7 +247,7 @@ ${raid.active ? `
 					let that = this;
 
 					this.channels.raids_log
-						.send(`__${raidName}__: ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${helpers.convert24to12(nextRotationTimeUTC)} UTC**`)
+						.send(`__${raidName}__: ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${msg.author.id}>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${nextRotationTimeUTC} / ${helpers.convert24to12(nextRotationTimeUTC)} UTC**`)
 						.then(msg => that.saveLastMessage(msg.id));
 				}
 
