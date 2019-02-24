@@ -23,25 +23,7 @@ export default class Heroku {
 	scheduleWakeUp() {
 		setInterval(() => {
 			const http = require('http');
-			const req = http.request({
-				hostname: 'swgoh-guilds.herokuapp.com',
-			}, (res) => {
-				console.log('===== swgoh-guilds.herokuapp.com WAKE UP =====');
-				console.log(`== STATUS: ${res.statusCode}`);
-				console.log(`== HEADERS: ${JSON.stringify(res.headers)}`);
-				res.setEncoding('utf8');
-				res.on('data', (chunk) => {
-					console.log(`== BODY: ${chunk}`);
-				});
-				res.on('end', () => {
-					console.log('===== Heroku.js RESET END =====');
-				});
-			});
-
-			req.on('error', (e) => {
-				console.error(`== Problem with request: ${e.message}`);
-			});
-
+			const req = http.request('http://swgoh-guilds.herokuapp.com', res => console.log(`===== swgoh-guilds.herokuapp.com WAKE UP: ${res.statusCode} =====`));
 			req.end();
 		}, 1 * 60 * 1000);
 	};
