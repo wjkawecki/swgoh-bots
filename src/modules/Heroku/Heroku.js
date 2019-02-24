@@ -43,7 +43,7 @@ export default class Heroku {
 			});
 
 			req.end();
-		}, 10 * 60 * 1000);
+		}, 1 * 60 * 1000);
 	};
 
 	scheduleRestart(appName, dynoName) {
