@@ -17,7 +17,34 @@ export default class Heroku {
 	constructor(DEV) {
 		if (!DEV)
 			this.scheduleRestart(appName, dynoName);
+			this.scheduleWakeUp();
 	}
+
+	scheduleWakeUp() {
+		setInterval(() => {
+			const http = require('http');
+			const req = http.request({
+				hostname: 'swgoh-guilds.herokuapp.com',
+			}, (res) => {
+				console.log('===== swgoh-guilds.herokuapp.com WAKE UP =====');
+				console.log(`== STATUS: ${res.statusCode}`);
+				console.log(`== HEADERS: ${JSON.stringify(res.headers)}`);
+				res.setEncoding('utf8');
+				res.on('data', (chunk) => {
+					console.log(`== BODY: ${chunk}`);
+				});
+				res.on('end', () => {
+					console.log('===== Heroku.js RESET END =====');
+				});
+			});
+
+			req.on('error', (e) => {
+				console.error(`== Problem with request: ${e.message}`);
+			});
+
+			req.end();
+		}, 10 * 60 * 1000);
+	};
 
 	scheduleRestart(appName, dynoName) {
 		let now = new Date(),
