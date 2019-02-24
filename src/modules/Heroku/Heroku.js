@@ -25,7 +25,7 @@ export default class Heroku {
 			const http = require('http');
 			const req = http.request('http://swgoh-guilds.herokuapp.com', res => console.log(`===== swgoh-guilds.herokuapp.com WAKE UP: ${res.statusCode} =====`));
 			req.end();
-		}, 15 * 60 * 1000);
+		}, 1 * 60 * 1000);
 	};
 
 	scheduleRestart(appName, dynoName) {
