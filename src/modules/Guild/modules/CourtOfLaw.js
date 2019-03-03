@@ -550,7 +550,7 @@ Examples:
     const channel = msg ? msg.channel : this.channels.officer_chat;
 
     channel.send(
-      `__**${this.channels.court_of_law.name} ${msg ? '' : 'Monthly '}Report**__
+      `__**<#${this.config.channels.court_of_law}> ${msg ? '' : 'Monthly '}Report**__
 
 •    ${helpers.getReadableTime((dateTo ? dateTo : new Date().getTime()) - dateFrom)}
       - From: ${new Date(dateFrom)}
