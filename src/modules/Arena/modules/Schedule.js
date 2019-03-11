@@ -1,133 +1,134 @@
 import helpers from '../../../helpers/helpers';
-import Discord from "discord.js";
+import Discord from 'discord.js';
 
 export default class Schedule {
-	constructor(Client, config, channel, data) {
-		this.Client = Client;
-		this.config = config;
-		this.channel = channel;
-		this.data = data;
-		this.payouts = data.payouts;
+  constructor(Client, config, channel, data) {
+    this.Client = Client;
+    this.config = config;
+    this.channel = channel;
+    this.data = data;
+    this.payouts = data.payouts;
 
-		// this.listenToMessages();
-		this.main();
-	}
+    // this.listenToMessages();
+    this.main();
+  }
 
-	main() {
-		try {
-			if (this.message) {
-				this.calculateSecondsUntilPayout();
-				this.sendMessage();
-			} else {
-				this.fetchMessage();
-			}
-		} catch (err) {
-			console.log(err.message);
-		} finally {
-			const timeout = 60000 - Date.now() % 60000;
+  main() {
+    try {
+      if (this.message) {
+        this.calculateSecondsUntilPayout();
+        this.sendMessage();
+      } else {
+        this.fetchMessage();
+      }
+    } catch (err) {
+      console.log(err.message);
+    } finally {
+      const timeout = 60000 - (Date.now() % 60000);
 
-			if (this.config.DEV) {
-				// console.log(`${this.config.name}: refresh in ${helpers.getReadableTime(timeout)}`);
-			}
-			setTimeout(() => this.main(), 60000 - Date.now() % 60000);
-		}
-	}
+      if (this.config.DEV) {
+        // console.log(`${this.config.name}: refresh in ${helpers.getReadableTime(timeout)}`);
+      }
+      setTimeout(() => this.main(), 60000 - (Date.now() % 60000));
+    }
+  }
 
-	fetchMessage() {
-		this.channel.fetchMessages()
-			.then(messages => {
-				if (messages) {
-					if (messages.array().length === 0) {
-						try {
-							this.message = this.channel.send({embed: new Discord.RichEmbed()});
-						} catch (err) {
-							console.log(err);
-						}
-					} else {
-						if (messages.last().embeds.length === 0) {
-							messages.forEach(async (message) => {
-								try {
-									await message.delete();
-								} catch (err) {
-									console.log(err);
-								}
-							});
+  fetchMessage() {
+    this.channel.fetchMessages().then(messages => {
+      if (messages) {
+        if (messages.array().length === 0) {
+          try {
+            this.message = this.channel.send({ embed: new Discord.RichEmbed() });
+          } catch (err) {
+            console.log(err);
+          }
+        } else {
+          if (messages.last().embeds.length === 0) {
+            messages.forEach(async message => {
+              try {
+                await message.delete();
+              } catch (err) {
+                console.log(err);
+              }
+            });
 
-							this.message = this.channel.send({embed: new Discord.RichEmbed()});
-						} else {
-							this.message = messages.last();
-						}
-					}
-				}
-			});
-	}
+            this.message = this.channel.send({ embed: new Discord.RichEmbed() });
+          } else {
+            this.message = messages.last();
+          }
+        }
+      }
+    });
+  }
 
-	calculateSecondsUntilPayout() {
-		const now = new Date();
+  calculateSecondsUntilPayout() {
+    const now = new Date();
 
-		for (let i in this.payouts) {
-			const payout = this.payouts[i];
-			const p = new Date();
+    for (let i in this.payouts) {
+      const payout = this.payouts[i];
+      const p = new Date();
 
-			p.setUTCHours(payout.payout, 0, 0, 0);
+      // console.log(String(payout.payout), 'hour', String(payout.payout).substr(0, 2), 'min', String(payout.payout).substr(2, 2));
 
-			if (p < now) {
-				p.setDate(p.getDate() + 1);
-			}
+      p.setUTCHours(String(payout.payout).substr(0, 2), String(payout.payout).substr(2, 2), 0, 0);
 
-			payout.timeUntilPayout = p.getTime() - now.getTime();
+      if (p < now) {
+        p.setDate(p.getDate() + 1);
+      }
 
-			let dif = new Date(payout.timeUntilPayout);
-			const round = dif.getTime() % 60000;
+      payout.timeUntilPayout = p.getTime() - now.getTime();
 
-			if (round < 30000) {
-				dif.setTime(dif.getTime() - round);
-			} else {
-				dif.setTime(dif.getTime() + 60000 - round);
-			}
+      let dif = new Date(payout.timeUntilPayout);
+      const round = dif.getTime() % 60000;
 
-			payout.time = `${String(dif.getUTCHours()).padStart(2, '00')}h ${String(dif.getUTCMinutes()).padStart(2, '00')}m`;
-			payout.players.sort((a, b) => a.name.localeCompare(b.name));
-		}
+      if (round < 30000) {
+        dif.setTime(dif.getTime() - round);
+      } else {
+        dif.setTime(dif.getTime() + 60000 - round);
+      }
 
-		this.payouts.sort((a, b) => a.timeUntilPayout - b.timeUntilPayout);
-	}
+      payout.time = `${String(dif.getUTCHours()).padStart(2, '00')}h ${String(dif.getUTCMinutes()).padStart(2, '00')}m`;
+      payout.players.sort((a, b) => a.name.localeCompare(b.name));
+    }
 
-	async sendMessage() {
-		try {
-			let embed = new Discord.RichEmbed(),
-				desc = '';
+    this.payouts.sort((a, b) => a.timeUntilPayout - b.timeUntilPayout);
+  }
 
-			for (let i in this.payouts) {
-				if (i > '1') {
-					desc += '\n_ _';
-				}
+  async sendMessage() {
+    try {
+      let embed = new Discord.RichEmbed(),
+        desc = '';
 
-				desc += `\n\`${this.payouts[i].time}\`_ _ _ _`;
-				for (let j in this.payouts[i].players) {
-					const player = this.payouts[i].players[j];
+      for (let i in this.payouts) {
+        if (i > '1') {
+          desc += '\n_ _';
+        }
 
-					desc += `${player.flag || this.data.defaultFlag} ${player.name.replace(/_/g, ' ').trim()} · `;
-				}
+        desc += `\n\`${this.payouts[i].time}\`_ _ _ _`;
+        for (let j in this.payouts[i].players) {
+          const player = this.payouts[i].players[j];
 
-				if (i === '0') {
-					desc = desc.substring(0, desc.length - 3);
+          desc += `${player.flag || this.data.defaultFlag} ${player.name.replace(/_/g, ' ').trim()} · `;
+        }
 
-					desc += '\n_ _\n_ _\n__Following payouts:__\n';
-				} else {
-					desc = desc.substring(0, desc.length - 3);
-				}
-			}
+        if (i === '0') {
+          desc = desc.substring(0, desc.length - 3);
 
-			embed
-				.setDescription(desc)
-				.setColor(this.data.embedColor)
-				.setAuthor(`Next payout - ${this.payouts[0].payout} UTC${this.config.DEV ? ' [DEV]' : ''}:`)
-				.setTimestamp();
+          desc += '\n_ _\n_ _\n__Following payouts:__\n';
+        } else {
+          desc = desc.substring(0, desc.length - 3);
+        }
+      }
 
-			await this.message.edit({embed});
-		} catch (err) {
-			console.log('sendMessage', err.message);
-		}
-	}
+      embed
+        .setDescription(desc)
+        .setColor(this.data.embedColor)
+        .setAuthor(`Next payout - ${this.payouts[0].payout} UTC${this.config.DEV ? ' [DEV]' : ''}:`)
+        .setTimestamp();
+
+      await this.message.edit({ embed });
+    } catch (err) {
+      console.log('sendMessage', err.message);
+    }
+  }
 }
