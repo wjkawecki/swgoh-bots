@@ -73,7 +73,8 @@ const initBot = () => {
       resetTimeUTC: {
         hour: 23,
         minute: 30
-      }
+      },
+      remindMinutesBefore: 30
     },
     {
       name: 'RoF',
@@ -96,7 +97,8 @@ const initBot = () => {
       resetTimeUTC: {
         hour: 23,
         minute: 30
-      }
+      },
+      remindMinutesBefore: 60
     },
     {
       name: 'PAW Purge',
