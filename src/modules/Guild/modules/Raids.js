@@ -135,12 +135,13 @@ export default class Raids {
 		desc = `:repeat: UTC Rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.map(hour => helpers.convert24to12(hour)).join(', ')}
 
 :arrow_forward: Active: ${raid.active ? helpers.convert24to12(raid.active.rotationTimeUTC) : '-'}
-:fast_forward: Next: ${raid.next ? helpers.convert24to12(raid.next.rotationTimeUTC) : '-'}
-${raid.active ? `
-\`-stop ${raidKey}\` to stop active raid.` : `
-\`-start ${raidKey}\` to start ${helpers.convert24to12(raid.next.rotationTimeUTC)} raid.`}
-\`-next ${raidKey}\` to move to next rotation without starting.
-\`-undo\` to revert your last action.`;
+:fast_forward: Next: ${raid.next ? helpers.convert24to12(raid.next.rotationTimeUTC) : '-'}`;
+
+// ${raid.active ? `
+// \`-stop ${raidKey}\` to stop active raid.` : `
+// \`-start ${raidKey}\` to start ${helpers.convert24to12(raid.next.rotationTimeUTC)} raid.`}
+// \`-next ${raidKey}\` to move to next rotation without starting.
+// \`-undo\` to revert your last action.`;
 
 		embed = new Discord.RichEmbed()
 			.setAuthor(`${raidKey ? this.json[raidKey].name : this.config.name} Raid Settings`)
