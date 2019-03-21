@@ -134,8 +134,8 @@ export default class Raids {
 
 		desc = `:repeat: UTC Rotations: ${raid.config.rotationTimesUTC && raid.config.rotationTimesUTC.map(hour => helpers.convert24to12(hour)).join(', ')}
 
-:arrow_forward: Active: ${raid.active ? helpers.convert24to12(raid.active.rotationTimeUTC) : '-'}
-:fast_forward: Next: ${raid.next ? helpers.convert24to12(raid.next.rotationTimeUTC) : '-'}`;
+:arrow_forward: Active: ${raid.active ? `${raid.active.rotationTimeUTC} / ${helpers.convert24to12(raid.active.rotationTimeUTC)}` : '-'}
+:fast_forward: Next: ${raid.next ? `${raid.next.rotationTimeUTC} / ${helpers.convert24to12(raid.next.rotationTimeUTC)}` : '-'}`;
 
 // ${raid.active ? `
 // \`-stop ${raidKey}\` to stop active raid.` : `
