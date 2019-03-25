@@ -362,7 +362,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
               new Date().getTime() - message.createdTimestamp,
               this.config.DEV
             )}:
-${[...slackers].map(slacker => `      - <@${slacker.id}>`).join('\n')}
+${[...slackers].map(slacker => `      - ${slacker.displayName}`).join('\n')}
    
 •    Short preview of the message, so it's easier to find:
 \`\`\`${message.cleanContent.substring(0, 100).trim()}${message.cleanContent.length > 100 ? ' (...)' : ''}\`\`\`
