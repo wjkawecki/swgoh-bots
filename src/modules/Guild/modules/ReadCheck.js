@@ -55,42 +55,42 @@ export default class ReadCheck {
     });
   }
 
-  // listenToReactions() {
-  //   this.Client.on('messageReactionAdd', (messageReaction, user) => {
-  //     if (
-  //       this.guild.members.get(user.id).roles.has(this.config.roles.officer) ||
-  //       (this.config.DEV && this.guild.members.get(user.id).user.bot)
-  //     ) {
-  //       if (this.hasReaction(messageReaction, 'readCheck_1h')) this.addCheck(messageReaction, user, 60 * 60 * 1000);
+  listenToReactions() {
+    this.Client.on('messageReactionAdd', (messageReaction, user) => {
+      if (
+        this.guild.members.get(user.id).roles.has(this.config.roles.officer) ||
+        (this.config.DEV && this.guild.members.get(user.id).user.bot)
+      ) {
+        // if (this.hasReaction(messageReaction, 'readCheck_1h')) this.addCheck(messageReaction, user, 60 * 60 * 1000);
 
-  //       if (this.hasReaction(messageReaction, 'readCheck_6h')) this.addCheck(messageReaction, user, 6 * 60 * 60 * 1000);
+        // if (this.hasReaction(messageReaction, 'readCheck_6h')) this.addCheck(messageReaction, user, 6 * 60 * 60 * 1000);
 
-  //       if (this.hasReaction(messageReaction, 'readCheck_12h')) this.addCheck(messageReaction, user, 12 * 60 * 60 * 1000);
+        // if (this.hasReaction(messageReaction, 'readCheck_12h')) this.addCheck(messageReaction, user, 12 * 60 * 60 * 1000);
 
-  //       if (this.hasReaction(messageReaction, 'readCheck_24h')) this.addCheck(messageReaction, user, 24 * 60 * 60 * 1000);
+        // if (this.hasReaction(messageReaction, 'readCheck_24h')) this.addCheck(messageReaction, user, 24 * 60 * 60 * 1000);
 
-  //       if (this.hasReaction(messageReaction, 'readCheck_48h')) this.addCheck(messageReaction, user, 48 * 60 * 60 * 1000);
+        // if (this.hasReaction(messageReaction, 'readCheck_48h')) this.addCheck(messageReaction, user, 48 * 60 * 60 * 1000);
 
-  //       if (this.hasReaction(messageReaction, 'readCheck_1h')) this.addCheck(messageReaction, user, 60 * 60 * 1000);
+        // if (this.hasReaction(messageReaction, 'readCheck_1h')) this.addCheck(messageReaction, user, 60 * 60 * 1000);
 
-  //       if (this.hasReaction(messageReaction, '🔍') && this.config.DEV) this.addCheck(messageReaction, user, 30 * 1000);
+        // if (this.hasReaction(messageReaction, '🔍') && this.config.DEV) this.addCheck(messageReaction, user, 30 * 1000);
 
-  //       if (this.hasReaction(messageReaction, '🔁')) this.toggleRepetition(messageReaction, user, true);
+        // if (this.hasReaction(messageReaction, '🔁')) this.toggleRepetition(messageReaction, user, true);
 
-  //       if (this.hasReaction(messageReaction, '💬')) this.toggleDM(messageReaction, user, true);
-  //     }
-  //   });
+        // if (this.hasReaction(messageReaction, '💬')) this.toggleDM(messageReaction, user, true);
+      }
+    });
 
-  //   this.Client.on('messageReactionRemove', (messageReaction, user) => {
-  //     if (this.guild.members.get(user.id).roles.has(this.config.roles.officer)) {
-  //       this.deleteCheck(messageReaction, user);
+    this.Client.on('messageReactionRemove', (messageReaction, user) => {
+      if (this.guild.members.get(user.id).roles.has(this.config.roles.officer)) {
+        // this.deleteCheck(messageReaction, user);
 
-  //       if (this.hasReaction(messageReaction, '🔁')) this.toggleRepetition(messageReaction, user, false);
+        // if (this.hasReaction(messageReaction, '🔁')) this.toggleRepetition(messageReaction, user, false);
 
-  //       if (this.hasReaction(messageReaction, '💬')) this.toggleDM(messageReaction, user, false);
-  //     }
-  //   });
-  // }
+        // if (this.hasReaction(messageReaction, '💬')) this.toggleDM(messageReaction, user, false);
+      }
+    });
+  }
 
   fetchMessage(msg, messageId, channelId) {
     const channel = this.Client.channels.get(channelId || msg.channel.id);
