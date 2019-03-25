@@ -62,21 +62,13 @@ export default class ReadCheck {
         (this.config.DEV && this.guild.members.get(user.id).user.bot)
       ) {
         // if (this.hasReaction(messageReaction, 'readCheck_1h')) this.addCheck(messageReaction, user, 60 * 60 * 1000);
-
         // if (this.hasReaction(messageReaction, 'readCheck_6h')) this.addCheck(messageReaction, user, 6 * 60 * 60 * 1000);
-
         // if (this.hasReaction(messageReaction, 'readCheck_12h')) this.addCheck(messageReaction, user, 12 * 60 * 60 * 1000);
-
         // if (this.hasReaction(messageReaction, 'readCheck_24h')) this.addCheck(messageReaction, user, 24 * 60 * 60 * 1000);
-
         // if (this.hasReaction(messageReaction, 'readCheck_48h')) this.addCheck(messageReaction, user, 48 * 60 * 60 * 1000);
-
         // if (this.hasReaction(messageReaction, 'readCheck_1h')) this.addCheck(messageReaction, user, 60 * 60 * 1000);
-
         // if (this.hasReaction(messageReaction, '🔍') && this.config.DEV) this.addCheck(messageReaction, user, 30 * 1000);
-
         // if (this.hasReaction(messageReaction, '🔁')) this.toggleRepetition(messageReaction, user, true);
-
         // if (this.hasReaction(messageReaction, '💬')) this.toggleDM(messageReaction, user, true);
       }
     });
@@ -84,9 +76,7 @@ export default class ReadCheck {
     this.Client.on('messageReactionRemove', (messageReaction, user) => {
       if (this.guild.members.get(user.id).roles.has(this.config.roles.officer)) {
         // this.deleteCheck(messageReaction, user);
-
         // if (this.hasReaction(messageReaction, '🔁')) this.toggleRepetition(messageReaction, user, false);
-
         // if (this.hasReaction(messageReaction, '💬')) this.toggleDM(messageReaction, user, false);
       }
     });
@@ -329,8 +319,7 @@ Once scheduled, ReadCheck will run through all people @mentioned in that message
           });
 
         Promise.all(reactionPromises).then(() => {
-          slackers = new Set([...pingedUsers].filter(pingedUser => !reactingUsers.has(pingedUser.id)));
-          slackers = new Set([...pingedUsers].filter(pingedUser => pingedUser.id !== msg.author.id));
+          slackers = new Set([...pingedUsers].filter(pingedUser => pingedUser.id !== msg.author.id && !reactingUsers.has(pingedUser.id)));
 
           if (slackers.size) {
             slackers = new Set([...slackers].sort((a, b) => a.displayName.localeCompare(b.displayName)));
