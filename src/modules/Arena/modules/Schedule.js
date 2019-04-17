@@ -104,7 +104,7 @@ export default class Schedule {
           desc += '\n_ _';
         }
 
-        desc += `\n\`${this.payouts[i].time}\`_ _ _ _`;
+        desc += `\n\`${i === '0' ? this.payouts[i].time : this.payouts[i].payout + ' UTC'}\`_ _ _ _`;
         for (let j in this.payouts[i].players) {
           const player = this.payouts[i].players[j];
 
