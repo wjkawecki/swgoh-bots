@@ -102,7 +102,7 @@ export default class Guild {
       if (config.DEV) {
         // channels.bot_playground.send('DEV reporting for duty!');
       } else {
-        channels.bot_playground.send('Reporting for duty!');
+        channels.bot_playground.send(':white_check_mark: `Reporting for duty!`');
       }
 
       // GUILD MODULES
