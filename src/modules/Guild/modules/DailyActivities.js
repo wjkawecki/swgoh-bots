@@ -53,7 +53,6 @@ export default class DailyActivities {
   }
 
   scheduleReminder(manualReminder = false) {
-    console.log(this.config.remindMinutesBefore);
     let remindMinutesBefore = this.config.remindMinutesBefore || 30,
       hour = this.config.resetTimeUTC.hour,
       minute = this.config.resetTimeUTC.minute,
@@ -83,7 +82,7 @@ export default class DailyActivities {
 
       this.channels.tickets_log &&
         setTimeout(() => {
-          this.channels.tickets_log.send(':repeat: Guild reset happens now - thank you for your raid tickets contribution!');
+          this.channels.tickets_log.send(':repeat: Guild reset mark - thank you for your raid tickets contribution!');
         }, diff);
 
       setTimeout((resetDay = this.resetDay) => {
