@@ -64,7 +64,8 @@ const initBot = () => {
         raids_comm: '424322828167413770',
         territory_battles: '424322614169960448',
         bot_playground: '371742456653414410',
-        court_of_law: '456166218878025738'
+        court_of_law: '456166218878025738',
+        tickets_log: '570959177200042006'
       },
       roles: {
         officer: '423875440806199305',

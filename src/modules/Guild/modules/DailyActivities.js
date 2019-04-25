@@ -73,11 +73,18 @@ export default class DailyActivities {
 
       if (reminderDiff > 0) {
         setTimeout(() => {
-          this.channels.guild_lounge.send(
+          const channel = this.channels.tickets_log || this.channels.guild_lounge;
+
+          channel.send(
             `<@&${this.config.roles.member}> **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`
           );
         }, reminderDiff);
       }
+
+      this.channels.tickets_log &&
+        setTimeout(() => {
+          this.channels.tickets_log.send(':repeat: Guild reset happens now - thank you for your raid tickets contribution!');
+        }, diff);
 
       setTimeout((resetDay = this.resetDay) => {
         let embed = new Discord.RichEmbed(),
