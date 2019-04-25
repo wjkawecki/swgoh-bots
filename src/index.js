@@ -74,7 +74,7 @@ const initBot = () => {
         hour: 23,
         minute: 30
       },
-      remindMinutesBefore: 30
+      remindMinutesBefore: 60
     },
     {
       name: 'RoF',
