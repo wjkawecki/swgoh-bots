@@ -75,14 +75,16 @@ export default class DailyActivities {
           const channel = this.channels.tickets_log || this.channels.guild_lounge;
 
           channel.send(
-            `<@&${this.config.roles.member}> **600 Ticket Reminder** - reset in __**${remindMinutesBefore} minutes**__  :six::zero::zero:`
+            `<@&${
+              this.config.roles.member
+            }> :six::zero::zero: **Tickets Reminder** - guild reset in __**${remindMinutesBefore} minutes**__.`
           );
         }, reminderDiff);
       }
 
       this.channels.tickets_log &&
         setTimeout(() => {
-          this.channels.tickets_log.send(':repeat: Guild reset mark - thank you for your raid tickets contribution!');
+          this.channels.tickets_log.send(':repeat: **Guild Reset** - thank you for your tickets contribution!');
         }, diff);
 
       setTimeout((resetDay = this.resetDay) => {
