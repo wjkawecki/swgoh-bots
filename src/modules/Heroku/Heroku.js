@@ -3,7 +3,7 @@ import helpers from '../../helpers/helpers';
 const token = process.env.HEROKU_API_KEY;
 const resetTimeUTC = {
   hour: 12,
-  minute: 01
+  minute: 12
 };
 
 process.on('unhandledRejection', function(reason, p) {
