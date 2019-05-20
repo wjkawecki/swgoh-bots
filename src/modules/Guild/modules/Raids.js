@@ -428,6 +428,19 @@ export default class Raids {
         }, raid.diff)
       );
 
+      this.timeouts[raid.raidKey].push(
+        setTimeout(() => {
+          const nextRotationTimeUTC = this.json[raid.raidKey].next.rotationTimeUTC;
+
+          this.channels.sergeants_office.send(
+            `<@&${this.config.roles.officer}> change __${raid.name}__ in-game autolaunch setting to :clock${helpers.convert24to12(
+              nextRotationTimeUTC,
+              false
+            )}: **${nextRotationTimeUTC} / ${helpers.convert24to12(nextRotationTimeUTC)} UTC**`
+          );
+        }, raid.diff + 3 * 60 * 60 * 1000)
+      );
+
       console.log(`${this.config.name}: ${raid.name} ${nextPhase} opens in ${helpers.getReadableTime(raid.diff)}`);
     }
   }
