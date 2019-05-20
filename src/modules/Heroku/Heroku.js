@@ -1,11 +1,9 @@
 import helpers from '../../helpers/helpers';
 
 const token = process.env.HEROKU_API_KEY;
-const appName = 'swgoh-bots';
-const dynoName = 'worker';
 const resetTimeUTC = {
-  hour: 23,
-  minute: 31
+  hour: 12,
+  minute: 01
 };
 
 process.on('unhandledRejection', function(reason, p) {
@@ -15,7 +13,10 @@ process.on('unhandledRejection', function(reason, p) {
 
 export default class Heroku {
   constructor(DEV) {
-    if (!DEV) this.scheduleRestart(appName, dynoName);
+    if (!DEV) {
+      this.scheduleRestart('swgoh-guilds', 'web');
+      this.scheduleRestart('swgoh-bots', 'worker');
+    }
     // this.scheduleWakeUp();
   }
 
