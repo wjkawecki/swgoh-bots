@@ -57,19 +57,19 @@ const initBot = () => {
       mongoCollection: 'TeN_TiNT',
       botToken: process.env.TOKEN_TeN_TiNT,
       channels: {
-        guild_lounge: '423829996461621248',
-        officer_chat: '423838294766256137',
-        sergeants_office: '426510072584077316',
-        raids_log: '425797428642316288',
-        raids_comm: '424322828167413770',
-        territory_battles: '424322614169960448',
-        bot_playground: '371742456653414410',
-        court_of_law: '456166218878025738',
-        tickets_log: '570959177200042006'
+        guild_lounge: '602443313622024213',
+        officer_chat: '602443466198220800',
+        sergeants_office: '602247189418475540',
+        raids_log: '602247189418475540',
+        raids_comm: '602246555600158729',
+        territory_battles: '602246125919141926',
+        bot_playground: '602763251318652929',
+        court_of_law: '602458926499233823',
+        tickets_log: '602458853824659456'
       },
       roles: {
-        officer: '423875440806199305',
-        member: '423827855420686336'
+        officer: '601817123483942922',
+        member: '601817882036273173'
       },
       resetTimeUTC: {
         hour: 23,
