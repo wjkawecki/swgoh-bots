@@ -222,11 +222,12 @@ export default class Raids {
         msg.reply(`don't fool me! __${raidName}__ is already active!`);
       } else {
         msg.reply(
-          `added ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC __${raidName}__ to the <#${
-            this.config.channels.raids_log
-          }>\nNext rotation: :clock${helpers.convert24to12(nextRotationTimeUTC, false)}: **${nextRotationTimeUTC} / ${helpers.convert24to12(
-            nextRotationTimeUTC
-          )} UTC**`
+          `${helpers.convert24to12(
+            raid.next.rotationTimeUTC
+          )} UTC __${raidName}__ has been activated.\nNext rotation: :clock${helpers.convert24to12(
+            nextRotationTimeUTC,
+            false
+          )}: **${nextRotationTimeUTC} / ${helpers.convert24to12(nextRotationTimeUTC)} UTC**`
         );
 
         if (raid.config.registrationHours > 0) {
@@ -253,20 +254,20 @@ export default class Raids {
           this.channels.raids_comm.send(`<@&${this.config.roles.member}> __${raidName}__ ${nextPhase} is now OPEN! :boom:${nextPhaseHold}`);
         }
 
-        if (!this.config.DEV) {
-          let that = this;
+        // if (!this.config.DEV) {
+        //   let that = this;
 
-          this.channels.raids_log
-            .send(
-              `__${raidName}__: ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${
-                msg.author.id
-              }>\nNext rotation: :clock${helpers.convert24to12(
-                nextRotationTimeUTC,
-                false
-              )}: **${nextRotationTimeUTC} / ${helpers.convert24to12(nextRotationTimeUTC)} UTC**`
-            )
-            .then(msg => that.saveLastMessage(msg.id));
-        }
+        //   this.channels.raids_log
+        //     .send(
+        //       `__${raidName}__: ${helpers.convert24to12(raid.next.rotationTimeUTC)} UTC started by <@${
+        //         msg.author.id
+        //       }>\nNext rotation: :clock${helpers.convert24to12(
+        //         nextRotationTimeUTC,
+        //         false
+        //       )}: **${nextRotationTimeUTC} / ${helpers.convert24to12(nextRotationTimeUTC)} UTC**`
+        //     )
+        //     .then(msg => that.saveLastMessage(msg.id));
+        // }
 
         this.json[raidKey].next = {
           rotationTimeUTC: nextRotationTimeUTC
