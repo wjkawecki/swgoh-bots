@@ -53,6 +53,31 @@ const initBot = () => {
 
   const GUILDS = [
     {
+      name: 'Empîre VENGEANCE',
+      mongoCollection: 'EMPIRE_VENG',
+      botToken: process.env.TOKEN_EMPIRE_VENG,
+      channels: {
+        guild_lounge: '404677793432207370',
+        officer_chat: '404697828703600640',
+        sergeants_office: '603143120305127454',
+        raids_log: '603143120305127454',
+        raids_comm: '404697955052945408',
+        territory_battles: '404698512027025408',
+        bot_playground: '602763251318652929'
+        // court_of_law: '602458926499233823',
+        // tickets_log: '602458853824659456'
+      },
+      roles: {
+        officer: '404681050212663296',
+        member: '404678561577041942'
+      },
+      // resetTimeUTC: {
+      //   hour: 23,
+      //   minute: 30
+      // },
+      remindMinutesBefore: 60
+    },
+    {
       name: 'TiNT',
       mongoCollection: 'TeN_TiNT',
       botToken: process.env.TOKEN_TeN_TiNT,
